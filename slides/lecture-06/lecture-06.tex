@@ -62,7 +62,7 @@
   \frame{\maketitle}
 
   % Show outline at beginning of each section
-  \AtBeginSection[]{ 
+  \AtBeginSection[]{
     \begin{frame}<beamer>
       \tableofcontents[currentsection]
     \end{frame}
@@ -71,7 +71,7 @@
   %%%%%%% Slides start here %%%%%%%
 
   \begin{darkframes}
-    
+
     %{slide 1}
     \begin{frame}{Making Better Decisions}
       \fontsize{10}{10}\selectfont
@@ -82,7 +82,7 @@
         exercise any control over their lives, careers, or their surroundings.}
         \text{- Ralph Keeney, Making Better Decision Makers, Decision Analysis, vol. 1}
         No:4, 2004
-      
+
       \lc %{How do you make important decisions?}
     \end{frame}
 
@@ -93,8 +93,8 @@
         \item A framework for analyszing decision problems that involve uncertainty
         \item Decision trees: a powerful graphical tool that guides that analysis
         \item Smaller analyses can be done using pen and paper
-        \item Larger ones require software 
-        \end{itemize} 
+        \item Larger ones require software
+        \end{itemize}
     \end{frame}
 
 
@@ -130,7 +130,13 @@
       A payoff table lists the payoff for each decision outcome pair; positive values are gains and negative values are losses.
 
         \begin{center}
-          \includegraphics[width=2.5in]{PayoffTable} 
+          \begin{tabular}{r|rrr}
+            & O1 & O2 & O3 \\
+            \hline
+            D1 & \$10 & \$10 & \$10 \\
+            D2 & $-\$10$ & \$20 & \$30 \\
+            D3 & $-\$30$ & \$30 & \$80
+          \end{tabular}
         \end{center}
         \begin{itemize}
             \item This table shows three possible decisions (D1, D2, and D3) and three
@@ -146,7 +152,13 @@
     \begin{frame}[fragile]{Payoff Tables}
       We need to know the probability of each outcome to make a good decision!
       \begin{center}
-        \includegraphics[width=2.5in]{PayoffTable} 
+        \begin{tabular}{r|rrr}
+          & O1 & O2 & O3 \\
+          \hline
+          D1 & \$10 & \$10 & \$10 \\
+          D2 & $-\$10$ & \$20 & \$30 \\
+          D3 & $-\$30$ & \$30 & \$80
+        \end{tabular}
       \end{center}
         \begin{itemize}
             \item Suppose $P(O1) = 0.3, P(O2) = 0.5, P(O3) = 0.2$
@@ -164,7 +176,7 @@
             \item $E(D1) = 10$
             \item $E(D2) = -10(0.3) + 20(0.5) - 30(0.2) = 13$
             \item $E(D3) = ?$
-        \end{itemize}    
+        \end{itemize}
 
       \lc %{What is EV of D3?}
     \end{frame}
@@ -178,7 +190,7 @@
             \item Probabilities are listed on probability branches, and are conditional on the events that have already been observed (i.e., they assume that everything to the left has already happened). \pause
             \item Monetary values are shown to the right of the end nodes. \pause
             \item EVs are calculated through a ``rolling-back'' process.
-          \end{itemize}  
+          \end{itemize}
     \end{frame}
 
 
@@ -189,45 +201,45 @@
         [
           grow                    = right,
           level 1/.style          ={sibling distance=4em, level distance=8em},
-          level 2/.style          ={sibling distance=3em, level distance=14em}, 
-          level 3/.style          ={sibling distance=3em, level distance=8em}, 
+          level 2/.style          ={sibling distance=3em, level distance=14em},
+          level 3/.style          ={sibling distance=3em, level distance=8em},
           %level distance          = 8em,
           edge from parent/.style = {draw, -latex},
           every node/.style       = {font=\footnotesize},
           sloped
         ]
         \node [decision] {}
-          child { 
+          child {
             node [prob] {}
-            child { 
+            child {
               node [leaf] { $80$ }
               edge from parent node [above] {O3, $p=0.2$}
             }
-            child { 
+            child {
               node [leaf] { $30$ }
               edge from parent node [above] {O2, $p=0.5$}
             }
-            child { 
+            child {
               node [leaf] { $-30$ }
               edge from parent node [above] {O1, $p=0.3$}
             }
             edge from parent node [above] {D3}
           }
-          child { 
+          child {
             node [leaf] {$10$}
             edge from parent node [above] {D1}
           }
-          child { 
+          child {
             node [prob] {}
-            child { 
+            child {
               node [leaf] { $30$ }
               edge from parent node [above] {O3, $p=0.2$}
             }
-            child { 
+            child {
               node [leaf] { $20$ }
               edge from parent node [above] {O2, $p=0.5$}
             }
-            child { 
+            child {
               node [leaf] { $-10$ }
               edge from parent node [above] {O1, $p=0.3$}
             }
@@ -236,9 +248,9 @@
         \end{tikzpicture}
       \end{center}
 
-    \end{frame}   
-    
-    
+    \end{frame}
+
+
         %{slide 10}
     \begin{frame}[fragile]{Rolling back: Step 1}
     Calculate the expected value at each probability node:
@@ -247,45 +259,45 @@
         [
           grow                    = right,
           level 1/.style          ={sibling distance=4em, level distance=8em},
-          level 2/.style          ={sibling distance=3em, level distance=14em}, 
-          level 3/.style          ={sibling distance=3em, level distance=8em}, 
+          level 2/.style          ={sibling distance=3em, level distance=14em},
+          level 3/.style          ={sibling distance=3em, level distance=8em},
           %level distance          = 8em,
           edge from parent/.style = {draw, -latex},
           every node/.style       = {font=\footnotesize},
           sloped
         ]
         \node [decision] {}
-          child { 
+          child {
             node [prob] {?}
-            child { 
+            child {
               node [leaf] { $80$ }
               edge from parent node [above] {O3, $p=0.2$}
             }
-            child { 
+            child {
               node [leaf] { $30$ }
               edge from parent node [above] {O2, $p=0.5$}
             }
-            child { 
+            child {
               node [leaf] { $-30$ }
               edge from parent node [above] {O1, $p=0.3$}
             }
             edge from parent node [above] {D3}
           }
-          child { 
+          child {
             node [leaf] {$10$}
             edge from parent node [above] {D1}
           }
-          child { 
+          child {
             node [prob] {13}
-            child { 
+            child {
               node [leaf] { $30$ }
               edge from parent node [above] {O3, $p=0.2$}
             }
-            child { 
+            child {
               node [leaf] { $20$ }
               edge from parent node [above] {O2, $p=0.5$}
             }
-            child { 
+            child {
               node [leaf] { $-10$ }
               edge from parent node [above] {O1, $p=0.3$}
             }
@@ -294,11 +306,11 @@
         \end{tikzpicture}
       \end{center}
       $E(D1) = .3(-10) + .5(20) + .2(30) = 13$
-      \lc{Calculate the node EV}
-    \end{frame} 
-    
-    
-    
+      \lc
+    \end{frame}
+
+
+
             %{slide 11}
     \begin{frame}[fragile]{Rolling back: Step 2}
      Calculate the maximum at each decision node:
@@ -307,45 +319,45 @@
         [
           grow                    = right,
           level 1/.style          ={sibling distance=4em, level distance=8em},
-          level 2/.style          ={sibling distance=3em, level distance=14em}, 
-          level 3/.style          ={sibling distance=3em, level distance=8em}, 
+          level 2/.style          ={sibling distance=3em, level distance=14em},
+          level 3/.style          ={sibling distance=3em, level distance=8em},
           %level distance          = 8em,
           edge from parent/.style = {draw, -latex},
           every node/.style       = {font=\footnotesize},
           sloped
         ]
         \node [decision] {22}
-          child { 
+          child {
             node [prob] {22}
-            child { 
+            child {
               node [leaf] { $80$ }
               edge from parent node [above] {O3, $p=0.2$}
             }
-            child { 
+            child {
               node [leaf] { $30$ }
               edge from parent node [above] {O2, $p=0.5$}
             }
-            child { 
+            child {
               node [leaf] { $-30$ }
               edge from parent node [above] {O1, $p=0.3$}
             }
             edge from parent node [above] {D3}
           }
-          child { 
+          child {
             node [leaf] {$10$}
             edge from parent node [above] {D1}
           }
-          child { 
+          child {
             node [prob] {13}
-            child { 
+            child {
               node [leaf] { $30$ }
               edge from parent node [above] {O3, $p=0.2$}
             }
-            child { 
+            child {
               node [leaf] { $20$ }
               edge from parent node [above] {O2, $p=0.5$}
             }
-            child { 
+            child {
               node [leaf] { $-10$ }
               edge from parent node [above] {O1, $p=0.3$}
             }
@@ -354,7 +366,7 @@
         \end{tikzpicture}
       \end{center}
        Take decision D3 since $22 = \text{max}(10, 13, 22)$.
-    \end{frame} 
+    \end{frame}
 
 
 
@@ -365,7 +377,7 @@
     %{slide 12}
     \begin{frame}[fragile]{Sally Ann Soles' Shoe Factory}
       Sally Ann Soles manages a successful shoe factory. She is wondering
-      whether to expand her factory this year. 
+      whether to expand her factory this year.
       \begin{itemize}
         \item The cost of the expansion is \$1.5M. \pause
 
@@ -389,15 +401,15 @@
         [
           grow                    = right,
           level 1/.style          ={sibling distance=8em},
-          level 2/.style          ={sibling distance=6em}, 
+          level 2/.style          ={sibling distance=6em},
           level 3/.style          ={sibling distance=6em},
           level distance          = 12em,
           edge from parent/.style = {draw, -latex},
           every node/.style       = {font=\footnotesize},
           sloped
         ]
-        \node [decision] {}   
-          child { 
+        \node [decision] {}
+          child {
               node [prob] {}
               child{
                 node [leaf] {\$1M}
@@ -410,22 +422,22 @@
                  edge from parent node [below] {$p=0.4$}
               }
                 edge from parent node [above] {Don't Expand}
-                edge from parent node [below] {\$0}
+                edge from parent node [below] {spend \$0}
           }
-          child { 
+          child {
             node [prob] {}
             child{
-              node [leaf] {\$2M}
+              node [leaf] {\$0.5M}
                edge from parent node [above] {Bad Economy}
                edge from parent node [below] {$p=0.6$}
             }
             child{
-              node [leaf] {\$6M}
+              node [leaf] {\$4.5M}
                edge from parent node [above] {Good Economy}
                edge from parent node [below] {$p=0.4$}
             }
             edge from parent node [above] {Expand Factory}
-            edge from parent node [below] {-\$1.5M}
+            edge from parent node [below] {spend \$1.5M}
           };
         \end{tikzpicture}
       \end{center}
@@ -443,15 +455,15 @@
         [
           grow                    = right,
           level 1/.style          ={sibling distance=8em},
-          level 2/.style          ={sibling distance=6em}, 
+          level 2/.style          ={sibling distance=6em},
           level 3/.style          ={sibling distance=6em},
           level distance          = 12em,
           edge from parent/.style = {draw, -latex},
           every node/.style       = {font=\footnotesize},
           sloped
         ]
-        \node [decision] {\$2.1M}   
-          child { 
+        \node [decision] {\$2.1M}
+          child {
               node [prob] {\$1.8M}
               child{
                 node [leaf] {\$1M}
@@ -464,28 +476,28 @@
                  edge from parent node [below] {$p=0.4$}
               }
                 edge from parent node [above] {Don't Expand}
-                edge from parent node [below] {\$0}
+                edge from parent node [below] {spend \$0}
           }
-          child { 
+          child {
             node [prob] {\$2.1M}
             child{
-              node [leaf] {\$2M}
+              node [leaf] {\$0.5M}
                edge from parent node [above] {Bad Economy}
                edge from parent node [below] {$p=0.6$}
             }
             child{
-              node [leaf] {\$6M}
+              node [leaf] {\$4.5M}
                edge from parent node [above] {Good Economy}
                edge from parent node [below] {$p=0.4$}
             }
             edge from parent node [above] {Expand Factory}
-            edge from parent node [below] {-\$1.5M}
+            edge from parent node [below] {spend \$1.5M}
           };
         \end{tikzpicture}
       \end{center}
       $E(\text{expand}) = (.4(6) + .6(2)) - 1.5 = 2.1$
       $E(\text{don't expand}) = (.4(3) + .6(1)) = 1.8$
-      
+
       Since \$2.1 > \$1.8, she should expand!
     \end{frame}
 
@@ -511,33 +523,34 @@
         [
           grow                    = right,
           level 1/.style          ={sibling distance=8em, level distance=5em},
-          level 2/.style          ={sibling distance=11em, level distance=8em}, 
-          level 3/.style          ={sibling distance=5em, level distance=12em}, 
+          level 2/.style          ={sibling distance=11em, level distance=8em},
+          level 3/.style          ={sibling distance=5em, level distance=12em},
           %level distance          = 8em,
           edge from parent/.style = {draw, -latex},
           every node/.style       = {font=\footnotesize},
           sloped
         ]
-        \node [decision] {} 
-            child { 
+        \node [decision] {}
+            child {
               node [prob] {\$1.8M}
               edge from parent node [above] {Don't Expand}
+              edge from parent node [below] {spend \$0}
             }
             child{
-              node [prob] {?}
+              node [prob] { }
               child{
-                node [decision] {\$2.3M}
+                node [decision] { }
                 child{
-                  node [leaf] {\$1M}
+                  node [leaf] {\$0.8M}
                   edge from parent node [above] {Reduce \& Sell}
                   edge from parent node [below] {+\$1.3M}
                 }
                 child{
-                  node [leaf] {\$2M}
+                  node [leaf] {\$0.5M}
                   edge from parent node [above] {Stay at new level}
                 }
                 child{
-                  node [leaf] {\$3M}
+                  node [leaf] {\$0}
                   edge from parent node [above] {Expand further}
                   edge from parent node [below] {-\$1.5M}
                 }
@@ -545,18 +558,18 @@
                  edge from parent node [below] {$p=0.6$}
               }
               child{
-                node [decision] {\$6.5M}
+                node [decision] { }
                 child{
-                  node [leaf] {\$3M}
+                  node [leaf] {\$4.3M}
                   edge from parent node [above] {Reduce \& Sell}
                   edge from parent node [below] {+\$1.3M}
                 }
                 child{
-                  node [leaf] {\$6M}
+                  node [leaf] {\$4.5M}
                   edge from parent node [above] {Stay at new level}
                 }
                 child{
-                  node [leaf] {\$8M}
+                  node [leaf] {\$5M}
                   edge from parent node [above] {Expand further}
                   edge from parent node [below] {-\$1.5M}
                 }
@@ -568,7 +581,11 @@
             };
         \end{tikzpicture}
       \end{center}
-      \lc{Calculate the new Expansion EV} 
+      \note{Build this up together on the board so students}
+      \note{see where each value comes from. The payoffs}
+      \note{are tricky, esp for the reduce & sell cases.}
+      \note{Use the last LC question one or more times}
+      \note{to prompt students.}
     \end{frame}
 
 
@@ -577,11 +594,11 @@
 
     %{slide 16}
     \begin{frame}[fragile]{Expected value of the option}
-        The EV of expanding is now 
-        \[ (.4(6.5) + .6(2.3)) - 1.5 = 2.48. \]
+        The EV of expanding is now
+        \[ (.4(5) + .6(0.8)) = 2.48. \]
         \pause
         Therefore the value of the option is
-        \[ E(\text{new}) - E(\text{old}) = 2.48 - 2.1 = 0.38, \] 
+        \[ E(\text{new}) - E(\text{old}) = 2.48 - 2.1 = 0.38, \]
         or \$380,000.
     \end{frame}
 
@@ -589,7 +606,7 @@
    %{slide 17}
     \begin{frame}[fragile]{Does this look familiar?}
       \begin{itemize}[<+->]
-        \item This method of valuing a real option is used by corpotate strategists, management consultants, and bankers. 
+        \item This method of valuing a real option is used by corporate strategists, management consultants, and bankers.
         \item A further refinement is to take time value of money into account and present value everything.
       \end{itemize}
     \end{frame}
