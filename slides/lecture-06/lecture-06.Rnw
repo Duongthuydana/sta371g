@@ -1,0 +1,553 @@
+\documentclass{beamer}
+\usepackage{../371g-slides}
+\title{Decision Trees 1}
+\subtitle{Lecture 6}
+\author{STA 371G}
+\usepackage{forest}
+\begin{document}
+  <<setup, include=F, cache=F>>=
+  opts_knit$set(global.par=T)
+  knit_hooks$set(crop=hook_pdfcrop)
+  opts_chunk$set(dev='tikz', external=F, fig.path='c:/tmp/figures/', comment=NA, fig.width=4, fig.height=3, crop=T, sanitize=T, tidy=F)
+  knit_theme$set('camo')
+  @
+  <<include=F, cache=F>>=
+  par(fg='#fefefe', col.axis='#fefefe', col.lab='#fefefe', col.main="#fefefe", mar=c(5.1, 4.1, 1.1, 2.1))
+  @
+
+  \frame{\maketitle}
+
+  % Show outline at beginning of each section
+  \AtBeginSection[]{ 
+    \begin{frame}<beamer>
+      \tableofcontents[currentsection]
+    \end{frame}
+  }
+
+  %%%%%%% Slides start here %%%%%%%
+
+  \begin{darkframes}
+    
+    %{slide 1}
+    \begin{frame}{Making Better Decisions}
+      \fontsize{10}{10}\selectfont
+      \begin{center}
+        \includegraphics[width=2in]{DecisionAnalysis.png} \\
+      \end{center}
+        \textit{Decision making is the only way that individuals can purposely
+        exercise any control over their lives, careers, or their surroundings.}
+        \text{- Ralph Keeney, Making Better Decision Makers, Decision Analysis, vol. 1}
+        No:4, 2004
+      
+      \lc %{How do you make important decisions?}
+    \end{frame}
+
+
+    %{slide 2}
+    \begin{frame}[fragile]{Decision Analysis}
+      \begin{itemize}[<+->]
+        \item A framework for analyszing decision problems that involve uncertainty
+        \item Decision trees: a powerful graphical tool that guides that analysis
+        \item Smaller analyses can be done using pen and paper
+        \item Larger ones require software 
+        \end{itemize} 
+    \end{frame}
+
+
+    %{slide 3}
+    \begin{frame}[fragile]{Topics to cover}
+          \begin{itemize}[<+->]
+            \item Criteria for choosing among alternative decisions
+            \item How probabilities are used in the decision-making process
+            \item How early decisions affect later decisions
+            \item How a decision-maker can quantify the value of information
+            \item How attitudes toward risk and uncertainty can affect the analysis
+          \end{itemize}
+
+    \end{frame}
+
+
+    %{slide 4}
+    \begin{frame}[fragile]{Elements of a Decision Analysis}
+      All problems have three common elements:
+
+        \begin{itemize}
+            \item The decisions available to the decision maker.
+            \item The possible outcomes and the probabilities of these outcomes.
+            \item A value model that provides monetary values for the various outcomes.
+        \end{itemize}
+
+      Once these elements are defined, the decision maker can find an optimal decision.
+    \end{frame}
+
+
+    %{slide #5}
+    \begin{frame}[fragile]{Payoff Tables}
+      A payoff table lists the payoff for each decision outcome pair; positive values are gains and negative values are losses.
+
+        \begin{center}
+          \includegraphics[width=2.5in]{PayoffTable} 
+        \end{center}
+        \begin{itemize}
+            \item This table shows three possible decisions (D1, D2, and D3) and three
+            possible outcomes (O1, O2, and O3) for each.
+            \item Which decision do you prefer?
+        \end{itemize}
+
+      \lc %{Which decision do you prefer?}
+    \end{frame}
+
+
+    %{slide #6}
+    \begin{frame}[fragile]{Payoff Tables}
+      We need to know the probability of each outcome to make a good decision!
+      \begin{center}
+        \includegraphics[width=2.5in]{PayoffTable} 
+      \end{center}
+        \begin{itemize}
+            \item Suppose $P(O1) = 0.3, P(O2) = 0.5, P(O3) = 0.2$
+            \item Now which decision do you prefer?
+        \end{itemize}
+
+    \end{frame}
+
+
+    %{slide 7}
+    \begin{frame}[fragile]{Expected Value}
+         \begin{itemize}[<+->]
+            \item Expected value (EV) is a weighted average of the possible payoffs for the decision,
+            weighted by the probabilities of the outcomes
+            \item $E(D1) = 10$
+            \item $E(D2) = -10(0.3) + 20(0.5) - 30(0.2) = 13$
+            \item $E(D3) = ?$
+        \end{itemize}    
+
+      \lc %{What is EV of D3?}
+    \end{frame}
+
+
+    %{slide 8}
+    \begin{frame}[fragile]{Decision Trees}
+          \begin{itemize}
+            \item Time proceeds from left to right. \pause
+            \item Branches leading out of a decision node represent the possible decisions. \pause
+            \item Probabilities are listed on probability branches, and are conditional on the events that have already been observed (i.e., they assume that everything to the left has already happened). \pause
+            \item Monetary values are shown to the right of the end nodes. \pause
+            \item EVs are calculated through a ``rolling-back'' process.
+          \end{itemize}  
+    \end{frame}
+
+
+    %{slide 9}
+    \begin{frame}[fragile]{Example}
+    \begin{center}
+        \begin{tikzpicture}
+        [
+          grow                    = right,
+          level 1/.style          ={sibling distance=4em, level distance=8em},
+          level 2/.style          ={sibling distance=3em, level distance=14em}, 
+          level 3/.style          ={sibling distance=3em, level distance=8em}, 
+          %level distance          = 8em,
+          edge from parent/.style = {draw, -latex},
+          every node/.style       = {font=\footnotesize},
+          sloped
+        ]
+        \node [decision] {}
+          child { 
+            node [prob] {}
+            child { 
+              node [leaf] { $80$ }
+              edge from parent node [above] {O3, $p=0.2$}
+            }
+            child { 
+              node [leaf] { $30$ }
+              edge from parent node [above] {O2, $p=0.5$}
+            }
+            child { 
+              node [leaf] { $-30$ }
+              edge from parent node [above] {O1, $p=0.3$}
+            }
+            edge from parent node [above] {D3}
+          }
+          child { 
+            node [leaf] {$10$}
+            edge from parent node [above] {D1}
+          }
+          child { 
+            node [prob] {}
+            child { 
+              node [leaf] { $30$ }
+              edge from parent node [above] {O3, $p=0.2$}
+            }
+            child { 
+              node [leaf] { $20$ }
+              edge from parent node [above] {O2, $p=0.5$}
+            }
+            child { 
+              node [leaf] { $-10$ }
+              edge from parent node [above] {O1, $p=0.3$}
+            }
+            edge from parent node [above] {D2}
+          };
+        \end{tikzpicture}
+      \end{center}
+
+    \end{frame}   
+    
+    
+        %{slide 10}
+    \begin{frame}[fragile]{Rolling back: Step 1}
+    Calculate the expected value at each probability node:
+    \begin{center}
+        \begin{tikzpicture}
+        [
+          grow                    = right,
+          level 1/.style          ={sibling distance=4em, level distance=8em},
+          level 2/.style          ={sibling distance=3em, level distance=14em}, 
+          level 3/.style          ={sibling distance=3em, level distance=8em}, 
+          %level distance          = 8em,
+          edge from parent/.style = {draw, -latex},
+          every node/.style       = {font=\footnotesize},
+          sloped
+        ]
+        \node [decision] {}
+          child { 
+            node [prob] {?}
+            child { 
+              node [leaf] { $80$ }
+              edge from parent node [above] {O3, $p=0.2$}
+            }
+            child { 
+              node [leaf] { $30$ }
+              edge from parent node [above] {O2, $p=0.5$}
+            }
+            child { 
+              node [leaf] { $-30$ }
+              edge from parent node [above] {O1, $p=0.3$}
+            }
+            edge from parent node [above] {D3}
+          }
+          child { 
+            node [leaf] {$10$}
+            edge from parent node [above] {D1}
+          }
+          child { 
+            node [prob] {13}
+            child { 
+              node [leaf] { $30$ }
+              edge from parent node [above] {O3, $p=0.2$}
+            }
+            child { 
+              node [leaf] { $20$ }
+              edge from parent node [above] {O2, $p=0.5$}
+            }
+            child { 
+              node [leaf] { $-10$ }
+              edge from parent node [above] {O1, $p=0.3$}
+            }
+            edge from parent node [above] {D2}
+          };
+        \end{tikzpicture}
+      \end{center}
+      $E(D1) = .3(-10) + .5(20) + .2(30) = 13$
+      \lc{Calculate the node EV}
+    \end{frame} 
+    
+    
+    
+            %{slide 11}
+    \begin{frame}[fragile]{Rolling back: Step 2}
+     Calculate the maximum at each decision node:
+    \begin{center}
+        \begin{tikzpicture}
+        [
+          grow                    = right,
+          level 1/.style          ={sibling distance=4em, level distance=8em},
+          level 2/.style          ={sibling distance=3em, level distance=14em}, 
+          level 3/.style          ={sibling distance=3em, level distance=8em}, 
+          %level distance          = 8em,
+          edge from parent/.style = {draw, -latex},
+          every node/.style       = {font=\footnotesize},
+          sloped
+        ]
+        \node [decision] {22}
+          child { 
+            node [prob] {22}
+            child { 
+              node [leaf] { $80$ }
+              edge from parent node [above] {O3, $p=0.2$}
+            }
+            child { 
+              node [leaf] { $30$ }
+              edge from parent node [above] {O2, $p=0.5$}
+            }
+            child { 
+              node [leaf] { $-30$ }
+              edge from parent node [above] {O1, $p=0.3$}
+            }
+            edge from parent node [above] {D3}
+          }
+          child { 
+            node [leaf] {$10$}
+            edge from parent node [above] {D1}
+          }
+          child { 
+            node [prob] {13}
+            child { 
+              node [leaf] { $30$ }
+              edge from parent node [above] {O3, $p=0.2$}
+            }
+            child { 
+              node [leaf] { $20$ }
+              edge from parent node [above] {O2, $p=0.5$}
+            }
+            child { 
+              node [leaf] { $-10$ }
+              edge from parent node [above] {O1, $p=0.3$}
+            }
+            edge from parent node [above] {D2}
+          };
+        \end{tikzpicture}
+      \end{center}
+       Take decision D3 since $22 = \text{max}(10, 13, 22)$.
+    \end{frame} 
+
+
+
+
+
+
+
+    %{slide 12}
+    \begin{frame}[fragile]{Sally Ann Soles' Shoe Factory}
+      Sally Ann Soles manages a successful shoe factory. She is wondering
+      whether to expand her factory this year. 
+      \begin{itemize}
+        \item The cost of the expansion is \$1.5M. \pause
+
+        \item If she does nothing and the economy stays good, she expects to earn \$3M in
+        revenue, but if the economy is bad, she expects only \$1M. \pause
+
+        \item If she expands the factory, she expects to earn \$6M if the economy is
+        good and \$2M if it is bad. \pause
+
+        \item She estimates that there is a 40 percent chance of a good economy and
+        a 60 percent chance of a bad economy.
+      \end{itemize}
+     Should she expand?
+    \end{frame}
+
+
+    %{slide 13}
+    \begin{frame}
+      \begin{center}
+        \begin{tikzpicture}
+        [
+          grow                    = right,
+          level 1/.style          ={sibling distance=8em},
+          level 2/.style          ={sibling distance=6em}, 
+          level 3/.style          ={sibling distance=6em},
+          level distance          = 12em,
+          edge from parent/.style = {draw, -latex},
+          every node/.style       = {font=\footnotesize},
+          sloped
+        ]
+        \node [decision] {}   
+          child { 
+              node [prob] {}
+              child{
+                node [leaf] {\$1M}
+                 edge from parent node [above] {Bad Economy}
+                 edge from parent node [below] {$p=0.6$}
+              }
+              child{
+                node [leaf] {\$3M}
+                 edge from parent node [above] {Good Economy}
+                 edge from parent node [below] {$p=0.4$}
+              }
+                edge from parent node [above] {Don't Expand}
+                edge from parent node [below] {\$0}
+          }
+          child { 
+            node [prob] {}
+            child{
+              node [leaf] {\$2M}
+               edge from parent node [above] {Bad Economy}
+               edge from parent node [below] {$p=0.6$}
+            }
+            child{
+              node [leaf] {\$6M}
+               edge from parent node [above] {Good Economy}
+               edge from parent node [below] {$p=0.4$}
+            }
+            edge from parent node [above] {Expand Factory}
+            edge from parent node [below] {-\$1.5M}
+          };
+        \end{tikzpicture}
+      \end{center}
+      \pause
+      $E(\text{expand}) = (.4(6) + .6(2)) - 1.5 = 2.1$
+      $E(\text{don't expand}) = (.4(3) + .6(1)) = 1.8$
+    \end{frame}
+
+
+
+      %{slide 13-2}
+          \begin{frame}
+      \begin{center}
+        \begin{tikzpicture}
+        [
+          grow                    = right,
+          level 1/.style          ={sibling distance=8em},
+          level 2/.style          ={sibling distance=6em}, 
+          level 3/.style          ={sibling distance=6em},
+          level distance          = 12em,
+          edge from parent/.style = {draw, -latex},
+          every node/.style       = {font=\footnotesize},
+          sloped
+        ]
+        \node [decision] {\$2.1M}   
+          child { 
+              node [prob] {\$1.8M}
+              child{
+                node [leaf] {\$1M}
+                 edge from parent node [above] {Bad Economy}
+                 edge from parent node [below] {$p=0.6$}
+              }
+              child{
+                node [leaf] {\$3M}
+                 edge from parent node [above] {Good Economy}
+                 edge from parent node [below] {$p=0.4$}
+              }
+                edge from parent node [above] {Don't Expand}
+                edge from parent node [below] {\$0}
+          }
+          child { 
+            node [prob] {\$2.1M}
+            child{
+              node [leaf] {\$2M}
+               edge from parent node [above] {Bad Economy}
+               edge from parent node [below] {$p=0.6$}
+            }
+            child{
+              node [leaf] {\$6M}
+               edge from parent node [above] {Good Economy}
+               edge from parent node [below] {$p=0.4$}
+            }
+            edge from parent node [above] {Expand Factory}
+            edge from parent node [below] {-\$1.5M}
+          };
+        \end{tikzpicture}
+      \end{center}
+      $E(\text{expand}) = (.4(6) + .6(2)) - 1.5 = 2.1$
+      $E(\text{don't expand}) = (.4(3) + .6(1)) = 1.8$
+      
+      Since \$2.1 > \$1.8, she should expand!
+    \end{frame}
+
+
+
+    %{slide 14}
+    \begin{frame}[fragile]{Sequential decisions}
+      She later learns if she expands, she can opt to either:
+      \begin{enumerate}[(a)]
+        \item expand the factory further, which costs \$1.5M and will yield an extra \$2M in profit if the economy is good, but \$1M if it is bad,   \pause
+        \item abandon the project and sell the equipment she originally bought, for \$1.3M, or  \pause
+        \item do nothing.
+      \end{enumerate}
+      How has the decision changed?
+    \end{frame}
+
+
+
+
+    \begin{frame}
+      \begin{center}
+        \begin{tikzpicture}
+        [
+          grow                    = right,
+          level 1/.style          ={sibling distance=8em, level distance=5em},
+          level 2/.style          ={sibling distance=11em, level distance=8em}, 
+          level 3/.style          ={sibling distance=5em, level distance=12em}, 
+          %level distance          = 8em,
+          edge from parent/.style = {draw, -latex},
+          every node/.style       = {font=\footnotesize},
+          sloped
+        ]
+        \node [decision] {} 
+            child { 
+              node [prob] {\$1.8M}
+              edge from parent node [above] {Don't Expand}
+            }
+            child{
+              node [prob] {?}
+              child{
+                node [decision] {\$2.3M}
+                child{
+                  node [leaf] {\$1M}
+                  edge from parent node [above] {Reduce \& Sell}
+                  edge from parent node [below] {+\$1.3M}
+                }
+                child{
+                  node [leaf] {\$2M}
+                  edge from parent node [above] {Stay at new level}
+                }
+                child{
+                  node [leaf] {\$3M}
+                  edge from parent node [above] {Expand further}
+                  edge from parent node [below] {-\$1.5M}
+                }
+                 edge from parent node [above] {Bad Economy}
+                 edge from parent node [below] {$p=0.6$}
+              }
+              child{
+                node [decision] {\$6.5M}
+                child{
+                  node [leaf] {\$3M}
+                  edge from parent node [above] {Reduce \& Sell}
+                  edge from parent node [below] {+\$1.3M}
+                }
+                child{
+                  node [leaf] {\$6M}
+                  edge from parent node [above] {Stay at new level}
+                }
+                child{
+                  node [leaf] {\$8M}
+                  edge from parent node [above] {Expand further}
+                  edge from parent node [below] {-\$1.5M}
+                }
+                 edge from parent node [above] {Good Economy}
+                 edge from parent node [below] {$p=0.4$}
+              }
+              edge from parent node [above] {Expand}
+              edge from parent node [below] {-\$1.5M}
+            };
+        \end{tikzpicture}
+      \end{center}
+      \lc{Calculate the new Expansion EV} 
+    \end{frame}
+
+
+
+
+
+    %{slide 16}
+    \begin{frame}[fragile]{Expected value of the option}
+        The EV of expanding is now 
+        \[ (.4(6.5) + .6(2.3)) - 1.5 = 2.48. \]
+        \pause
+        Therefore the value of the option is
+        \[ E(\text{new}) - E(\text{old}) = 2.48 - 2.1 = 0.38, \] 
+        or \$380,000.
+    \end{frame}
+
+
+   %{slide 17}
+    \begin{frame}[fragile]{Does this look familiar?}
+      \begin{itemize}[<+->]
+        \item This method of valuing a real option is used by corpotate strategists, management consultants, and bankers. 
+        \item A further refinement is to take time value of money into account and present value everything.
+      \end{itemize}
+    \end{frame}
+  \end{darkframes}
+\end{document}
