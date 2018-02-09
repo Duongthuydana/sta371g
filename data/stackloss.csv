@@ -1,4 +1,4 @@
-"Air.Flow","Water.Temp","Acid.Conc.","stack.loss"
+AirFlow,WaterTemp,AcidConc,StackLoss
 80,27,89,42
 80,27,88,37
 75,25,90,37
