@@ -48,6 +48,14 @@
     drill.Sc = oil.net*O.Sc + no.oil.net*Oc.Sc
     @
 
+    \begin{frame}{Announcement: Midterm 1}
+      \begin{itemize}
+        \item Midterm 1 is on February 22 or 23, in the ModLab
+        \item You'll be able to bring one page of notes to use during the exam
+        \item You'll also have access to R
+      \end{itemize}
+    \end{frame}
+
     \begin{frame}{Announcement: Midterm 1 signup}
       On Thursday at 7 PM, you'll get a link to sign up for a time to take Midterm 1 in the ModLab. You can pick any of the following times, but sign up ASAP as space is limited!
       \begin{itemize}
@@ -58,6 +66,10 @@
         \item Friday, February 23 @ 11:30 AM
         \item Friday, February 23 @ 1:15 PM
       \end{itemize}
+    \end{frame}
+
+    \begin{frame}{Announcement: Perusall due dates}
+      Perusall due dates have all been pushed back by a day (for the Tuesday/Thursday sections) but try to still complete by 7 PM the night before class, if possible
     \end{frame}
 
     \begin{frame}{Oil drilling}
