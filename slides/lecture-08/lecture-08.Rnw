@@ -1,0 +1,220 @@
+\documentclass{beamer}
+\usepackage{../371g-slides}
+\title{Review of distributions and estimation}
+\subtitle{Lecture 8}
+\author{STA 371G}
+
+\begin{document}
+<<setup, include=F, cache=F>>=
+opts_knit$set(global.par=T)
+knit_hooks$set(crop=hook_pdfcrop)
+opts_chunk$set(dev='tikz', external=F, fig.path='/tmp/figures/', comment=NA, fig.width=4, fig.height=3, crop=T, sanitize=T, tidy=F)
+knit_theme$set('camo')
+@
+<<include=F, cache=F>>=
+par(fg='#fefefe', col.axis='#fefefe', col.lab='#fefefe', col.main="#fefefe", mar=c(5.1, 4.1, 1.1, 2.1))
+ut2000 <- read.csv("http://jgscott.github.io/teaching/data/ut2000.csv")
+set.seed(1)
+options(digits=3)
+@
+
+\frame{\maketitle}
+
+%%%%%%% Slides start here %%%%%%%
+
+\begin{darkframes}
+
+\begin{frame}{The story of statistics}
+\begin{itemize}
+  \item Usually, there is an \emph{population} that we are interested in---and a \emph{parameter} about that population we care about---but we don't have access to the population and all we have is a \emph{sample} \pause
+  \item So we calculate a \emph{statistic} in the sample and use that as our best estimate of the population parameter \pause
+  \item Example: I want to know the average GPA at UT, but I only have a sample of $n=100$ GPAs. \pause
+\end{itemize}
+
+\begin{tabular}{r|l}
+\textbf{Population} & All GPAs at UT \\
+\textbf{Sample} & The 100 GPAs in my sample \\
+\textbf{Parameter} & Average GPA among all UT students ($\mu$) \\
+\textbf{Statistic} & Average GPA among the 100 students in my sample ($\hat\mu$)
+\end{tabular}
+\end{frame}
+
+
+\begin{frame}[fragile]{Data set}
+The data set \texttt{ut2000} contains information on all \Sexpr{nrow(ut2000)} students that entered UT Austin in Fall 2000 and graduated within 6 years.
+<<>>=
+head(ut2000)
+@
+\end{frame}
+
+
+\begin{frame}[fragile]
+<<>>=
+hist(ut2000$GPA, main="", col="orange", xlab="GPA")
+@
+\note{LC Q2 here}
+\end{frame}
+
+
+\begin{frame}[fragile]{Let's take a sample}
+Usually, we only have access to a sample of the data. Let's pretend that we only had a sample of $n=100$ students:
+<<>>=
+sample.gpas <- sample(ut2000$GPA, 100)
+mean(sample.gpas)
+@
+Since we have a random sample, it's a good, but not perfect, estimate of the population GPA (\Sexpr{mean(ut2000$GPA)}). \pause But normally we don't have access to the population, so we don't know how good our estimate is!
+\end{frame}
+
+
+\begin{frame}[fragile]
+Normally we only have access to one sample. But what if we had many samples, and we took the sample mean in each sample?
+<<fig.height=2>>=
+sample.means <- replicate(10000,
+  mean(sample(ut2000$GPA, 100)))
+hist(sample.means, main="", col="orange")
+@
+\note{Explain what we are simulating here.}
+\note{Note that this dbn is almost normal, while the original dbn was skewed.}
+\note{LC Q3 here}
+\end{frame}
+
+
+\begin{frame}[fragile]{Sampling distribution of $\overline{GPA}$}
+The \emph{sampling distribution} of $\overline{GPA}$ is the distribution of sample means, if we took repeated samples:
+
+\begin{align*}
+  E(\overline{GPA}) &= \mu = \Sexpr{mean(ut2000$GPA)} \\
+  \text{SD}(\overline{GPA}) &= \frac{\sigma}{\sqrt n} = \frac{\Sexpr{sd(ut2000$GPA)}}{\sqrt{100}} = \Sexpr{sd(ut2000$GPA)/10}
+\end{align*}
+
+The last value quantifies how much the sample mean will vary from sample to sample. But we normally can't compute $\sigma$ since we don't have the whole population, so we estimate it by calculating the SD in the \emph{sample} ($\hat\sigma$) and dividing by $\sqrt n$; this is the \emph{standard error of the mean}.
+\note{Show that in our simulation the SD closely tracks the theoretical value.}
+\note{LC Q4 here}
+\end{frame}
+
+
+\begin{frame}{Confidence intervals}
+Given a sample mean, we want to calculate a \emph{confidence interval}, which gives a plausible range of values for the population mean.
+\pause
+
+A confidence interval is always of the form
+\[
+  \text{sample statistic} \pm (\text{critical value})(\text{standard error}).
+\]
+\pause
+Our sample statistic is $\hat\mu$ and our standard error is $\hat\sigma/\sqrt n$.
+\pause
+What is the critical value?
+\end{frame}
+
+
+\begin{frame}
+As it turns out, the sampling distribution (of $\hat\mu$) is not \emph{quite} Normal. If we standardize the sample means, the distribution of \[ \frac{\hat\mu - \mu}{ \hat\sigma/\sqrt n } \] is called a $t$-distribution with $n-1$ degrees of freedom. \pause The critical value for a 95\% confidence interval is $t^*=\pm\Sexpr{qt(0.975, 99)}$, the value that cuts off 95\% of the area under the $t$-distribution:
+
+<<echo=F, fig.height=2>>=
+lb <- -qt(.975, 99)
+ub <- qt(.975, 99)
+x <- seq(-3, 3, length=1000)
+hx <- dt(x, 99)
+plot(x, hx, type="l", axes=F, ylab="", xlab="", main="")
+i <- x >= lb & x <= ub
+lines(x, hx)
+polygon(c(lb,x[i],ub), c(0,hx[i],0), col="lightblue")
+axis(1, at=seq(-3, 3), pos=0)
+text(0, .15, "95% of total area", col="black")
+@
+\end{frame}
+
+
+\begin{frame}[fragile]
+There are two helpful R functions for calculating values around $t$-distributions:
+\begin{itemize}[<+->]
+  \item \verb|pt(x, df)| calculates $P(t<x)$ if we are looking at a distribution with $df$ degrees of freedom. \pause
+  \item \verb|qt(y, df)| does the opposite; it figures out what value of $x$ will give $P(t<x)=y$. \pause
+\end{itemize}
+So the critical value for a 95\% confidence interval is \verb|qt(.975, 99)| when $n=100$. \pause\bigskip
+
+There are similar functions \verb|pnorm| and \verb|qnorm| when you are working with Normal distributions.
+\end{frame}
+
+\begin{frame}
+Using our sample of $n=100$, we calculate that a 95\% confidence interval for the mean population GPA is
+\[
+  \hat\mu \pm t^* \frac{\hat\sigma}{\sqrt n}
+  \pause\quad\Longrightarrow\quad
+  \Sexpr{mean(sample.gpas)} \pm \Sexpr{qt(0.975, 99)}\cdot\frac{\Sexpr{sd(sample.gpas)}}{\sqrt{100}}
+  \pause\quad\Longrightarrow\quad
+  (\Sexpr{mean(sample.gpas) - qt(0.975, 99)*sd(sample.gpas)/10}, \Sexpr{mean(sample.gpas) + qt(0.975, 99)*sd(sample.gpas)/10})
+\]
+\pause
+There are two ways to interpret this:
+\begin{itemize}
+  \item \textbf{Informally,} we are 95\% confident that the population mean GPA is between \Sexpr{mean(sample.gpas) - qt(0.975, 99)*sd(sample.gpas)/10} and \Sexpr{mean(sample.gpas) + qt(0.975, 99)*sd(sample.gpas)/10}. \pause
+  \item \textbf{Formally,} if we took repeated samples and found the 95\% CI within each sample, 95\% of the CIs would contain the population mean.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+R can do this work for you!
+<<>>=
+t.test(sample.gpas, conf.level=0.95)
+@
+\note{LC Q5 here}
+\end{frame}
+
+
+\begin{frame}{Hypothesis tests}
+\begin{itemize}[<+->]
+  \item Let's say Mr. Sooner comes along and claims that the average UT GPA is actually 3.0.
+  \item Usually, we don't have the population, and so we can't know for sure that he is wrong.
+  \item But we do have some evidence (our sample) that we can bring to bear on the question.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+Let's start by framing Sooner's claim as a null hypothesis; the alternative hypothesis is what we will believe if it turns out the null is false:
+
+\begin{center}
+  \begin{tabular}{rl|l}
+    $H_0$ & (null hypothesis) & $\mu=3.0$ \\
+    $H_A$ & (alternative hypothesis) & $\mu\neq 3.0$
+  \end{tabular}
+\end{center}
+\pause
+
+A hypothesis test will produce a $p$-value, which represents the probability:
+\[
+  P(\text{seeing data this extreme in our sample} \mid \text{$H_0$ is true})
+\]
+\pause
+In other words, if Sooner is correct, how likely is it that in our sample we would see a sample mean that is so far away from his hypothesized value?
+\end{frame}
+
+
+\begin{frame}[fragile]
+R can run hypothesis tests for us:
+<<>>=
+t.test(sample.gpas, mu=3)
+@
+\end{frame}
+
+
+\begin{frame}
+So:
+\[
+  P(\text{seeing data this extreme in our sample} \mid \text{$H_0$ is true}) = 5 \times 10^{-6}.
+\]
+\pause
+Since we \emph{did} see data this extreme in our sample, it suggests that we should \emph{reject} the null hypothesis as implausible. (Sorry, Mr. Sooner!)
+\pause\bigskip
+
+When doing hypothesis testing, we select an $\alpha$ value a priori and then reject the null hypothesis if $p<\alpha$.
+\pause\bigskip
+
+$\alpha=.05$ is a good ``default'' to use unless you have a reason to set it higher or lower.
+\note{LC Q6-8 here, depending on time}
+\end{frame}
+
+\end{darkframes}
+\end{document}

@@ -1,0 +1,319 @@
+\documentclass{beamer}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{1, 0.894, 0.769}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.824,0.412,0.118}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{1,0.894,0.71}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.824,0.706,0.549}{#1}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{1,0.894,0.769}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{1,0.894,0.769}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.941,0.902,0.549}{#1}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.804,0.776,0.451}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.78,0.941,0.545}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{1,0.78,0.769}{#1}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\usepackage{../371g-slides}
+\title{Review of distributions and estimation}
+\subtitle{Lecture 8}
+\author{STA 371G}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+
+
+
+\frame{\maketitle}
+
+%%%%%%% Slides start here %%%%%%%
+
+\begin{darkframes}
+
+\begin{frame}{The story of statistics}
+\begin{itemize}
+  \item Usually, there is an \emph{population} that we are interested in---and a \emph{parameter} about that population we care about---but we don't have access to the population and all we have is a \emph{sample} \pause
+  \item So we calculate a \emph{statistic} in the sample and use that as our best estimate of the population parameter \pause
+  \item Example: I want to know the average GPA at UT, but I only have a sample of $n=100$ GPAs. \pause
+\end{itemize}
+
+\begin{tabular}{r|l}
+\textbf{Population} & All GPAs at UT \\
+\textbf{Sample} & The 100 GPAs in my sample \\
+\textbf{Parameter} & Average GPA among all UT students ($\mu$) \\
+\textbf{Statistic} & Average GPA among the 100 students in my sample ($\hat\mu$)
+\end{tabular}
+\end{frame}
+
+
+\begin{frame}[fragile]{Data set}
+The data set \texttt{ut2000} contains information on all 5191 students that entered UT Austin in Fall 2000 and graduated within 6 years.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+\hlkwd{head}\hlstd{(ut2000)}
+\end{alltt}
+\begin{verbatim}
+  SAT.V SAT.Q SAT.C          School  GPA Status
+1   690   580  1270        BUSINESS 3.82      G
+2   530   710  1240 NATURAL SCIENCE 3.53      G
+3   610   700  1310 NATURAL SCIENCE 3.37      G
+4   730   700  1430     ENGINEERING 3.34      G
+5   700   710  1410 NATURAL SCIENCE 3.72      G
+6   540   690  1230    LIBERAL ARTS 2.69      G
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+\hlkwd{hist}\hlstd{(ut2000}\hlopt{$}\hlstd{GPA,} \hlkwc{main}\hlstd{=}\hlstr{""}\hlstd{,} \hlkwc{col}\hlstd{=}\hlstr{"orange"}\hlstd{,} \hlkwc{xlab}\hlstd{=}\hlstr{"GPA"}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\input{/tmp/figures/unnamed-chunk-3-1.tikz}
+
+\end{knitrout}
+\note{LC Q2 here}
+\end{frame}
+
+
+\begin{frame}[fragile]{Let's take a sample}
+Usually, we only have access to a sample of the data. Let's pretend that we only had a sample of $n=100$ students:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+\hlstd{sample.gpas} \hlkwb{<-} \hlkwd{sample}\hlstd{(ut2000}\hlopt{$}\hlstd{GPA,} \hlnum{100}\hlstd{)}
+\hlkwd{mean}\hlstd{(sample.gpas)}
+\end{alltt}
+\begin{verbatim}
+[1] 3.23
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+Since we have a random sample, it's a good, but not perfect, estimate of the population GPA (3.212). \pause But normally we don't have access to the population, so we don't know how good our estimate is!
+\end{frame}
+
+
+\begin{frame}[fragile]
+Normally we only have access to one sample. But what if we had many samples, and we took the sample mean in each sample?
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+\hlstd{sample.means} \hlkwb{<-} \hlkwd{replicate}\hlstd{(}\hlnum{10000}\hlstd{,}
+  \hlkwd{mean}\hlstd{(}\hlkwd{sample}\hlstd{(ut2000}\hlopt{$}\hlstd{GPA,} \hlnum{100}\hlstd{)))}
+\hlkwd{hist}\hlstd{(sample.means,} \hlkwc{main}\hlstd{=}\hlstr{""}\hlstd{,} \hlkwc{col}\hlstd{=}\hlstr{"orange"}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\input{/tmp/figures/unnamed-chunk-5-1.tikz}
+
+\end{knitrout}
+\note{Explain what we are simulating here.}
+\note{Note that this dbn is almost normal, while the original dbn was skewed.}
+\note{LC Q3 here}
+\end{frame}
+
+
+\begin{frame}[fragile]{Sampling distribution of $\overline{GPA}$}
+The \emph{sampling distribution} of $\overline{GPA}$ is the distribution of sample means, if we took repeated samples:
+
+\begin{align*}
+  E(\overline{GPA}) &= \mu = 3.212 \\
+  \text{SD}(\overline{GPA}) &= \frac{\sigma}{\sqrt n} = \frac{0.48}{\sqrt{100}} = 0.048
+\end{align*}
+
+The last value quantifies how much the sample mean will vary from sample to sample. But we normally can't compute $\sigma$ since we don't have the whole population, so we estimate it by calculating the SD in the \emph{sample} ($\hat\sigma$) and dividing by $\sqrt n$; this is the \emph{standard error of the mean}.
+\note{Show that in our simulation the SD closely tracks the theoretical value.}
+\note{LC Q4 here}
+\end{frame}
+
+
+\begin{frame}{Confidence intervals}
+Given a sample mean, we want to calculate a \emph{confidence interval}, which gives a plausible range of values for the population mean.
+\pause
+
+A confidence interval is always of the form
+\[
+  \text{sample statistic} \pm (\text{critical value})(\text{standard error}).
+\]
+\pause
+Our sample statistic is $\hat\mu$ and our standard error is $\hat\sigma/\sqrt n$.
+\pause
+What is the critical value?
+\end{frame}
+
+
+\begin{frame}
+As it turns out, the sampling distribution (of $\hat\mu$) is not \emph{quite} Normal. If we standardize the sample means, the distribution of \[ \frac{\hat\mu - \mu}{ \hat\sigma/\sqrt n } \] is called a $t$-distribution with $n-1$ degrees of freedom. \pause The critical value for a 95\% confidence interval is $t^*=\pm1.984$, the value that cuts off 95\% of the area under the $t$-distribution:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}
+\input{/tmp/figures/unnamed-chunk-6-1.tikz}
+
+\end{knitrout}
+\end{frame}
+
+
+\begin{frame}[fragile]
+There are two helpful R functions for calculating values around $t$-distributions:
+\begin{itemize}[<+->]
+  \item \verb|pt(x, df)| calculates $P(t<x)$ if we are looking at a distribution with $df$ degrees of freedom. \pause
+  \item \verb|qt(y, df)| does the opposite; it figures out what value of $x$ will give $P(t<x)=y$. \pause
+\end{itemize}
+So the critical value for a 95\% confidence interval is \verb|qt(.975, 99)| when $n=100$. \pause\bigskip
+
+There are similar functions \verb|pnorm| and \verb|qnorm| when you are working with Normal distributions.
+\end{frame}
+
+\begin{frame}
+Using our sample of $n=100$, we calculate that a 95\% confidence interval for the mean population GPA is
+\[
+  \hat\mu \pm t^* \frac{\hat\sigma}{\sqrt n}
+  \pause\quad\Longrightarrow\quad
+  3.226 \pm 1.984\cdot\frac{0.471}{\sqrt{100}}
+  \pause\quad\Longrightarrow\quad
+  (3.133, 3.32)
+\]
+\pause
+There are two ways to interpret this:
+\begin{itemize}
+  \item \textbf{Informally,} we are 95\% confident that the population mean GPA is between 3.133 and 3.32. \pause
+  \item \textbf{Formally,} if we took repeated samples and found the 95\% CI within each sample, 95\% of the CIs would contain the population mean.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+R can do this work for you!
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+\hlkwd{t.test}\hlstd{(sample.gpas,} \hlkwc{conf.level}\hlstd{=}\hlnum{0.95}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+
+	One Sample t-test
+
+data:  sample.gpas
+t = 70, df = 100, p-value <2e-16
+alternative hypothesis: true mean is not equal to 0
+95 percent confidence interval:
+ 3.13 3.32
+sample estimates:
+mean of x 
+     3.23 
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+\note{LC Q5 here}
+\end{frame}
+
+
+\begin{frame}{Hypothesis tests}
+\begin{itemize}[<+->]
+  \item Let's say Mr. Sooner comes along and claims that the average UT GPA is actually 3.0.
+  \item Usually, we don't have the population, and so we can't know for sure that he is wrong.
+  \item But we do have some evidence (our sample) that we can bring to bear on the question.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+Let's start by framing Sooner's claim as a null hypothesis; the alternative hypothesis is what we will believe if it turns out the null is false:
+
+\begin{center}
+  \begin{tabular}{rl|l}
+    $H_0$ & (null hypothesis) & $\mu=3.0$ \\
+    $H_A$ & (alternative hypothesis) & $\mu\neq 3.0$
+  \end{tabular}
+\end{center}
+\pause
+
+A hypothesis test will produce a $p$-value, which represents the probability:
+\[
+  P(\text{seeing data this extreme in our sample} \mid \text{$H_0$ is true})
+\]
+\pause
+In other words, if Sooner is correct, how likely is it that in our sample we would see a sample mean that is so far away from his hypothesized value?
+\end{frame}
+
+
+\begin{frame}[fragile]
+R can run hypothesis tests for us:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+\hlkwd{t.test}\hlstd{(sample.gpas,} \hlkwc{mu}\hlstd{=}\hlnum{3}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+
+	One Sample t-test
+
+data:  sample.gpas
+t = 5, df = 100, p-value = 5e-06
+alternative hypothesis: true mean is not equal to 3
+95 percent confidence interval:
+ 3.13 3.32
+sample estimates:
+mean of x 
+     3.23 
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+\end{frame}
+
+
+\begin{frame}
+So:
+\[
+  P(\text{seeing data this extreme in our sample} \mid \text{$H_0$ is true}) = 5 \times 10^{-6}.
+\]
+\pause
+Since we \emph{did} see data this extreme in our sample, it suggests that we should \emph{reject} the null hypothesis as implausible. (Sorry, Mr. Sooner!)
+\pause\bigskip
+
+When doing hypothesis testing, we select an $\alpha$ value a priori and then reject the null hypothesis if $p<\alpha$.
+\pause\bigskip
+
+$\alpha=.05$ is a good ``default'' to use unless you have a reason to set it higher or lower.
+\note{LC Q6-8 here, depending on time}
+\end{frame}
+
+\end{darkframes}
+\end{document}
