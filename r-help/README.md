@@ -24,6 +24,6 @@ R help session videos are available on [YouTube](https://www.youtube.com/channel
 
 The scripts from the help sessions are available here:
 
-* [January 26](help-sessions/help-session-01-26.R)
-* [February 2](help-sessions/help-session-02-02.R)
-* [February 9](help-sessions/help-session-02-09.R)
+* January 26: [R script](help-sessions/help-session-01-26.R)
+* February 2: [R script](help-sessions/help-session-02-02.R)
+* February 9: [R script](help-sessions/help-session-02-09.R), [Slides](help-sessions/help-session-02-09.pdf)
