@@ -48,6 +48,14 @@ head(ut2000)
 \end{frame}
 
 
+\begin{frame}{In the year 2000...}
+\begin{itemize}[<+->]
+  \item The most popular TV show was \emph{Survivor}
+  \item Britney Spears' \emph{Oops!...I did it again} had just come out
+  \item Angelina Jolie was married to Billy Bob Thorton
+\end{itemize}
+\end{frame}
+
 \begin{frame}[fragile]
 <<>>=
 hist(ut2000$GPA, main="", col="orange", xlab="GPA")
