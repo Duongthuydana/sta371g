@@ -1,0 +1,354 @@
+\documentclass{beamer}
+\usepackage{../371g-slides}
+% Uncomment these lines to print notes pages
+% \pgfpagesuselayout{4 on 1}[letterpaper,border shrink=5mm,landscape]
+% \setbeameroption{show only notes}
+\title{Simple Regression 1}
+\subtitle{Lecture 9}
+\author{STA 371G}
+
+\begin{document}
+  <<setup, include=F, cache=F>>=
+  opts_knit$set(global.par=T)
+  knit_hooks$set(crop=hook_pdfcrop)
+  opts_chunk$set(dev='tikz', external=F, fig.path='/tmp/figures/', comment=NA, fig.width=4, fig.height=3, crop=T, sanitize=T, tidy=F, prompt=T)
+  knit_theme$set('camo')
+  @
+  <<include=F, cache=F>>=
+  par(fg='#fefefe', col.axis='#fefefe', col.lab='#fefefe', col.main="#fefefe", mar=c(5.1, 4.1, 1.1, 2.1))
+  @
+  <<include=F>>=
+  load("../../data/addhealth_public4.rdata")
+  @
+
+  \frame{\maketitle}
+
+  % Show outline at beginning of each section
+  \AtBeginSection[]{
+    \begin{frame}<beamer>
+      \tableofcontents[currentsection]
+    \end{frame}
+  }
+
+  %%%%%%% Slides start here %%%%%%%
+
+  \begin{darkframes}
+    \begin{frame}
+      \begin{center}
+        \includegraphics[width=3in]{add-health}
+
+        \bigskip
+        National Longitudinal Study of Adolescent to Adult Health
+
+        \bigskip
+        Nationally representative sample of US students in grades 7-12 were surveyed in the 1994-95 school year (\url{http://www.cpc.unc.edu/projects/addhealth})
+
+        \bigskip
+        Students were followed up on with subsequent in-home interviews four times (most recently 2008)
+      \end{center}
+    \end{frame}
+
+    \begin{frame}
+      This is an \textbf{awesome} data set, with data on:
+      \begin{columns}[onlytextwidth]
+        \column{.5\textwidth}
+          \begin{itemize}
+            \item family
+            \item relationships
+            \item health
+            \item military service
+            \item religion
+            \item sex and STDs
+            \item economics
+            \item education
+          \end{itemize}
+        \column{.5\textwidth}
+          \begin{itemize}
+            \item personality
+            \item criminality
+            \item tobacco
+            \item drugs
+            \item alcohol
+            \item pregnancy
+            \item sleep
+            \item daily activities
+          \end{itemize}
+      \end{columns}
+    \end{frame}
+
+    \begin{frame}
+      \begin{center}
+        Do people that start drinking younger tend to drink more (or less) when they become adults?
+      \end{center}
+      \bigskip\pause
+      We want to know:
+      \begin{itemize}[<+->]
+        \item What is our best \textbf{prediction} of alcohol consumption if we know at what age had their first drink?
+        \item How good is that prediction?
+        \item What is the \textbf{relationship} between alcohol consumption and age of first drink?
+      \end{itemize}
+    \end{frame}
+
+    \begin{frame}
+      \begin{tabular}{ll}
+        Age of first drink & \textbf{Predictor variable} \\
+        Number of drinks consumed as adult & \textbf{Response variable} \\
+      \end{tabular}
+    \end{frame}
+
+    \begin{frame}[fragile]
+      \note{
+        Point out R command and syntax. \textCR
+        Ask what's wrong with this? \textCR
+        Introduce the idea of a codebook here.
+      }
+      <<fig.height=2.5>>=
+      hist(addhealth_public4$h4to34,
+        main='', xlab='Age of first drink',
+        col='orange')
+      @
+      \lc
+    \end{frame}
+
+    \begin{frame}{Let's examine our variables}
+      \begin{center}
+        \includegraphics[width=3.5in]{h4to34_codebook.png}
+      \end{center}
+    \end{frame}
+
+    \begin{frame}[fragile]
+      <<>>=
+      age <- addhealth_public4$h4to34
+      age[age >= 96] <- NA
+      hist(age, main='', xlab='', col='orange')
+      @
+    \end{frame}
+
+    \begin{frame}{Let's examine our variables}
+      \begin{center}
+        \includegraphics[width=3.5in]{h4to36_codebook.png}
+      \end{center}
+    \end{frame}
+
+    \begin{frame}[fragile]
+      <<>>=
+      num.drinks <- addhealth_public4$h4to36
+      num.drinks[num.drinks >= 96] <- NA
+      hist(num.drinks, main='', xlab='How many drinks',
+        col='orange')
+      @
+    \end{frame}
+
+
+    \begin{frame}[fragile]
+      <<>>=
+      plot(num.drinks ~ age, pch=16, col='orange',
+        xlab='Age of first drink',
+        ylab='Number of drinks consumed')
+      @
+    \end{frame}
+
+    \begin{frame}[fragile]
+      <<>>=
+      plot(jitter(num.drinks, 4) ~ jitter(age, 4),
+        pch=46, col='orange',
+        xlab='Age of first drink',
+        ylab='Number of drinks consumed')
+      @
+    \end{frame}
+
+    \begin{frame}[fragile]
+      The regression line is the line of ``best fit'' through this plot:
+      <<echo=F>>=
+      plot(num.drinks ~ age, pch=16, col='orange',
+        xlab='Age of first drink',
+        ylab='Number of drinks consumed')
+      model <- lm(num.drinks ~ age)
+      abline(model, col='red', lwd=4)
+      @
+      \lc
+    \end{frame}
+
+    \begin{frame}{What is linear regression doing?}
+      We model each case ($x_i=$ age for $i$th person, $y_i=$ number of drinks for $i$th person) as a linear relationship plus some error:
+      \[
+        y_i = \beta_0 + \beta_1 x_i + \epsilon_i
+      \]
+      $\beta_0$ and $\beta_1$ are the intercept and slope, respectively.
+      \bigskip\pause
+
+      We find estimates for $\beta_0$ and $\beta_1$ in our sample that \emph{minimize} the errors:
+      \[
+        \hat Y = \hat\beta_0 + \hat\beta_1 X
+      \]
+      This is the regression (best fit) line.
+    \end{frame}
+
+    \begin{frame}[fragile]
+      \fontsize{9}{9}\selectfont
+      <<>>=
+      model <- lm(num.drinks ~ age)
+      summary(model)
+      @
+      \lc
+    \end{frame}
+
+    \begin{frame}[fragile]
+      This translates to a regression line of:
+      <<echo=F>>=
+        options(digits=2)
+        beta0 <- model$coefficients["(Intercept)"]
+        beta1 <- model$coefficients['age']
+        r.squared <- summary(model)$r.squared
+        age.se <- summary(model)$coefficients[,"Std. Error"]["age"]
+      @
+      \[
+        \widehat{\text{num drinks}} = \Sexpr{beta0} - \Sexpr{abs(beta1)} \cdot\text{age}
+      \]
+      \pause
+      Predict number of drinks for $\text{age}=21$:
+      \[
+        \widehat{\text{num drinks}}
+        = \Sexpr{beta0} - \Sexpr{abs(beta1)} \cdot 21
+        = \Sexpr{predict.lm(model, list(age=21))}
+      \]
+      Or we can use R to do the work for us:
+      <<results='hide'>>=
+      predict.lm(model, list(age=21))
+      @
+      \lc
+    \end{frame}
+
+    \begin{frame}{How good are our predictions?}
+      $R^2$ quantifies how closely the model fits the data.
+      \begin{itemize}[<+->]
+        \item $R^2$ is the fraction of the variation of $Y$ explained by $X$.
+        \item $R^2=\text{cor}(X,Y)^2$, i.e., the squared correlation between $X$ and $Y$.
+        \item $R^2=0$ when the model has no predictive power at all.
+        \item $R^2=1$ when the model yields perfect predictions every time.
+        \item $R^2=\text{cor}(Y,\hat Y)^2$, i.e., the squared correlation between the actual and predicted values of $Y$.
+      \end{itemize}
+    \end{frame}
+
+    \begin{frame}[fragile]
+      \note{Point out where $R^2$ is found on the R output.}
+      \fontsize{9}{9}\selectfont
+      <<>>=
+      model <- lm(num.drinks ~ age)
+      summary(model)
+      @
+    \end{frame}
+
+    \begin{frame}
+      In our regression, $R^2=\Sexpr{r.squared}$, so $r=\sqrt{\Sexpr{r.squared}}=\Sexpr{sqrt(r.squared)}$.
+
+      Is this ``significant?''
+      \pause
+      \begin{itemize}[<+->]
+        \item \textbf{Statistical significance:} Can we reject the null hypothesis that the correlation between $X$ and $Y$ in the \emph{population} is zero?
+        \item \textbf{Practical significance:} Is the correlation in our sample large enough to be meaningful?
+      \end{itemize}
+    \end{frame}
+
+    \begin{frame}{The overall null hypothesis for a regression model}
+      The following are equivalent ways to express the overall null hypothesis:
+      \begin{itemize}[<+->]
+        \item $R^2=0$ (in the population)
+        \item $\text{cor}(X,Y)=0$ (in the population)
+        \item $\beta_1=0$
+        \item The model has no predictive power
+        \item Predictions from this model are no better than predicting $\overline Y$ for every case
+      \end{itemize}
+    \end{frame}
+
+    \begin{frame}{Two ways to test the overall null hypothesis}
+      \begin{itemize}
+        \item The $F$-test (tests $H_0:R^2=0$ in the population)
+        \item The $t$-test for the \emph{slope} ($\beta_1$) coefficient (tests $H_0:\beta_1=0$)
+      \end{itemize}
+      \pause
+      Both of these methods are equivalent; the $p$-values will be exactly the same!
+    \end{frame}
+
+    \begin{frame}[fragile]
+      \note{Point out where these $p$-values are found on the R output.}
+      \fontsize{9}{9}\selectfont
+      <<>>=
+      model <- lm(num.drinks ~ age)
+      summary(model)
+      @
+    \end{frame}
+
+    \begin{frame}{What is our conclusion about $\beta_1$?}
+      \begin{itemize}[<+->]
+        \item There is a \textbf{statistically significant} relationship between the age someone starts drinking and how much they drink as an adult.
+        \item Or: People that start drinking earlier in life consume \textbf{significantly more} alcohol when they drink as adults.
+        \item Each additional year you wait to start drinking is associated with consuming \Sexpr{abs(beta1)} fewer drinks as an adult.
+        \item Is this relationship \textbf{practically significant}?
+      \end{itemize}
+    \end{frame}
+
+    \begin{frame}{Put a confidence interval on it}
+      \begin{itemize}[<+->]
+        \item Our best estimate for the \emph{effect} of a year's postponement of drinking is \Sexpr{abs(beta1)} fewer drinks as an adult
+        \item We can use a confidence interval to give a range of plausible values for what this effect size is in the population
+      \end{itemize}
+    \end{frame}
+
+    \begin{frame}[fragile]{Put a confidence interval on it}
+      A confidence interval is always of the form \[ \text{estimate} \pm (\text{critical value})(\text{standard error}). \]
+      \pause
+      Recall that the critical value for a 95\% confidence interval is the cutoff value that cuts off 95\% of the area in the middle of the distribution; the sampling distribution of $\hat\beta_1$ is a $t$-distribution.
+
+      <<echo=F>>=
+        options(digits=7)
+      @
+      <<>>=
+      n <- nobs(model)
+      qt(0.975, n-2)
+      @
+    \end{frame}
+
+    \begin{frame}[fragile]{Put a confidence interval on it}
+      R will also calculate confidence intervals for us:
+      <<>>=
+      confint(model)
+      @
+      <<echo=F>>=
+      options(digits=2)
+      @
+      \pause
+      In other words, we are 95\% confident that the effect of each additional year's delay in starting to drink is between \Sexpr{abs(confint(model)["age","97.5 %"])} and \Sexpr{abs(confint(model)["age","2.5 %"])}.
+    \end{frame}
+
+    \begin{frame}{Put a confidence interval on it, part 2}
+      We can also put a confidence interval on a prediction!
+
+      Two kinds of intervals:
+      \bigskip
+
+      \begin{tabular}{lp{1in}p{2in}}
+        \textbf{Confidence} & Predicting the mean value of $Y$ for a particular $X$. & Among all people that start drinking at age 21, how many drinks do have on average as adults? \\
+        \textbf{Prediction} & Predicting $Y$ for a single new case. & If Bob started drinking at age 21, how many drinks do we think will have as an adult? \\
+      \end{tabular}
+    \end{frame}
+
+    \begin{frame}[fragile]{Put a confidence interval on it, part 2}
+      <<echo=F>>=
+      options(digits=7)
+      @
+      <<>>=
+      predict.lm(model, list(age=21),
+        interval='confidence')
+      predict.lm(model, list(age=21),
+        interval='prediction')
+      @
+
+      \pause
+      Why is the prediction interval wider?
+      \lc
+    \end{frame}
+
+  \end{darkframes}
+
+\end{document}
