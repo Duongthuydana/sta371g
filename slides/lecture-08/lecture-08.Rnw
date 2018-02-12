@@ -45,6 +45,7 @@ The data set \texttt{ut2000} contains information on all \Sexpr{nrow(ut2000)} st
 <<>>=
 head(ut2000)
 @
+\footnotesize{Data from James Scott: \url{http://jgscott.github.io/teaching/data/ut2000.csv}}
 \end{frame}
 
 
