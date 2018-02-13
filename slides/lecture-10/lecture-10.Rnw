@@ -1,0 +1,242 @@
+\documentclass{beamer}
+\usepackage{../371g-slides}
+\title{Simple Regression 2}
+\subtitle{Lecture 10}
+\author{STA 371G}
+
+\begin{document}
+  <<setup, include=F, cache=F>>=
+  opts_knit$set(global.par=T)
+  knit_hooks$set(crop=hook_pdfcrop)
+  opts_chunk$set(dev='tikz', external=F, fig.path='/tmp/figures/', comment=NA, fig.width=4, fig.height=3, crop=T, sanitize=T, prompt=T, tidy=F)
+  knit_theme$set('camo')
+  @
+  <<include=F, cache=F>>=
+  par(fg='#fefefe', col.axis='#fefefe', col.lab='#fefefe', col.main="#fefefe", mar=c(5.1, 4.1, 1.1, 2.1))
+  @
+  <<include=F>>=
+  library(readr)
+  stock_market_returns <- read_csv("../../data/stock-market-returns.csv")
+  salaries <- read_csv("../../data/social-worker-salaries.csv")
+  @
+
+  \frame{\maketitle}
+
+  % Show outline at beginning of each section
+  \AtBeginSection[]{
+    \begin{frame}<beamer>
+      \tableofcontents[currentsection]
+    \end{frame}
+  }
+
+  %%%%%%% Slides start here %%%%%%%
+
+  \begin{darkframes}
+    \begin{frame}
+      In finance, the $\beta$ of an asset indicates its volatility relative to the market. An asset with:
+      \pause
+      \begin{itemize}[<+->]
+        \item $\beta=1$ rises and falls with the market as a whole.
+        \item $\beta>1$ is \textbf{more} volatile than the market as a whole.
+        \item $\beta<1$ is \textbf{less} volatile than the market as a whole.
+      \end{itemize}
+      \pause
+      $\beta$ is just the slope of the regression line (i.e. $\hat\beta_1$) when we regress the asset's weekly returns against the weekly returns of a market index.
+    \end{frame}
+
+    \begin{frame}[fragile]{W5000 (Wilshire 5000, a broad market index)}
+      \fontsize{10}{10}\selectfont
+      <<fig.height=2>>=
+      hist(stock_market_returns$W5000, col='green',
+        main='', xlab='W5000 return as a % of previous week close')
+      @
+      \note{Make connection to efficient market hypothesis}
+    \end{frame}
+
+    \begin{frame}[fragile]{W5000 (Wilshire 5000, a broad market index)}
+      \fontsize{10}{10}\selectfont
+      <<fig.height=2>>=
+      hist(stock_market_returns$W5000, col='green',
+        main='', xlab='W5000 return as a % of previous week close')
+      @
+      \note{Make connection to efficient market hypothesis}
+      \lc
+    \end{frame}
+
+
+    \begin{frame}[fragile]{Amazon (AMZN)}
+      <<fig.height=2.5>>=
+      plot(AMZN ~ W5000, data=stock_market_returns,
+        pch=16, col='cyan')
+      @
+      \note{Interpret the meaning of a point (x,y) together}
+      \lc
+    \end{frame}
+
+    \begin{frame}[fragile]
+      <<echo=F, fig.height=2.5>>=
+      options(digits=2)
+      amzn <- lm(AMZN ~ W5000, data=stock_market_returns)
+      beta0 <- amzn$coefficients["(Intercept)"]
+      beta1 <- amzn$coefficients['W5000']
+      r.squared <- summary(amzn)$r.squared
+      p.value <- summary(amzn)$coefficients['W5000','Pr(>|t|)']
+      plot(AMZN ~ W5000, data=stock_market_returns,
+        pch=16, col='cyan')
+      abline(amzn, col='orange', lwd=4)
+      @
+
+      The regression line is
+      \[
+        \widehat{\text{AMZN}} = \Sexpr{beta0} + \Sexpr{beta1} \cdot\text{W5000},
+      \]
+      with $R^2=\Sexpr{r.squared}$ and $p=\Sexpr{p.value}$.
+      \lc
+    \end{frame}
+
+    \begin{frame}{Interpreting the regression statistics}
+      \begin{itemize}[<+->]
+        \item $\hat\beta_1=\Sexpr{beta1}$ (``$\beta$'') is the predicted increase in returns for AMZN when W5000 returns increase by 1 percentage point---since this is $>1$ AMZN will swing more than the market as a whole
+        \item $R^2=\Sexpr{r.squared}$ indicates how closely AMZN tracks W5000 (the market as a whole)
+        \item $p=\Sexpr{p.value}$ tells us whether we can reject the null hypothesis that AMZN does not move with the market at all \pause (we can! since $p$ is small)
+      \end{itemize}
+    \end{frame}
+
+    \begin{frame}{Simple regression assumptions}
+      We need four things to be true for statistical inference (i.e., hypothesis tests, $p$-values, confidence intervals) to work for regression:
+      \pause
+      \begin{enumerate}
+        \item The errors are independent.
+        \item $Y$ is a linear function of $X$ (except for the errors).
+        \item The errors are normally distributed.
+        \item The variance of $Y$ is the same for any value of $X$ (``homoscedasticity'').
+      \end{enumerate}
+    \end{frame}
+
+    \begin{frame}{Assumption 1: Independence}
+      Independence means that knowing the value of a variable for one case doesn't tell you anything about another case.
+
+      \begin{itemize}[<+->]
+        \item From last time: Knowing how much Bob drinks doesn't give us any suggestion as to how much Lisa drinks.
+        \item From today: Knowing the return this week doesn't tell us anything about the return next week, if we believe the efficient market hypothesis.
+        \item \alert{But:} Time-series data often violates the independence assumption!
+      \end{itemize}
+    \end{frame}
+
+    \begin{frame}{Simple regression assumptions}
+      We need four things to be true for statistical inference (i.e., hypothesis tests, $p$-values, confidence intervals) to work for regression:
+      \begin{enumerate}
+        \item The errors are independent. \greencheckmark
+        \item $Y$ is a linear function of $X$ (except for the errors).
+        \item The errors are normally distributed.
+        \item The variance of $Y$ is the same for any value of $X$ (``homoscedasticity'').
+      \end{enumerate}
+    \end{frame}
+
+    \begin{frame}{Assumption 2: Linearity}
+      Step 1: Visually examine to ensure a line is a good fit for the data:
+      <<echo=F, fig.height=2.5>>=
+      plot(AMZN ~ W5000, data=stock_market_returns,
+        pch=16, col='cyan')
+      abline(amzn, col='orange', lwd=4)
+      @
+    \end{frame}
+
+    \begin{frame}{Assumption 2: Linearity}
+      Each point has a \textbf{residual} ($Y-\hat Y$); this is the over/under-prediction of the model (red lines).
+      <<echo=F, fig.height=2.5>>=
+      plot(AMZN ~ W5000, data=stock_market_returns,
+        pch=16, col='cyan')
+      abline(amzn, col='orange', lwd=4)
+      segments(stock_market_returns$W5000, stock_market_returns$AMZN, stock_market_returns$W5000, predict(amzn), col='red', lwd=4)
+      points(stock_market_returns$W5000, stock_market_returns$AMZN, col='cyan', pch=16)
+      @
+    \end{frame}
+
+    \begin{frame}[fragile]{Assumption 2: Linearity}
+      \fontsize{10}{10}\selectfont
+      A \textbf{residual plot} (of residuals vs $X$) helps us ensure that there is not subtle nonlinearity. We want to see \textbf{no trend} in this plot:
+      <<fig.height=2>>=
+      model <- lm(AMZN ~ W5000, data=stock_market_returns)
+      plot(stock_market_returns$W5000, resid(model),
+        pch=16, col='green', xlab='W5000', ylab='Residuals')
+      @
+    \end{frame}
+
+    \begin{frame}{Simple regression assumptions}
+      We need four things to be true for statistical inference (i.e., hypothesis tests, $p$-values, confidence intervals) to work for regression:
+      \begin{enumerate}
+        \item The errors are independent. \greencheckmark
+        \item $Y$ is a linear function of $X$ (except for the errors). \greencheckmark
+        \item The errors are normally distributed.
+        \item The variance of $Y$ is the same for any value of $X$ (``homoscedasticity'').
+      \end{enumerate}
+    \end{frame}
+
+    \begin{frame}[fragile]{Assumption 3: Errors are normally distributed}
+      Step 1: Look at a histogram of the residuals and ensure they are approximately normally distributed:
+      <<fig.height=2>>=
+      hist(resid(model), col='darkred',
+        xlab='Residuals', main='')
+      @
+    \end{frame}
+
+    \begin{frame}[fragile]{Assumption 3: Errors are normally distributed}
+      Step 2: Look at a Q-Q plot of the residuals and look for an approximately straight line:
+      <<fig.height=2>>=
+      qqnorm(resid(model), main='')
+      @
+    \end{frame}
+
+    \begin{frame}{Simple regression assumptions}
+      We need four things to be true for statistical inference (i.e., hypothesis tests, $p$-values, confidence intervals) to work for regression:
+      \begin{enumerate}
+        \item The errors are independent. \greencheckmark
+        \item $Y$ is a linear function of $X$ (except for the errors). \greencheckmark
+        \item The errors are normally distributed. \greencheckmark
+        \item The variance of $Y$ is the same for any value of $X$ (``homoscedasticity'').
+      \end{enumerate}
+    \end{frame}
+
+    \begin{frame}[fragile]{Assumption 4: The variance of $Y$ is the same for any value of $X$}
+      Look for the residual plot to have roughly equal vertical spread all the way across:
+      <<fig.height=2, echo=F>>=
+      model <- lm(AMZN ~ W5000, data=stock_market_returns)
+      plot(stock_market_returns$W5000, resid(model),
+        pch=16, col='green', xlab='W5000', ylab='Residuals')
+      abline(5, 0, col='orange', lwd=4, lty='dotted')
+      abline(-5, 0, col='orange', lwd=4, lty='dotted')
+      @
+    \end{frame}
+
+    \begin{frame}{Simple regression assumptions}
+      We need four things to be true for statistical inference (i.e., hypothesis tests, $p$-values, confidence intervals) to work for regression:
+      \begin{enumerate}
+        \item The errors are independent. \greencheckmark
+        \item $Y$ is a linear function of $X$ (except for the errors). \greencheckmark
+        \item The errors are normally distributed. \greencheckmark
+        \item The variance of $Y$ is the same for any value of $X$ (``homoscedasticity''). \greencheckmark
+      \end{enumerate}
+      \pause
+      \alert{We always need to check these assumptions before interpreting $p$-values or confidence intervals!}
+      \lc
+    \end{frame}
+
+    \begin{frame}{An example where an assumption fails}
+      This is a data set of social worker salaries based on years of experience. Which assumption might be violated here?
+      <<echo=F, fig.height=2.5>>=
+      plot(salary ~ experience, data=salaries, col='orange', pch=16, xlab='Years of experience', ylab='Salary ($)')
+      @
+    \end{frame}
+
+    \begin{frame}{An example where an assumption fails}
+      <<echo=F>>=
+      model <- lm(salary ~ experience, data=salaries)
+      plot(salaries$experience, resid(model), col='green', pch=16, xlab='Years of experience', ylab='Residuals')
+      @
+      \note{Heteroscedasticity!}
+    \end{frame}
+
+  \end{darkframes}
+
+\end{document}
