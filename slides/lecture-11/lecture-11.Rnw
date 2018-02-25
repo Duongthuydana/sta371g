@@ -1,0 +1,376 @@
+\documentclass{beamer}
+\usepackage{../371g-slides}
+\title{Multiple Regression}
+\subtitle{Lecture 11}
+\author{STA 371G}
+
+\begin{document}
+  <<setup, include=F, cache=F>>=
+  opts_knit$set(global.par=T)
+  knit_hooks$set(crop=hook_pdfcrop)
+  opts_chunk$set(dev='tikz', external=F, fig.path='/tmp/figures/', comment=NA, fig.width=4, fig.height=3, crop=T, sanitize=T, prompt=T, tidy=F)
+  knit_theme$set('camo')
+  @
+  <<include=F, cache=F>>=
+  par(fg='#fefefe', col.axis='#fefefe', col.lab='#fefefe', col.main="#fefefe", mar=c(5.1, 4.1, 1.1, 2.1))
+  @
+  <<include=F>>=
+  library(readr)
+  library(car)
+  boston <- read_csv("../../data/boston.csv")
+  
+  @
+
+  \frame{\maketitle}
+
+  % Show outline at beginning of each section
+  \AtBeginSection[]{ 
+    \begin{frame}<beamer>
+      \tableofcontents[currentsection]
+    \end{frame}
+  }
+
+  %%%%%%% Slides start here %%%%%%%
+
+  \begin{darkframes}    
+    \begin{frame}
+      How do you know how much to pay for a house? \pause
+      
+      Zillow? How do they know? 
+      
+      \begin{center}
+        \includegraphics[width=3.5in]{zillow} \\
+      \end{center} \pause
+      
+      \begin{columns}[onlytextwidth]
+        \column{.5\textwidth}
+          \begin{itemize}
+            \item Square feet
+            \item Year built
+            \item \# of rooms
+          \end{itemize}
+        \column{.5\textwidth}
+          \begin{itemize}
+            \item Distance to downtown
+            \item Crime rate
+            \item ...
+          \end{itemize}
+      \end{columns}
+      
+      
+    \end{frame}
+    
+    
+    
+    
+    
+    
+    \begin{frame}
+    
+      \begin{center}
+        \includegraphics[width=4in]{boston} \\
+      \end{center}
+      
+      Boston house price data (by census tract, 1970)
+      \note{Every row corresponds to a census tract. The prices are multiplied by 20 to make them more relevant.}
+    \end{frame}
+    
+    
+    
+    
+    
+    
+    
+    \begin{frame}
+     
+      \begin{columns}[onlytextwidth]
+        \column{.5\textwidth}
+          \begin{itemize}
+            \item MEDV: Median Price (response)
+            \item LON: Longitude
+            \item LAT: Latitude
+            \item CRIME: Per capita crime rate
+            \item ZONE: Proportion of large lots
+            \item INDUS: Proportion of non-retail business acres
+            \item NOX: Nitrogen Oxide concentration
+          \end{itemize}
+        \column{.5\textwidth}
+          \begin{itemize}
+            \item ROOM: Average \# of rooms
+            \item AGE: Proportion of built before 1940
+            \item DIST: Distance to employment centers
+            \item RADIAL: Accessibility to highways
+            \item TAX: Tax rate (per \$10K)
+            \item PTRATIO: Pupil-to-teacher ratio
+            \item LSTAT: Proportion of ``lower status''
+            %  proportion of adults without some high school education or that are classified as laborers
+          \end{itemize}
+      \end{columns}
+    
+    \end{frame}
+    
+    
+    
+    
+    
+    \begin{frame}
+        Can you guess the top three factors?
+        \lc
+    \end{frame}
+    
+    
+    
+    
+    \begin{frame}[fragile]{Distribution of house prices (MEDV)}
+      \fontsize{10}{10}\selectfont
+      <<fig.height=2>>=
+      hist(boston$MEDV, col='green', 
+        main='', xlab='Census Tract Median House Price')
+      @
+      \note{Not a normal distribution... We can mention log-normal distributions.}
+    \end{frame}
+    
+    
+        \begin{frame}{Multiple Regression Model}
+      
+      We model the median price in a census tract ($y_i=$ median price in $i$th tract) as a linear function of multiple predictors, plus some error.
+      
+      \[
+        y_i = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} +\ldots + \beta_{13} x_{i13} + \epsilon_i
+      \]
+      
+    \begin{table}[!b]
+        {\carlitoTLF % Use monospaced lining figures
+        \begin{tabularx}{\textwidth}{Xrrrrrr}
+           
+           & $\beta_0$ & $\beta_1$ & $\beta_2$ & \textbf{...} &   $\beta_{13}$ & \\
+          \toprule
+
+          & & \textbf{LAT} & \textbf{LON} & \textbf{...} &   \textbf{LSTAT} & \textbf{error}\\
+          \toprule
+    $y_1$ & 1 & $x_{1,1}$ & $x_{1,2}$  & \textbf{...} & $x_{1,13}$ & $\epsilon_1$  \\
+    $y_2$ & 1 & $x_{2,1}$ & $x_{2,2}$  & \textbf{...} & $x_{2,13}$ & $\epsilon_2$\\
+    \textbf{...}  & \textbf{...} &  \textbf{...} & \textbf{...}  & \textbf{...} &   \textbf{...}  & \textbf{...}\\
+    %$y_{503}$ & 1 &  $x_{503,1}$ & $x_{503,2}$  & \textbf{...} &   $x_{503,13}$  & $\epsilon_{503}$\\
+      
+          \bottomrule
+        \end{tabularx}}
+        
+      \end{table}     
+     
+      \bigskip\pause
+      
+      We find $\hat\beta_0,\ldots,\hat\beta_{13}$ to minimize the residuals ($y_i-\hat y_i$)
+      
+      %\[
+      %  \hat y_i = \hat\beta_0 + \hat\beta_1 x_{i1} + \hat\beta_2 x_{i2} +\ldots + \hat\beta_{13} x_{i13} 
+      %\]
+    \end{frame}
+    
+    
+  
+  
+  
+    \begin{frame}[fragile]
+      \fontsize{9}{9}\selectfont
+      <<>>=
+      model <- lm(MEDV ~ LON+LAT+CRIME+ZONE+INDUS+NOX+ROOM+AGE+DIST
+                        +RADIAL+TAX+PTRATIO+LSTAT, data=boston)
+      summary(model$residuals)
+      summary(model)$r.squared
+      summary(model)$adj.r.squared
+      @
+      This is a high $R^2$ compared to the prior examples!
+      
+      Keep an eye on the Adjusted-$R^2$...
+    \end{frame}
+    
+    
+    \begin{frame}[fragile]
+      Here is how the predictors contribute to the estimation:
+      \fontsize{9}{9}\selectfont
+      <<>>=
+      round(summary(model)$coefficients,3)
+      @
+      \quad \pause
+      
+      Intercept, INDUS, AGE, LAT and LON seem to be statistically insignificant. Should we omit them altogether?
+    \end{frame}
+    
+    
+    
+    
+    \begin{frame}
+      A $p$-value of predictor $i$ tests the null hypothesis that $\beta_i=0$; i.e., that predictor $i$ has no contribution to predicting $Y$ independent above and beyond the other predictors
+      
+      \bigskip
+      
+      Omitting other predictors might increase the significance (decrease the $p$-value) of a statistically insignificant predictor.
+    \end{frame}
+
+    
+    \begin{frame}[fragile]
+      \fontsize{9}{9}\selectfont
+      <<>>=
+      model_red <- lm(MEDV ~ LON+LAT+INDUS+AGE, data=boston)
+      round(summary(model_red)$coefficients,3)
+      summary(model_red)$r.squared
+      @
+      LON and INDUS look like a big deal now, although they do not explain as much with $R^2=0.32$.
+      
+      Let's start omiting one by one.
+    \end{frame}
+    
+    
+    
+    
+    \begin{frame}[fragile]
+      \fontsize{9}{9}\selectfont
+      INDUS has been omitted.
+      <<>>=
+      model <- lm(MEDV ~ LON+LAT+CRIME+ZONE+NOX+ROOM+AGE+DIST
+                        +RADIAL+TAX+PTRATIO+LSTAT, data=boston)
+      summary(model)$r.squared
+      summary(model)$adj.r.squared
+      @
+      $R^2$ has not changed too much, Adjusted-$R^2$ has increased a bit.
+    \end{frame}
+    
+    
+    \begin{frame}[fragile]
+      \fontsize{9}{9}\selectfont
+      <<>>=
+      round(summary(model)$coefficients,3)
+      @
+    
+      
+      AGE still seems insignificant.
+    \end{frame}
+    
+    
+    
+    
+    
+    \begin{frame}[fragile]
+      \fontsize{9}{9}\selectfont
+      AGE has been omitted.
+      <<>>=
+      model <- lm(MEDV ~ LON+LAT+CRIME+ZONE+NOX+ROOM+DIST
+                        +RADIAL+TAX+PTRATIO+LSTAT, data=boston)
+      summary(model)$r.squared
+      summary(model)$adj.r.squared
+      @
+      $R^2$ is again about the same, and Adjusted-$R^2$ has increased a bit.
+    \end{frame}
+    
+    
+    \begin{frame}[fragile]
+      \fontsize{9}{9}\selectfont
+      <<>>=
+      round(summary(model)$coefficients,3)
+      @
+      LAT is next.
+    \end{frame}
+    
+    
+    
+    \begin{frame}[fragile]
+      \fontsize{9}{9}\selectfont
+      LAT has been omitted.
+      <<>>=
+      model <- lm(MEDV ~ LON+CRIME+ZONE+NOX+ROOM+DIST
+                        +RADIAL+TAX+PTRATIO+LSTAT, data=boston)
+      summary(model)$r.squared
+      summary(model)$adj.r.squared
+      @
+      Both $R^2$ and Adjusted-$R^2$ have reduced. But still not too bad.
+    \end{frame}
+    
+    
+    \begin{frame}[fragile]
+      \fontsize{9}{9}\selectfont
+      <<>>=
+      round(summary(model)$coefficients,3)
+      @
+      Bye LON...
+    \end{frame}
+    
+    
+    \begin{frame}[fragile]
+      \fontsize{9}{9}\selectfont
+      LON has been omitted.
+      <<>>=
+      model <- lm(MEDV ~ CRIME+ZONE+NOX+ROOM+DIST
+                        +RADIAL+TAX+PTRATIO+LSTAT, data=boston)
+      summary(model)$r.squared
+      summary(model)$adj.r.squared
+      @
+      Both $R^2$ and Adjusted-$R^2$ have reduced. But that's OK.
+    \end{frame}
+    
+    
+    \begin{frame}[fragile]
+      \fontsize{9}{9}\selectfont
+      <<>>=
+      round(summary(model)$coefficients,3)
+      @
+      Notice what happened to the intercept. LON (and perhaps the others) was acting like an intercept!
+    \end{frame}
+    
+    
+    \begin{frame}{When to omit, when to keep?}
+      It is usually good to omit statistically insignificant variables, because:
+      \begin{itemize}
+        \item The model gets simpler
+        \item Insignificant variables may lead to incorrect interpretations (as in LON)
+        \item When the data set is small, we can read too much into the impact of insignificant variables    
+      \end{itemize}
+      
+    \end{frame}
+    
+    \begin{frame}{When to omit, when to keep?}
+      We keep a variable in the model, even if it is statistically insignificant, when:
+      \begin{itemize}
+        \item We are testing a hypothesis on the variable
+        \item The variable has a big effect, although it is statistically insignificant
+        \item It is an expected control variable (e.g. age in medical studies, race in sociological studies etc.)
+        \item It is included in a higher order term (more on this later)
+        
+      \end{itemize}
+      
+    \end{frame}
+    
+    
+    \begin{frame}{``Most important'' predictors}
+      How to identify which predictors have ``more significant'' effect on the response?
+      
+      \begin{itemize}
+        \item[] Parameter estimate? \pause
+        \item[] $p$-value? \pause
+        \item[] t score? \pause \greencheckmark
+        
+      \end{itemize}
+      
+    \end{frame}
+    
+    
+    \begin{frame}[fragile]
+      \fontsize{9}{9}\selectfont
+      Which ones seem to be the most important? 
+      <<>>=
+      round(summary(model)$coefficients,3)
+      @
+      \lc
+    \end{frame}
+    
+
+    \begin{frame}
+      \begin{itemize}
+        \item Reminder to keep up with the readings in Perusall
+        \item The readings often have technical discussions (e.g., matrix algebra, ANOVA tables) that you don't need to worry about (we'll talk about it in class if you need to know it)
+      \end{itemize}
+    \end{frame}
+ 
+  \end{darkframes}
+
+\end{document}
