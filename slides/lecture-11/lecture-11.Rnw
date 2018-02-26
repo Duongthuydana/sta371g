@@ -364,12 +364,6 @@
     \end{frame}
     
 
-    \begin{frame}
-      \begin{itemize}
-        \item Reminder to keep up with the readings in Perusall
-        \item The readings often have technical discussions (e.g., matrix algebra, ANOVA tables) that you don't need to worry about (we'll talk about it in class if you need to know it)
-      \end{itemize}
-    \end{frame}
  
   \end{darkframes}
 
