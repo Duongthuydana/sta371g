@@ -51,7 +51,7 @@
 \usepackage{alltt}
 \usepackage{../371g-slides}
 \title{Multiple Regression}
-\subtitle{Lecture 11}
+\subtitle{Lecture 12}
 \author{STA 371G}
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \begin{document}
@@ -62,7 +62,7 @@
   \frame{\maketitle}
 
   % Show outline at beginning of each section
-  \AtBeginSection[]{ 
+  \AtBeginSection[]{
     \begin{frame}<beamer>
       \tableofcontents[currentsection]
     \end{frame}
@@ -70,16 +70,16 @@
 
   %%%%%%% Slides start here %%%%%%%
 
-  \begin{darkframes}    
+  \begin{darkframes}
     \begin{frame}
-      How do you know how much to pay for a house? \pause
-      
-      Zillow? How do they know? 
-      
+      How do you know how much a house is worth? \pause
+
+      Zillow? How do they know?
+
       \begin{center}
         \includegraphics[width=3.5in]{zillow} \\
       \end{center} \pause
-      
+
       \begin{columns}[onlytextwidth]
         \column{.5\textwidth}
           \begin{itemize}
@@ -94,33 +94,33 @@
             \item ...
           \end{itemize}
       \end{columns}
-      
-      
+
+
     \end{frame}
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
     \begin{frame}
-    
+
       \begin{center}
         \includegraphics[width=4in]{boston} \\
       \end{center}
-      
+
       Boston house price data (by census tract, 1970)
       \note{Every row corresponds to a census tract. The prices are multiplied by 20 to make them more relevant.}
     \end{frame}
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
     \begin{frame}
-     
+
       \begin{columns}[onlytextwidth]
         \column{.5\textwidth}
           \begin{itemize}
@@ -144,21 +144,21 @@
             %  proportion of adults without some high school education or that are classified as laborers
           \end{itemize}
       \end{columns}
-    
+
     \end{frame}
-    
-    
-    
-    
-    
+
+
+
+
+
     \begin{frame}
         Can you guess the top three factors?
         \lc
     \end{frame}
-    
-    
-    
-    
+
+
+
+
     \begin{frame}[fragile]{Distribution of house prices (MEDV)}
       \fontsize{10}{10}\selectfont
 \begin{knitrout}
@@ -173,20 +173,20 @@
 \end{knitrout}
       \note{Not a normal distribution... We can mention log-normal distributions.}
     \end{frame}
-    
-    
+
+
         \begin{frame}{Multiple Regression Model}
-      
+
       We model the median price in a census tract ($y_i=$ median price in $i$th tract) as a linear function of multiple predictors, plus some error.
-      
+
       \[
         y_i = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} +\ldots + \beta_{13} x_{i13} + \epsilon_i
       \]
-      
+
     \begin{table}[!b]
         {\carlitoTLF % Use monospaced lining figures
         \begin{tabularx}{\textwidth}{Xrrrrrr}
-           
+
            & $\beta_0$ & $\beta_1$ & $\beta_2$ & \textbf{...} &   $\beta_{13}$ & \\
           \toprule
 
@@ -196,25 +196,25 @@
     $y_2$ & 1 & $x_{2,1}$ & $x_{2,2}$  & \textbf{...} & $x_{2,13}$ & $\epsilon_2$\\
     \textbf{...}  & \textbf{...} &  \textbf{...} & \textbf{...}  & \textbf{...} &   \textbf{...}  & \textbf{...}\\
     %$y_{503}$ & 1 &  $x_{503,1}$ & $x_{503,2}$  & \textbf{...} &   $x_{503,13}$  & $\epsilon_{503}$\\
-      
+
           \bottomrule
         \end{tabularx}}
-        
-      \end{table}     
-     
+
+      \end{table}
+
       \bigskip\pause
-      
+
       We find $\hat\beta_0,\ldots,\hat\beta_{13}$ to minimize the residuals ($y_i-\hat y_i$)
-      
+
       %\[
-      %  \hat y_i = \hat\beta_0 + \hat\beta_1 x_{i1} + \hat\beta_2 x_{i2} +\ldots + \hat\beta_{13} x_{i13} 
+      %  \hat y_i = \hat\beta_0 + \hat\beta_1 x_{i1} + \hat\beta_2 x_{i2} +\ldots + \hat\beta_{13} x_{i13}
       %\]
     \end{frame}
-    
-    
-  
-  
-  
+
+
+
+
+
     \begin{frame}[fragile]
       \fontsize{9}{9}\selectfont
 \begin{knitrout}
@@ -226,7 +226,7 @@
 \end{alltt}
 \begin{verbatim}
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
--258100  -57340  -13640       0   39610  531300 
+-258106  -57337  -13642       0   39614  531268 
 \end{verbatim}
 \begin{alltt}
 \hlstd{> }\hlkwd{summary}\hlstd{(model)}\hlopt{$}\hlstd{r.squared}
@@ -243,11 +243,11 @@
 \end{kframe}
 \end{knitrout}
       This is a high $R^2$ compared to the prior examples!
-      
+
       Keep an eye on the Adjusted-$R^2$...
     \end{frame}
-    
-    
+
+
     \begin{frame}[fragile]
       Here is how the predictors contribute to the estimation:
       \fontsize{9}{9}\selectfont
@@ -276,22 +276,31 @@ LSTAT          -11416.450    1022.127 -11.169    0.000
 \end{kframe}
 \end{knitrout}
       \quad \pause
-      
+
       Intercept, INDUS, AGE, LAT and LON seem to be statistically insignificant. Should we omit them altogether?
     \end{frame}
-    
-    
-    
-    
+
+
+    \begin{frame}
+      
+      Let's interpret the ROOM coefficient 72906.39. The interpretation is:
+      \begin{itemize}[<+->]
+        \item \emph{Holding the other predictors (X variables) constant}, our predicted home price increases by \$72906.39 for each additional room.
+        \item Two census tracts that are otherwise identical (but where one census tract has 1 more room on average than the other) will differ by \$72906.39 in their predicted home price.
+      \end{itemize}
+    \end{frame}
+
+
+
     \begin{frame}
       A $p$-value of predictor $i$ tests the null hypothesis that $\beta_i=0$; i.e., that predictor $i$ has no contribution to predicting $Y$ independent above and beyond the other predictors
-      
+
       \bigskip
-      
+
       Omitting other predictors might increase the significance (decrease the $p$-value) of a statistically insignificant predictor.
     \end{frame}
 
-    
+
     \begin{frame}[fragile]
       \fontsize{9}{9}\selectfont
 \begin{knitrout}
@@ -317,13 +326,13 @@ AGE              -235.769     324.422  -0.727    0.468
 \end{kframe}
 \end{knitrout}
       LON and INDUS look like a big deal now, although they do not explain as much with $R^2=0.32$.
-      
+
       Let's start omiting one by one.
     \end{frame}
-    
-    
-    
-    
+
+
+
+
     \begin{frame}[fragile]
       \fontsize{9}{9}\selectfont
       INDUS has been omitted.
@@ -347,8 +356,8 @@ AGE              -235.769     324.422  -0.727    0.468
 \end{knitrout}
       $R^2$ has not changed too much, Adjusted-$R^2$ has increased a bit.
     \end{frame}
-    
-    
+
+
     \begin{frame}[fragile]
       \fontsize{9}{9}\selectfont
 \begin{knitrout}
@@ -374,15 +383,15 @@ LSTAT          -11391.407    1018.762 -11.182    0.000
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
-    
-      
+
+
       AGE still seems insignificant.
     \end{frame}
-    
-    
-    
-    
-    
+
+
+
+
+
     \begin{frame}[fragile]
       \fontsize{9}{9}\selectfont
       AGE has been omitted.
@@ -406,8 +415,8 @@ LSTAT          -11391.407    1018.762 -11.182    0.000
 \end{knitrout}
       $R^2$ is again about the same, and Adjusted-$R^2$ has increased a bit.
     \end{frame}
-    
-    
+
+
     \begin{frame}[fragile]
       \fontsize{9}{9}\selectfont
 \begin{knitrout}
@@ -434,9 +443,9 @@ LSTAT          -11177.763     959.387 -11.651    0.000
 \end{knitrout}
       LAT is next.
     \end{frame}
-    
-    
-    
+
+
+
     \begin{frame}[fragile]
       \fontsize{9}{9}\selectfont
       LAT has been omitted.
@@ -460,8 +469,8 @@ LSTAT          -11177.763     959.387 -11.651    0.000
 \end{knitrout}
       Both $R^2$ and Adjusted-$R^2$ have reduced. But still not too bad.
     \end{frame}
-    
-    
+
+
     \begin{frame}[fragile]
       \fontsize{9}{9}\selectfont
 \begin{knitrout}
@@ -487,8 +496,8 @@ LSTAT         -11062.388     956.946 -11.560    0.000
 \end{knitrout}
       Bye LON...
     \end{frame}
-    
-    
+
+
     \begin{frame}[fragile]
       \fontsize{9}{9}\selectfont
       LON has been omitted.
@@ -512,8 +521,8 @@ LSTAT         -11062.388     956.946 -11.560    0.000
 \end{knitrout}
       Both $R^2$ and Adjusted-$R^2$ have reduced. But that's OK.
     \end{frame}
-    
-    
+
+
     \begin{frame}[fragile]
       \fontsize{9}{9}\selectfont
 \begin{knitrout}
@@ -538,18 +547,18 @@ LSTAT        -11071.731    957.483 -11.563    0.000
 \end{knitrout}
       Notice what happened to the intercept. LON (and perhaps the others) was acting like an intercept!
     \end{frame}
-    
-    
+
+
     \begin{frame}{When to omit, when to keep?}
       It is usually good to omit statistically insignificant variables, because:
       \begin{itemize}
         \item The model gets simpler
         \item Insignificant variables may lead to incorrect interpretations (as in LON)
-        \item When the data set is small, we can read too much into the impact of insignificant variables    
+        \item When the data set is small, we can read too much into the impact of insignificant variables
       \end{itemize}
-      
+
     \end{frame}
-    
+
     \begin{frame}{When to omit, when to keep?}
       We keep a variable in the model, even if it is statistically insignificant, when:
       \begin{itemize}
@@ -557,28 +566,28 @@ LSTAT        -11071.731    957.483 -11.563    0.000
         \item The variable has a big effect, although it is statistically insignificant
         \item It is an expected control variable (e.g. age in medical studies, race in sociological studies etc.)
         \item It is included in a higher order term (more on this later)
-        
+
       \end{itemize}
-      
+
     \end{frame}
-    
-    
+
+
     \begin{frame}{``Most important'' predictors}
       How to identify which predictors have ``more significant'' effect on the response?
-      
+
       \begin{itemize}
         \item[] Parameter estimate? \pause
         \item[] $p$-value? \pause
         \item[] t score? \pause \greencheckmark
-        
+
       \end{itemize}
-      
+
     \end{frame}
-    
-    
+
+
     \begin{frame}[fragile]
       \fontsize{9}{9}\selectfont
-      Which ones seem to be the most important? 
+      Which ones seem to be the most important?
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
 \begin{alltt}
@@ -601,9 +610,9 @@ LSTAT        -11071.731    957.483 -11.563    0.000
 \end{knitrout}
       \lc
     \end{frame}
-    
 
- 
+
+
   \end{darkframes}
 
 \end{document}
