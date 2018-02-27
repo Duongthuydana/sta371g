@@ -62,7 +62,7 @@
   \frame{\maketitle}
 
   % Show outline at beginning of each section
-  \AtBeginSection[]{ 
+  \AtBeginSection[]{
     \begin{frame}<beamer>
       \tableofcontents[currentsection]
     \end{frame}
@@ -71,20 +71,24 @@
   %%%%%%% Slides start here %%%%%%%
 
   \begin{darkframes}
-  
-  
-    \begin{frame}[fragile]{Predicting House prices in the Greater Boston Area}
-      \fontsize{9}{9}\selectfont
-      
-      Median house price for each census tract, along with other data. \pause
-      
-      The final model:
-      
+    \begin{frame}{Midterm 1 results}
+      \begin{itemize}[<+->]
+        \item Scores and feedback will be available in Canvas/Quest later today or tomorrow
+        \item Approximately: mean = 74\%, median = 75\%, SD = 15\%
+        \item Since this was our first exam using Quest, you can retake the exam and get up to half credit back starting Thursday 5 PM
+        \item Example: if you got a 60\%, and you get a 100\% on the retake, your new Midterm 1 score will be 80\%
+        \item Your retake submission is due one week later (Thursday, March 8 at 5 PM)
+      \end{itemize}
+      \note{Start with an LC Q2 to review}
+    \end{frame}
+
+    \begin{frame}[fragile]{Predicting median house prices in Boston}
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
 \begin{alltt}
-\hlstd{> }\hlstd{model} \hlkwb{<-} \hlkwd{lm}\hlstd{(MEDV} \hlopt{~} \hlstd{CRIME}\hlopt{+}\hlstd{ZONE}\hlopt{+}\hlstd{NOX}\hlopt{+}\hlstd{ROOM}\hlopt{+}\hlstd{DIST}
-\hlstd{+ }                  \hlopt{+}\hlstd{RADIAL}\hlopt{+}\hlstd{TAX}\hlopt{+}\hlstd{PTRATIO}\hlopt{+}\hlstd{LSTAT,} \hlkwc{data}\hlstd{=boston)}
+\hlstd{> }\hlstd{model} \hlkwb{<-} \hlkwd{lm}\hlstd{(MEDV} \hlopt{~} \hlstd{CRIME} \hlopt{+} \hlstd{ZONE} \hlopt{+} \hlstd{NOX} \hlopt{+} \hlstd{ROOM} \hlopt{+} \hlstd{DIST}
+\hlstd{+ }             \hlopt{+} \hlstd{RADIAL} \hlopt{+} \hlstd{TAX} \hlopt{+} \hlstd{PTRATIO} \hlopt{+} \hlstd{LSTAT,}
+\hlstd{+ }             \hlkwc{data}\hlstd{=boston)}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
@@ -108,13 +112,11 @@
           \end{itemize}
       \end{columns}
     \end{frame}
-    
-   
-   
+
+
+
     \begin{frame}[fragile]{Overall Null Hypothesis}
-      \fontsize{9}{9}\selectfont
-    
-      Is our model useful? Check the R-squared:
+      Is our model useful? Let's look at $R^2$:
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
 \begin{alltt}
@@ -125,88 +127,71 @@
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
-      \quad \pause
-      
+      \pause
       Can we be confident that our model will generalize to the \alert{population}?  \pause
-      
+
       \bigskip
-      
+
       $H_0: \beta_1=\beta_2=\beta_3=\beta_4=\beta_5=\beta_6=\beta_7=\beta_8=\beta_9=0$ (Data explains nothing!) \pause
-      
-      $H_1: \beta_i \neq 0$ for some $i$ (At least one predictor is useful) \pause
-      
-      \bigskip
-      
-      or 
-      
-      \bigskip
-      
-      $H_0: R^2=0$
-      
-      $H_1: R^2>0$
+
+      $H_A: \beta_i \neq 0$ for some $i$ (At least one predictor is useful) \pause
+
+      or
+
+      $H_0: R^2=0 \qquad H_A: R^2>0$
     \end{frame}
-   
-   
-   
+
+
+
    \begin{frame}[fragile]{Overall Null Hypothesis}
-      \fontsize{9}{9}\selectfont
-      Check the P-value for the  F-statistic in the summary
+      Check the $p$-value in the summary:
       \begin{center}
         \includegraphics[width=4in]{r_sq_pval} \\
       \end{center}
       So we can reject the overall null hypothesis! \pause
-      
-      R-squared was already too big to suspect that it is zero and we already knew some predictors are statistically significant.
-      
-    \end{frame}  
-   
-   
-    
+      \bigskip
+      ($R^2$ was already too big to suspect that it was actually zero in the population---and we already knew some predictors are statistically significant!)
+    \end{frame}
+
+
+
     \begin{frame}[fragile]{How good are our predictions?}
-      \fontsize{9}{9}\selectfont
-      Let's plot the residuals, i.e., discrepancies between the predictions and the data. \pause
-      
+      Let's plot the residuals (the discrepancies between the predicted and actual home prices). \pause
+
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
 \begin{alltt}
-\hlstd{> }\hlkwd{hist}\hlstd{(model}\hlopt{$}\hlstd{residuals,} \hlkwc{col}\hlstd{=}\hlstr{'green'}\hlstd{,}
+\hlstd{> }\hlkwd{hist}\hlstd{(}\hlkwd{resid}\hlstd{(model),} \hlkwc{col}\hlstd{=}\hlstr{'green'}\hlstd{,}
 \hlstd{+ }  \hlkwc{main}\hlstd{=}\hlstr{''}\hlstd{,} \hlkwc{xlab}\hlstd{=}\hlstr{'Residuals ($)'}\hlstd{,} \hlkwc{ylab}\hlstd{=}\hlstr{'Frequency'}\hlstd{)}
 \end{alltt}
 \end{kframe}
 \input{/tmp/figures/unnamed-chunk-5-1.tikz}
 
 \end{knitrout}
-      
-      
-    \end{frame}  
-    
-    
+
+
+    \end{frame}
+
+
     \begin{frame}[fragile]{How good are our predictions?}
-      \fontsize{9}{9}\selectfont
-      It looks like a normal distribution. Let's look at the mean of the residuals: \pause
-      
+      Let's look at the mean of the residuals: \pause
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
 \begin{alltt}
-\hlstd{> }\hlkwd{mean}\hlstd{(model}\hlopt{$}\hlstd{residuals)}
+\hlstd{> }\hlkwd{mean}\hlstd{(}\hlkwd{resid}\hlstd{(model))}
 \end{alltt}
 \begin{verbatim}
 [1] 7.125761e-12
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
-      Virtually zero. \pause
+      It will be always zero since regression minimizes the sum of squared residuals! \pause
+      Now let's look at the standard deviation: \pause
 
-      \bigskip
-      (It will be always zero since regression minimizes the sum of squared residuals.) \pause
-      
-      \bigskip
-      
-      What about the standard deviation? \pause
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
 \begin{alltt}
-\hlstd{> }\hlkwd{sd}\hlstd{(model}\hlopt{$}\hlstd{residuals)}
+\hlstd{> }\hlkwd{sd}\hlstd{(}\hlkwd{resid}\hlstd{(model))}
 \end{alltt}
 \begin{verbatim}
 [1] 95881.11
@@ -214,19 +199,16 @@
 \end{kframe}
 \end{knitrout}
       \pause
-      By the 2 standard deviation rule, we could estimate that 95\% of the time residuals are in [-\$192K, \$192K] range.
-    \end{frame}  
-   
-    
+      Since the residuals are roughly normal, by the 2 SD rule about 95\% of the time predictions will be off by less than \$191762.
+    \end{frame}
+
+
     \begin{frame}[fragile]{How good are our predictions?}
-      \fontsize{9}{9}\selectfont
-      
-      Can we obtain a \alert{similar} measure directly from the summary of the regression?
-      
-      \note{Emphasize that standard error and what we get with sd() is similar, but not exactly the same. 
-           sd() estimates the population std dev, standard error is obtained by dividing SS by the num. deg. of freedom. } \pause
-           
-      It is the Residual standard error!
+      The residual standard error provides a \alert{similar} measure directly from the summary of the regression:
+
+      \note{Emphasize that standard error and what we get with sd() is similar, but not exactly the same.
+           sd() estimates the population std dev, standard error is obtained by dividing SS by the num. deg. of freedom. }
+
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
 \begin{alltt}
@@ -241,75 +223,72 @@
       \begin{center}
         \includegraphics[width=4in]{std_err} \\
       \end{center}
-      
+
     \end{frame}
-    
-    
-    
+
+
+
     \begin{frame}{Again: regression assumptions}
-    \fontsize{9}{9}\selectfont
       Remember the big four:
       \begin{enumerate}
         \item \alert{The residuals are independent.}
         \item $Y$ is a linear function of $X$s (except for the errors).
         \item The residuals are normally distributed.
         \item The variance of $Y$ is the same for any value of $X$s (``homoscedasticity'').
-    
+
       \end{enumerate}
     \end{frame}
-    
-    
-    \begin{frame}[fragile]{Assumption 1: Independence}
-    \fontsize{9}{9}\selectfont
-      Independence: No correlation between residuals \pause --- we have to think this through; can't use a plot here.
-    \end{frame}
-    
 
-    
-    
-    
+
+    \begin{frame}[fragile]{Assumption 1: Independence}
+      Independence: No correlation between residuals \pause --- we have to think this through; can't use a plot here.
+      \pause
+      Remember that we want the \alert{cases} to be independent, not the \alert{variables}. We very much hope that $Y$ will be dependent on the $X$'s (otherwise, why are we trying to predict $Y$ based on the $X$'s?).
+    \end{frame}
+
+
+
+
+
     \begin{frame}{Again: regression assumptions}
-    \fontsize{9}{9}\selectfont
       Remember the big four:
       \begin{enumerate}
-        \item The residuals are independent.
+        \item The residuals are independent. \greencheckmark
         \item \alert{$Y$ is a linear function of $X$s (except for the errors).}
         \item The residuals are normally distributed.
         \item The variance of $Y$ is the same for any value of $X$s (``homoscedasticity'').
       \end{enumerate}
     \end{frame}
-    
-    
-    
+
+
+
     \begin{frame}[fragile]{Assumption 2: Linearity}
-    
-      Plot the residuals vs the predicted Y-values and ensure there is no trend:
+      Plot the residuals vs the \alert{predicted Y-values} and ensure there is no trend:
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
 \begin{alltt}
-\hlstd{> }\hlkwd{plot}\hlstd{(model}\hlopt{$}\hlstd{fitted.values,} \hlkwd{resid}\hlstd{(model),}
-\hlstd{+ }  \hlkwc{xlab}\hlstd{=}\hlstr{'Predicted values'}\hlstd{,} \hlkwc{ylab}\hlstd{=}\hlstr{'Residuals'}\hlstd{)}
+\hlstd{> }\hlkwd{plot}\hlstd{(}\hlkwd{predict}\hlstd{(model),} \hlkwd{resid}\hlstd{(model),} \hlkwc{col}\hlstd{=}\hlstr{"green"}\hlstd{,}
+\hlstd{+ }  \hlkwc{xlab}\hlstd{=}\hlstr{"Predicted values"}\hlstd{,} \hlkwc{ylab}\hlstd{=}\hlstr{"Residuals"}\hlstd{)}
 \end{alltt}
 \end{kframe}
 \input{/tmp/figures/unnamed-chunk-9-1.tikz}
 
 \end{knitrout}
-    \end{frame}   
-    
-    
+    \end{frame}
+
+
     \begin{frame}{Again: regression assumptions}
-    \fontsize{9}{9}\selectfont
       Remember the big four:
       \begin{enumerate}
-        \item The residuals are independent.
-        \item $Y$ is a linear function of $X$s (except for the errors).
+        \item The residuals are independent. \greencheckmark
+        \item $Y$ is a linear function of $X$s (except for the errors). \greencheckmark
         \item \alert{The residuals are normally distributed.}
         \item The variance of $Y$ is the same for any value of $X$s (``homoscedasticity'').
       \end{enumerate}
     \end{frame}
-    
-    
-    
+
+
+
     \begin{frame}[fragile]{Assumption 3: Normally distributed residuals}
       Ensure that the Q-Q plot shows a (roughly) straight line:
 \begin{knitrout}
@@ -322,79 +301,88 @@
 
 \end{knitrout}
     \end{frame}
-    
-    
+
+
     \begin{frame}{Again: regression assumptions}
-    \fontsize{9}{9}\selectfont
       Remember the big four:
       \begin{enumerate}
-        \item The residuals are independent.
-        \item $Y$ is a linear function of $X$s (except for the errors).
-        \item The residuals are normally distributed.
+        \item The residuals are independent. \greencheckmark
+        \item $Y$ is a linear function of $X$s (except for the errors). \greencheckmark
+        \item The residuals are normally distributed. \greencheckmark
         \item \alert{The variance of $Y$ is the same for any value of $X$s (``homoscedasticity'').}
       \end{enumerate}
     \end{frame}
-    
-    
+
+
     \begin{frame}[fragile]{Assumption 4: The variance of $Y$ is the same across}
-      Look for a (roughly) constant vertical ``thickness'':  
+      Look for a (roughly) constant vertical ``thickness'':
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
 \begin{alltt}
-\hlstd{> }\hlkwd{plot}\hlstd{(model}\hlopt{$}\hlstd{fitted.values,} \hlkwd{resid}\hlstd{(model),}
-\hlstd{+ }  \hlkwc{xlab}\hlstd{=}\hlstr{'Predicted values'}\hlstd{,} \hlkwc{ylab}\hlstd{=}\hlstr{'Residuals'}\hlstd{)}
+\hlstd{> }\hlkwd{plot}\hlstd{(}\hlkwd{predict}\hlstd{(model),} \hlkwd{resid}\hlstd{(model),} \hlkwc{col}\hlstd{=}\hlstr{"green"}\hlstd{,}
+\hlstd{+ }  \hlkwc{xlab}\hlstd{=}\hlstr{"Predicted values"}\hlstd{,} \hlkwc{ylab}\hlstd{=}\hlstr{"Residuals"}\hlstd{)}
 \end{alltt}
 \end{kframe}
 \input{/tmp/figures/unnamed-chunk-11-1.tikz}
 
 \end{knitrout}
     \end{frame}
-    
-    
-    
-    
-    \begin{frame}[fragile]{We have a model. Then what?}
-      \fontsize{9}{9}\selectfont
+
+    \begin{frame}{Again: regression assumptions}
+      Remember the big four:
+      \begin{enumerate}
+        \item The residuals are independent. \greencheckmark
+        \item $Y$ is a linear function of $X$s (except for the errors). \greencheckmark
+        \item The residuals are normally distributed. \greencheckmark
+        \item The variance of $Y$ is the same for any value of $X$s (``homoscedasticity'').  \greencheckmark
+      \end{enumerate}
+      \pause
+      \alert{w00t w00t!} \pause This model meets the assumptions for regression, so it is safe to interpret $p$-values and confidence intervals.
+      \lc
+    \end{frame}
+
+
+    \begin{frame}[fragile]{We have a model. Now what?}
       Let's make some predictions.
     \end{frame}
-    
-    
-    \begin{frame}[fragile]{Model Coefficients}
-    \fontsize{9}{9}\selectfont  
-      Regression model estimates the coefficients of the predictors.
+
+
+    \begin{frame}[fragile]{Making predictions}
+      The regression model estimates the coefficients of the predictors:
+      \fontsize{9}{9}\selectfont
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
 \begin{alltt}
-\hlstd{> }\hlkwd{round}\hlstd{(}\hlkwd{summary}\hlstd{(model)}\hlopt{$}\hlstd{coefficients,}\hlnum{2}\hlstd{)}
+\hlstd{> }\hlkwd{round}\hlstd{(}\hlkwd{summary}\hlstd{(model)}\hlopt{$}\hlstd{coefficients,} \hlnum{4}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
-              Estimate Std. Error t value Pr(>|t|)
-(Intercept)  840065.15   99001.03    8.49        0
-CRIME         -2566.08     663.82   -3.87        0
-ZONE            922.00     276.22    3.34        0
-NOX         -346925.67   71811.32   -4.83        0
-ROOM          74242.52    8261.88    8.99        0
-DIST         -31049.53    3784.98   -8.20        0
-RADIAL         6000.24    1288.14    4.66        0
-TAX            -265.33      68.57   -3.87        0
-PTRATIO      -19279.75    2627.20   -7.34        0
-LSTAT        -11071.73     957.48  -11.56        0
+                Estimate Std. Error  t value Pr(>|t|)
+(Intercept)  840065.1500 99001.0317   8.4854    0e+00
+CRIME         -2566.0842   663.8172  -3.8656    1e-04
+ZONE            921.9981   276.2196   3.3379    9e-04
+NOX         -346925.6722 71811.3231  -4.8311    0e+00
+ROOM          74242.5198  8261.8840   8.9861    0e+00
+DIST         -31049.5290  3784.9798  -8.2034    0e+00
+RADIAL         6000.2426  1288.1421   4.6581    0e+00
+TAX            -265.3307    68.5657  -3.8697    1e-04
+PTRATIO      -19279.7516  2627.2042  -7.3385    0e+00
+LSTAT        -11071.7310   957.4835 -11.5634    0e+00
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
-      
+
     \end{frame}
-    
-    
-    \begin{frame}[fragile]{Model Coefficients}
-      \fontsize{9}{9}\selectfont
+
+
+    \begin{frame}[fragile]{Making predictions}
       Let's estimate the median house price in a particular district:
-      
+      \fontsize{9}{9}\selectfont
+
       \begin{table}[!b]
         {\carlitoTLF % Use monospaced lining figures
         \begin{tabularx}{\textwidth}{XXrrr}
-           
-           $j$ & Predictor  & $\beta_j$   &  $X_j$  & $\beta_j X_j$ \\ 
+
+           $j$ & Predictor  & $\beta_j$   &  $X_j$  & $\beta_j X_j$ \\
           \toprule
             0 & Intercept	&	840.07	&	1	&	840.07  \\
             1 & CRIME	&	-2.57	&	0.03	&	-0.0771  \\
@@ -407,21 +395,20 @@ LSTAT        -11071.73     957.48  -11.56        0
             8 & PTRATIO	&	-19.28	&	15	&	-385.6  \\
             9 & LSTAT	&	-11.07	&	10	&	-110.7  \\
           \bottomrule
-             Price &  Estimate 	& (\$1000)		&		&	342.538   \\
-        
-        
+             Price &  Estimate 	& 	&		&	342.538   \\
+
+
         \end{tabularx}}
-        
-      \end{table} 
-      
+
+      \end{table}
+
     \end{frame}
 
 
 
-    \begin{frame}[fragile]{Model Coefficients}
-    \fontsize{9}{9}\selectfont
+    \begin{frame}[fragile]{Making predictions}
       Let R do it for us!
-      
+
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
 \begin{alltt}
@@ -438,22 +425,21 @@ LSTAT        -11071.73     957.48  -11.56        0
 \end{kframe}
 \end{knitrout}
       \note{The discrepancy is due to rounding in the previous slide.}
-      
+
     \end{frame}
-    
-    
-    \begin{frame}[fragile]{Model Coefficients}
-    \fontsize{9}{9}\selectfont
-      Assume that there are 420 students and 28 teachers in the disctrict ($\text{PTRATIO}=420/28=15$). \pause
-      
+
+
+    \begin{frame}[fragile]{Model coefficients}
+      Suppose there are 420 students and 28 teachers in the disctrict ($\text{PTRATIO}=420/28=15$). \pause
+
       \bigskip
-      
+
       The school board is considering hiring 2 more teachers. How would this affect the house prices in the district? \pause
-      
+
       \bigskip
-      
+
       The new PTRATIO will be $420/30=14$. \pause
-      
+
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
 \begin{alltt}
@@ -470,27 +456,27 @@ LSTAT        -11071.73     957.48  -11.56        0
 \end{kframe}
 \end{knitrout}
     \end{frame}
-    
-    
-    
-    \begin{frame}[fragile]{Model Coefficients}
-      Nothing is free. To be able to compansate the new hires, the ISD decides to add \$50 more on your tax bill for every \$10K of your house price. \pause
-      
+
+
+
+    \begin{frame}[fragile]{Model coefficients}
+      To be able to compansate the new hires, the school district must add \$50 more on your tax bill for every \$10K of your house price. \pause
+
       \bigskip
       So, the tax rate increases to \$50 per \$10K. How would this affect the median house price?
-      
+
       \lc
-    
+
     \end{frame}
-    
-    
-    
+
+
+
     \begin{frame}[fragile]{Confidence intervals}
-      We all know our predictions are not exactly right. 
-      
+      We know our predictions are not exactly right.
+
       Can we come up with some confidence intervals on our predictions? \pause
       \bigskip
-      
+
       Remember the two kinds of intervals:
       \bigskip
 
@@ -498,14 +484,13 @@ LSTAT        -11071.73     957.48  -11.56        0
         \textbf{Confidence} & Predicting the mean value of $Y$ for a particular  set of $X$ values. & Among all the districts whose predictors are as above, what is the mean value of median house price?  \\
         \textbf{Prediction} & Predicting $Y$ for a single new case. & If Springfield has the predictors above, what is the median house price in Springfield?\\
       \end{tabular}
-    
-    
+
+
     \end{frame}
-        
-      
-    
+
+
+
     \begin{frame}[fragile]{Confidence intervals}
-      \fontsize{9}{9}\selectfont
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
 \begin{alltt}
@@ -524,13 +509,14 @@ LSTAT        -11071.73     957.48  -11.56        0
 \end{knitrout}
      \lc
      \end{frame}
-     
-     
-     
+
+
+
      \begin{frame}[fragile]%{Confidence intervals}
-      \fontsize{9}{9}\selectfont
         We can also put a confidence interval on a coefficient to estimate the plausible range of its effect.
-        
+
+        \fontsize{9}{9}\selectfont
+
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
 \begin{alltt}
@@ -551,15 +537,17 @@ LSTAT        -12952.9546   -9190.5075
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
-     
+
+        \fontsize{11}{13}\selectfont
+
         \pause
-        Reducing the pupil/teacher ratio (PTRATIO) by one could increase the median house price from \$14K to \$24K!
-        
+        We are 95\% confident that the effect of reducing the pupil/teacher ratio (PTRATIO) by 1 on median house price is between \$14K and \$24K!
+
         \lc
      \end{frame}
-        
-        
- 
+
+
+
   \end{darkframes}
 
 \end{document}
