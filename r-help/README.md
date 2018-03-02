@@ -28,3 +28,4 @@ The scripts from the help sessions are available here:
 * February 2: [R script](help-sessions/help-session-02-02.R)
 * February 9: [R script](help-sessions/help-session-02-09.R), [Slides](help-sessions/help-session-02-09.pdf)
 * February 16: [R script](help-sessions/help-session-02-16.R)
+* March 2: [R script](help-sessions/help-session-03-02.R)
