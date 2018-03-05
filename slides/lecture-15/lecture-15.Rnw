@@ -1,0 +1,223 @@
+\documentclass{beamer}
+\usepackage{../371g-slides}
+\usepackage{preview}
+\title{Interactions 1}
+\subtitle{Lecture 15}
+\author{STA 371G}
+
+% This is adapted from http://community.amstat.org/stats101/resources/viewdocument?DocumentKey=e4f8d3f1-41a3-4f01-9f8b-f8fbe1562c15&tab=librarydocuments&CommunityKey=5ad27b39-58d0-49e9-9f6f-0c39c82a0401.
+
+\begin{document}
+  <<setup, include=F, cache=F>>=
+  opts_knit$set(global.par=T)
+  knit_hooks$set(crop=hook_pdfcrop)
+  opts_chunk$set(dev='tikz', external=F, fig.path='/tmp/figures/', comment=NA, fig.width=4, fig.height=3, crop=T, sanitize=T, tidy=F)
+  knit_theme$set('camo')
+  @
+  <<include=F, cache=F>>=
+  houses <- read.csv('../../data/houses.csv')
+  par(fg='#fefefe', col.axis='#fefefe', col.lab='#fefefe', col.main="#fefefe", mar=c(5.1, 4.1, 1.1, 2.1))
+  options(scipen=5)
+  @
+
+\frame{\maketitle}
+
+  % Show outline at beginning of each section
+  \AtBeginSection[]{ 
+    \begin{frame}<beamer>
+      \tableofcontents[currentsection]
+    \end{frame}
+  }
+
+  %%%%%%% Slides start here %%%%%%%
+
+\begin{darkframes}
+    \begin{frame}{Housing price data}
+      Let's return to the 2007 housing price data set from Saratoga County, NY that you looked at for HW5.
+      \begin{itemize}
+        \item \textbf{Price}: price of house (\$)
+        \item \textbf{Living.Area}: amount of living space (sq ft)
+        \item \textbf{Fireplace}: whether house has a fireplace (yes/no)
+      \end{itemize}
+      \lc
+    \end{frame}
+
+\begin{frame}[fragile]{How much is a fireplace worth?}
+      <<fig.height=2.8>>=
+      boxplot(Price ~ Fireplace, data=houses, 
+        col='gray', ylab='Price')
+      @
+\end{frame}
+
+\begin{frame}[fragile]{How much is a fireplace worth?}
+      <<include=F>>=
+      simple <- lm(Price ~ Fireplace, data=houses)
+      beta0 <- simple$coefficients['(Intercept)']
+      beta1 <- simple$coefficients['FireplaceYes']
+      options(digits=0)
+      @
+
+      If we regress Price on Fireplace, we get the regression equation
+      \[
+        \widehat{\text{Price}} = \Sexpr{beta0} + \Sexpr{beta1}\cdot(\text{Fireplace = Yes})
+      \]
+      The average difference between houses with and without a fireplace is \$\Sexpr{beta1}.
+      \lc
+      \note{What is the reference level?}
+\end{frame}
+
+    \begin{frame}{What is the relationship between price and size?}
+      <<echo=F>>=
+      options(scipen=5)
+      with(houses, plot(Price ~ Living.Area, pch=20, col=ifelse(Fireplace == "Yes", "red", "cyan"), xlab="Living Area (sq ft)", ylab="Price ($)"))
+      @
+    \end{frame}
+
+    \begin{frame}{Predicting price from living area}
+      \begin{center}
+        Let's start by creating a simple regression predicting \\
+        price from living area (in sq ft).
+      \end{center}
+    \end{frame}
+
+    \begin{frame}[fragile]
+      \fontsize{8}{8}\selectfont
+      <<>>=
+      model1 <- lm(Price ~ Living.Area, data=houses)
+      summary(model1)
+      @
+    \end{frame}
+
+    \begin{frame}
+      \begin{center}
+        Can we do better by adding a dummy variable for fireplace to the model?
+      \end{center}
+    \end{frame}
+
+    \begin{frame}[fragile]
+      \fontsize{8}{8}\selectfont
+      <<>>=
+      model2 <- lm(Price ~ Living.Area + Fireplace, data=houses)
+      summary(model2)
+      @
+    \end{frame}
+
+    \begin{frame}
+      By adding the dummy variable, we are essentially fitting two regression lines:
+      <<echo=F>>=
+      with(houses, plot(Price ~ Living.Area, pch=20, col=ifelse(Fireplace == "Yes", "red", "cyan"), xlab="Living Area (sq ft)", ylab="Price ($)"))
+      abline(model2$coefficients["(Intercept)"], model2$coefficients["Living.Area"], col="cyan")
+      abline(model2$coefficients["(Intercept)"] + model2$coefficients["FireplaceYes"], model2$coefficients["Living.Area"], col="red")
+      @
+    They have the same slope, but different intercepts
+    \end{frame}
+
+    \begin{frame}{Interactions}
+      \begin{center}
+        Our regression equation is
+        \[
+          \widehat{\text{Price}} = \Sexpr{model2$coefficients["(Intercept)"]}
+            + \Sexpr{model2$coefficients["Living.Area"]} \cdot\text{Living.Area}
+            + \Sexpr{model2$coefficients["FireplaceYes"]} \cdot\text{FireplaceYes}.
+        \]
+        
+        \bigskip\pause
+
+        What if the \emph{slope} of the best-fit line is different for houses with a fireplace than for houses without?
+
+        \bigskip\pause
+
+        Equivalently, what if the \emph{effect} of having a bigger house is different for houses with fireplaces than for houses without fireplaces?
+      \end{center}
+    \end{frame}
+    
+    \begin{frame}{Interactions}
+      To model this, we can add an \alert{interaction term} that consists of the product of the two predictors:
+      \begin{multline*}
+        \text{Price} = \beta_0 + \beta_1\cdot\text{Living.Area} + \beta_2\cdot\text{FireplaceYes}
+        \\ + \beta_3\cdot\text{Living.Area}\cdot\text{FireplaceYes} + \epsilon_i.
+      \end{multline*}
+
+      \pause\bigskip
+
+      Now, the \emph{slope} of Living.Area depends on the \emph{value} of Fireplace!
+      
+      \bigskip
+      Houses with a fireplace have a slope of of $\beta_1+\beta_3$, houses without have a slope of $\beta_1$.
+    \end{frame}
+
+\begin{frame}[fragile]
+      \fontsize{8}{8}\selectfont
+      <<>>=
+      model3 <- lm(Price ~ Living.Area * Fireplace, data=houses)
+      summary(model3)
+      @
+\end{frame}
+
+    \begin{frame}
+      This corresponds to the regression equation:
+      \begin{multline*}
+        \widehat{\text{Price}} = \Sexpr{model3$coefficients["(Intercept)"]}
+          + \Sexpr{model3$coefficients["Living.Area"]} \cdot\text{Living.Area}
+          - \Sexpr{abs(model3$coefficients["FireplaceYes"])} \cdot\text{FireplaceYes} \\
+          + \Sexpr{model3$coefficients["Living.Area:FireplaceYes"]} \cdot\text{Living.Area}\cdot\text{FireplaceYes}
+      \end{multline*}
+      \pause
+      In other words, for houses without a fireplace:
+      \[
+        \widehat{\text{Price}} = \Sexpr{model3$coefficients["(Intercept)"]}
+        + \Sexpr{model3$coefficients["Living.Area"]} \cdot\text{Living.Area}
+      \]
+      \pause
+      And for houses with a fireplace:
+      \[
+        \widehat{\text{Price}} = (\Sexpr{model3$coefficients["(Intercept)"]} - \Sexpr{abs(model3$coefficients["FireplaceYes"])})
+        + (\Sexpr{model3$coefficients["Living.Area"]} + \Sexpr{model3$coefficients["Living.Area:FireplaceYes"]}) \cdot\text{Living.Area}
+      \]
+    \end{frame}
+
+    \begin{frame}
+      <<echo=F>>=
+      with(houses, plot(Price ~ Living.Area, pch=20, col=ifelse(Fireplace == "Yes", "red", "cyan"), xlab="Living Area (sq ft)", ylab="Price ($)"))
+      abline(model3$coefficients["(Intercept)"], model3$coefficients["Living.Area"], col="cyan")
+      abline(model3$coefficients["(Intercept)"] + model3$coefficients["FireplaceYes"], model3$coefficients["Living.Area"] + model3$coefficients["Living.Area:FireplaceYes"], col="red")
+      @
+      \lc
+      \note{Do both LC questions about interpretations in either direction}
+    \end{frame}
+
+\begin{frame}[fragile]{Main effects and interaction effects}
+      \fontsize{9}{9}\selectfont
+
+      In the output, the coeffficients for Living.Space and Fireplace are \alert{main effects}, and the coefficient for $\text{Living.Space}\cdot\text{Fireplace}$ is an \alert{interaction effect}.
+
+      <<include=F>>=
+      options(digits=2)
+      @
+      <<>>=
+      summary(model3)$coefficients
+      @
+
+      \pause
+      The main effect for Living.Area (\Sexpr{model3$coefficients["Living.Area"]}) represents the predicted incremental effect of each additional square foot of living space, when there is no fireplace present.
+
+      \bigskip\pause
+      When we have an interaction term in the model, we \emph{must} include the main effect as well!
+
+      \lc
+\end{frame}
+
+\begin{frame}[fragile]{Making predictions}
+      Let's make predictions for the price of a 2500 sq ft house, both with and without a fireplace:
+      <<>>=
+      predict.lm(model3, list(Living.Area=2500, Fireplace='Yes'),
+        interval='prediction')
+      predict.lm(model3, list(Living.Area=2500, Fireplace='No'),
+        interval='prediction')
+      @
+      \note{Discuss the meaning of the overlap here}
+\end{frame}
+
+  \end{darkframes}
+
+  \end{document}
