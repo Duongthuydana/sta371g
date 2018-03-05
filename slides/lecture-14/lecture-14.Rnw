@@ -26,7 +26,7 @@
   \frame{\maketitle}
 
   % Show outline at beginning of each section
-  \AtBeginSection[]{ 
+  \AtBeginSection[]{
     \begin{frame}<beamer>
       \tableofcontents[currentsection]
     \end{frame}
@@ -38,11 +38,11 @@
     \begin{frame}
       \fontsize{9}{9}\selectfont
       Let's predict fuel economy (miles per gallon) for different car models of the 70s.
-      
+
       \begin{center}
         \includegraphics[width=2.8in]{bmw} \\
       \end{center} \pause
-      
+
       \begin{columns}[onlytextwidth]
         \column{.5\textwidth}
           \begin{itemize}
@@ -58,81 +58,81 @@
           \end{itemize}
       \end{columns}
     \end{frame}
-    
-    
+
+
 \begin{frame}[fragile]{Exploring the data}
       \fontsize{9}{9}\selectfont
       Let's display the first 5 rows (and all columns).
       <<>>=
       auto_mpg[1:5,]
-      @ 
+      @
       \pause
       How do we handle the Yes/No data in the ``After1975'' column?
 \end{frame}
-    
-    
-    
-    
+
+
+
+
 \begin{frame}[fragile]%{Exploring the data}
       \note{This slide is to get familiar with boxplots. Conclusion: Being manufactured after 1975 matters}
       <<>>=
-      boxplot(MPG ~ After1975, data=auto_mpg, ylab="MPG", 
+      boxplot(MPG ~ After1975, data=auto_mpg, ylab="MPG",
                     xlab="After 1975", col='darkgray')
       @
-      
+
 \end{frame}
-    
-    
-    
+
+
+
 \begin{frame}[fragile]{Exploring the data}
-        To incorporate the ``After1975'' variable into a regression model, 
+        To incorporate the ``After1975'' variable into a regression model,
         create a \alert{dummy variable} that maps a ``Yes'' to 1, and ``No'' to 0. \pause
       <<>>=
-      auto_mpg$LateModel <- 
+      auto_mpg$LateModel <-
         ifelse(auto_mpg$After1975 == "Yes", 1, 0)
       @
-      \pause  
+      \pause
       Now let's a regression model using the predictors Cylinders, Displacement, HP, Weight, Acceleration and LateModel.
-    
+
       \lc
 \end{frame}
-    
-    
-    
-    
+
+
+
+
 \begin{frame}[fragile]{Regression with categorical variables}
       R will actually create this ``dummy'' (0/1) variable for us automatically! \pause
       <<>>=
       model <- lm(MPG ~ Cylinders + Displacement + HP
-                  + Weight + Acceleration + After1975, 
+                  + Weight + Acceleration + After1975,
                   data=auto_mpg)
       summary(model)$r.squared
       @
       \pause
-      
+
       R was able to handle the ``After1975'' column, which is a \alert{categorical variable} (or a \alert{factor} as R calls them).
 \end{frame}
-    
-    
-    
-    
+
+
+
+
 \begin{frame}[fragile]{Dummy variables}
       <<>>=
       round(summary(model)$coefficients, 2)
       @
       R has created a \alert{dummy variable} ``After1975Yes.''
 \end{frame}
-    
-    
-    
+
+
+
 \begin{frame}[fragile]{Dummy variables}
       ``After1975Yes'' is 1 whenever ``After1975'' is ``Yes,'' and 0 otherwise:
-    
+
       \begin{table}[!b]
         {\carlitoTLF % Use monospaced lining figures
         \begin{tabularx}{\textwidth}{rrrrr}
-           
-           MPG &  ... & Acceleration & After1975 & After1975Yes\\ 
+
+           MPG &  ... & Acceleration & After1975 & After1975Yes\\
           \toprule
             ... & ... & ... & ... & ... \\
             25 & ... & 13.5 & No & 0 \\
@@ -141,43 +141,43 @@
             25 & ... & 16.9 & Yes & 1 \\
             ... & ... & ... & ... & ... \\
           \bottomrule
-            
+
         \end{tabularx}}
-        
-      \end{table} 
-      
+
+      \end{table}
+
       \pause
       Notice that we do not have a ``After1975No'' variable.\pause
-      
+
       It would cause problems because it would be perfectly correlated with ``After1975Yes.''
 \end{frame}
-      
-      
+
+
 \begin{frame}[fragile]{Regression with categorical variables}
         Let's simplify our model by omitting statistically insignificant variables one by one. (Make sure to re-run the model after omitting each variable, starting with the least signfiicant.)
-        
+
         What is the $R^2$ in your final model?
         \lc
-      
+
 \end{frame}
-      
-      
-      
+
+
+
 \begin{frame}[fragile]{Regression with categorical variables}
         \fontsize{9}{9}\selectfont
         <<>>=
-        model <- lm(MPG ~  HP + Weight + After1975,  
+        model <- lm(MPG ~  HP + Weight + After1975,
                            data=auto_mpg)
         summary(model)$r.squared
         round(summary(model)$coefficients, 2)
         @
         \pause
         Is Horsepower capturing the information in Cylinders, Displacement and Acceleration?
-      
+
 \end{frame}
-      
-      
-      
+
+
+
 \begin{frame}[fragile]{Regression with categorical variables}
         Let's look at the correlations between variables:
         <<include=F>>=
@@ -191,19 +191,19 @@
         }
         We have \alert{multicollinearity} between HP, Cylinders, Displacement, and Acceleration --- all are highly correlated so it only makes sense to have one of these in the model.
 \end{frame}
-      
-      
-      
+
+
+
 \begin{frame}[fragile]{Regression with categorical variables}
         The information in Displacement is already mostly captured by HP:
         <<fig.height=2>>=
-        plot(auto_mpg$HP, auto_mpg$Displacement, pch=16, 
+        plot(auto_mpg$HP, auto_mpg$Displacement, pch=16,
           xlab='HP', ylab='Displacement',col='green', main='')
         @
 \end{frame}
-      
-      
-      
+
+
+
 \begin{frame}[fragile]{Interpretation of the $\hat\beta$ of the dummy variable}
         Our regression equation is:
         \[
@@ -211,7 +211,7 @@
           \Sexpr{abs(model$coefficients['HP'])} \cdot \text{HP} -
           \Sexpr{abs(model$coefficients['Weight'])} \cdot \text{Weight} +
           \Sexpr{model$coefficients['After1975Yes']} \cdot \text{After1975Yes}.
-        \] 
+        \]
         \pause
 
         Let's interpret the coefficient \Sexpr{model$coefficients['After1975Yes']}.
@@ -220,75 +220,74 @@
           \item Model A and B have the same HP and Weight.
           \item Model A was manufactured before 1975, whereas B was manufactured after 1975.
           \item We predict Model B will have a MPG that is \Sexpr{model$coefficients['After1975Yes']} higher than Model A.
-        \end{itemize} 
+        \end{itemize}
         \lc
 \end{frame}
-      
-      
-      
-      
+
+
+
+
 \begin{frame}[fragile]{Interpretation of the $\hat\beta$ of the dummy variable}
         R has assigned ``Yes'' to 1 and ``No'' to 0 in our dummy variable, so the ``reference level'' is cars manufactured before 1975.
         \pause\bigskip
-	
-        If we created a dummy variable After1975No that is 1 for cars manufactured \emph{before} 1975, what would the regression look like?          
+
+        If we created a dummy variable After1975No that is 1 for cars manufactured \emph{before} 1975, what would the regression look like?
 \end{frame}
-      
-      
-      
-      
-      
-      
-      
+
+
+
+
+
+
+
 \begin{frame}[fragile]{What if there are more than two categories?}
         The Origin variable represents the country of manufacture.
         \fontsize{8}{8}\selectfont
         <<>>=
         auto_mpg_all[1:5,]
         levels(as.factor(auto_mpg_all$Origin))
-        @      
+        @
 \end{frame}
-      
+
 \begin{frame}[fragile]%{Exploring the data}
         \fontsize{9}{9}\selectfont
         <<>>=
-        boxplot(MPG ~ Origin, data=auto_mpg_all, ylab="MPG", 
+        boxplot(MPG ~ Origin, data=auto_mpg_all, ylab="MPG",
                       xlab="Origin", col='darkgray')
         @
-      
+
 \end{frame}
-      
-      
-      
+
+
+
 \begin{frame}[fragile]{Regression with categorical variables}
         \fontsize{9}{9}\selectfont
         <<>>=
-        omodel <- lm(MPG ~ HP + Weight + After1975 + Origin,  
+        omodel <- lm(MPG ~ HP + Weight + After1975 + Origin,
                     data=auto_mpg_all)
         round(summary(omodel)$coefficients,3)
         @
         \pause
         \fontsize{10}{10}\selectfont
-        For Origin, R has chosen EU as the reference level and create dummy variables for both JP and US.
+        For Origin, R has chosen EU as the reference level and created dummy variables for both JP and US.
 \end{frame}
-      
-      
 
-      
+
+
+
 \begin{frame}[fragile]{A warning about categorical variables with numeric representations}
-        \fontsize{9}{9}\selectfont
           In the original dataset, the origin was represented as 1 for U.S., 2 for EU and 3 for JP.
           \bigskip  \pause
-	  
-          We would NOT want to just put these numbers in the regression as numbers, because then regression would treat this as if it were a quantitative variable!        
+
+          We would NOT want to just put these numbers in the regression as numbers, because then regression would treat this as if it were a quantitative variable!
           \bigskip  \pause
-	  
+
           Even though the representation in the file is numeric, it is still a categorical variable and should be treated as such.
-      
+
 \end{frame}
-      
-      
-      
+
+
+
 \begin{frame}[fragile]{Assumptions}
         \fontsize{9}{9}\selectfont
         What are the issues with this model?
@@ -296,29 +295,29 @@
         <<>>=
         plot(predict.lm(omodel), resid(omodel), col='green', main='')
         @
-      
+
 \end{frame}
-      
-      
-      
+
+
+
 \begin{frame}[fragile]{Assumptions}
       \fontsize{9}{9}\selectfont
         What about normality?
         <<>>=
           hist(resid(omodel), col='green', main='')
         @
-      
+
 \end{frame}
-      
-      
+
+
 \begin{frame}[fragile]{Assumptions}
         \fontsize{9}{9}\selectfont
         What about normality?
-        
+
         <<>>=
           qqnorm(resid(omodel), col='green', main='')
         @
-      
+
 \end{frame}
 
 \begin{frame}[fragile]{Statistical significance of a categorical variable}
@@ -326,12 +325,12 @@
 
         \bigskip\pause
 
-        We want to test the \alert{compound null hypothesis} 
+        We want to test the \alert{compound null hypothesis}
         \[
           H_0 : \beta_{\text{US}} = \beta_{\text{JP}} = 0.
         \]
 \end{frame}
-      
+
 \begin{frame}[fragile]{Statistical significance of a categorical variable}
         To do this, we look at the ANOVA table; the $p$-value on the Origin line ($2.4 \times 10^{-5}$) is the $p$-value for the compound null hypothesis $H_0 : \beta_{\text{US}} = \beta_{\text{JP}} = 0$.
         \fontsize{9}{9}\selectfont
@@ -339,13 +338,13 @@
         anova(omodel)
         @
 \end{frame}
-      
+
 \begin{frame}{Practical significance of a categorical variable}
         Since $p<.05$, we can conclude that Origin is a statistically significant predictor of MPG.
         But is it a \emph{practically} significant predictor?
-        
+
         \bigskip\pause
-        
+
         To do this, compare $R^2$ values, or standard error of residuals:
 
         \bigskip
@@ -362,7 +361,7 @@
 
         We have to decide if the increased precision is worth the extra complexity in the model.
 \end{frame}
- 
+
   \end{darkframes}
 
 \end{document}
