@@ -109,11 +109,11 @@
 # A tibble: 5 x 7
     MPG Cylinders Displacement    HP Weight Acceleration After1975
   <dbl>     <int>        <dbl> <int>  <int>        <dbl>     <chr>
-1    18         8          307   130   3504           12        No
-2    15         8          350   165   3693           12        No
-3    18         8          318   150   3436           11        No
-4    16         8          304   150   3433           12        No
-5    17         8          302   140   3449           10        No
+1    18         8          307   130   3504         12.0        No
+2    15         8          350   165   3693         11.5        No
+3    18         8          318   150   3436         11.0        No
+4    16         8          304   150   3433         12.0        No
+5    17         8          302   140   3449         10.5        No
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -172,7 +172,7 @@
 \hlkwd{summary}\hlstd{(model)}\hlopt{$}\hlstd{r.squared}
 \end{alltt}
 \begin{verbatim}
-[1] 0.78
+[1] 0.776176
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -255,17 +255,17 @@ After1975Yes     4.36       0.40   10.85     0.00
 \hlkwd{summary}\hlstd{(model)}\hlopt{$}\hlstd{r.squared}
 \end{alltt}
 \begin{verbatim}
-[1] 0.77
+[1] 0.7745063
 \end{verbatim}
 \begin{alltt}
 \hlkwd{round}\hlstd{(}\hlkwd{summary}\hlstd{(model)}\hlopt{$}\hlstd{coefficients,} \hlnum{2}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
              Estimate Std. Error t value Pr(>|t|)
-(Intercept)     41.71       0.78    53.1     0.00
-HP              -0.02       0.01    -2.3     0.02
-Weight          -0.01       0.00   -13.8     0.00
-After1975Yes     4.33       0.40    10.8     0.00
+(Intercept)     41.71       0.78   53.15     0.00
+HP              -0.02       0.01   -2.30     0.02
+Weight          -0.01       0.00  -13.84     0.00
+After1975Yes     4.33       0.40   10.83     0.00
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
