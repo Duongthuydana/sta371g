@@ -129,19 +129,19 @@ Call:
 lm(formula = PTS ~ N3PA, data = nba)
 
 Residuals:
-    Min      1Q  Median      3Q     Max 
--11.245  -2.511   0.055   2.225   8.640 
+     Min       1Q   Median       3Q      Max 
+-11.2454  -2.5114   0.0549   2.2252   8.6405 
 
 Coefficients:
             Estimate Std. Error t value Pr(>|t|)    
-(Intercept)  86.1920     1.7746   48.57  < 2e-16 ***
-N3PA          0.6484     0.0794    8.17  3.9e-13 ***
+(Intercept) 86.19204    1.77464  48.569  < 2e-16 ***
+N3PA         0.64842    0.07935   8.171 3.89e-13 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 3.5 on 118 degrees of freedom
-Multiple R-squared:  0.361,	Adjusted R-squared:  0.356 
-F-statistic: 66.8 on 1 and 118 DF,  p-value: 3.89e-13
+Residual standard error: 3.496 on 118 degrees of freedom
+Multiple R-squared:  0.3614,	Adjusted R-squared:  0.356 
+F-statistic: 66.77 on 1 and 118 DF,  p-value: 3.889e-13
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -179,20 +179,20 @@ Call:
 lm(formula = PTS ~ N3PA + PCT3P, data = nba)
 
 Residuals:
-   Min     1Q Median     3Q    Max 
--8.349 -2.139 -0.079  1.869  9.190 
+    Min      1Q  Median      3Q     Max 
+-8.3487 -2.1392 -0.0791  1.8691  9.1904 
 
 Coefficients:
             Estimate Std. Error t value Pr(>|t|)    
-(Intercept)  62.0049     5.6140   11.04  < 2e-16 ***
-N3PA          0.5647     0.0759    7.44  1.8e-11 ***
-PCT3P         0.7342     0.1629    4.51  1.6e-05 ***
+(Intercept) 62.00493    5.61396  11.045  < 2e-16 ***
+N3PA         0.56467    0.07587   7.442 1.82e-11 ***
+PCT3P        0.73415    0.16292   4.506 1.57e-05 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 3.2 on 117 degrees of freedom
-Multiple R-squared:  0.456,	Adjusted R-squared:  0.447 
-F-statistic:   49 on 2 and 117 DF,  p-value: 3.48e-16
+Residual standard error: 3.241 on 117 degrees of freedom
+Multiple R-squared:  0.4558,	Adjusted R-squared:  0.4465 
+F-statistic:    49 on 2 and 117 DF,  p-value: 3.478e-16
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -223,21 +223,21 @@ Call:
 lm(formula = PTS ~ N3PA * PCT3P, data = nba)
 
 Residuals:
-   Min     1Q Median     3Q    Max 
--7.263 -2.276  0.115  1.970  9.376 
+    Min      1Q  Median      3Q     Max 
+-7.2629 -2.2757  0.1148  1.9698  9.3756 
 
 Coefficients:
-            Estimate Std. Error t value Pr(>|t|)    
-(Intercept) 122.8490    30.5894    4.02  0.00011 ***
-N3PA         -2.1190     1.3290   -1.59  0.11356    
-PCT3P        -0.9841     0.8646   -1.14  0.25740    
-N3PA:PCT3P    0.0756     0.0374    2.02  0.04542 *  
+             Estimate Std. Error t value Pr(>|t|)    
+(Intercept) 122.84903   30.58937   4.016 0.000105 ***
+N3PA         -2.11904    1.32903  -1.594 0.113561    
+PCT3P        -0.98410    0.86465  -1.138 0.257400    
+N3PA:PCT3P    0.07561    0.03739   2.023 0.045423 *  
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 3.2 on 116 degrees of freedom
-Multiple R-squared:  0.474,	Adjusted R-squared:  0.461 
-F-statistic: 34.9 on 3 and 116 DF,  p-value: 3.8e-16
+Residual standard error: 3.199 on 116 degrees of freedom
+Multiple R-squared:  0.4743,	Adjusted R-squared:  0.4608 
+F-statistic: 34.89 on 3 and 116 DF,  p-value: 3.798e-16
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
