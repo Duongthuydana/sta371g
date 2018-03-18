@@ -1,0 +1,403 @@
+\documentclass{beamer}
+\usepackage{../371g-slides}
+\usepackage{preview}
+\title{Diagnostics \& Transformations 1}
+\subtitle{Lecture 17}
+\author{STA 371G}
+
+\begin{document}
+  <<setup, include=F, cache=F>>=
+  opts_knit$set(global.par=T)
+  knit_hooks$set(crop=hook_pdfcrop)
+  opts_chunk$set(dev='tikz', external=F, fig.path='/tmp/figures/', comment=NA, fig.width=4, fig.height=3, crop=T, sanitize=T, tidy=F)
+  knit_theme$set('camo')
+  @
+  <<include=F, cache=F>>=
+  auto_mpg <- read.csv("../../data/auto_mpg.csv")
+  par(fg='#fefefe', col.axis='#fefefe', col.lab='#fefefe', col.main="#fefefe", mar=c(5.1, 4.1, 1.1, 2.1))
+  @
+
+  \frame{\maketitle}
+
+  % Show outline at beginning of each section
+  \AtBeginSection[]{ 
+    \begin{frame}<beamer>
+      \tableofcontents[currentsection]
+    \end{frame}
+  }
+
+  %%%%%%% Slides start here %%%%%%%
+
+  \begin{darkframes}
+    
+    
+    \begin{frame}
+      \fontsize{9}{9}\selectfont
+      Predicting the fuel economy (miles per gallon) for different car models of the 70s.
+      
+      \begin{center}
+        \includegraphics[width=2.8in]{bmw} \\
+      \end{center} \pause
+      
+      Regression assumptions:
+      \begin{columns}[onlytextwidth]
+        \column{.5\textwidth}
+          \begin{itemize}
+            \item Linearity
+            \item Independent errors
+          \end{itemize}
+        \column{.5\textwidth}
+          \begin{itemize}
+            \item Normally distributed errors
+            \item Equal Variance (Homoscedasticity)
+          \end{itemize}
+      \end{columns}
+    \end{frame}
+    
+    
+    
+    \begin{frame}[fragile]{Predicting MPG from Horsepower}
+    \fontsize{9}{9}\selectfont
+      <<>>=
+        model <- lm(MPG ~ HP, data=auto_mpg)
+        summary(model)
+      @
+    \end{frame}
+    
+    
+    
+    \begin{frame}[fragile]
+    \fontsize{9}{9}\selectfont
+      <<fig.height=2.5>>=
+        plot(model$fitted.values, resid(model), col='green')
+      @
+      \pause
+      What's wrong here?
+      \pause
+      \begin{itemize}
+      \item      The trend in the residuals implies linearity issues.
+      \item The ``funnel'' implies equal variance issues.
+    \end{itemize}	   
+      
+    \end{frame}
+    
+    
+    
+    \begin{frame}[fragile]{Addressing the linearity issue}
+      \fontsize{9}{9}\selectfont
+        The relation between MPG and horsepower does not seem to be linear.
+      <<fig.height=2.5>>=
+        plot(auto_mpg$HP, auto_mpg$MPG, col='green', 
+             xlab='Horsepower', ylab='MPG')
+        abline(model, col='cyan', lwd=3)
+      @
+    \end{frame}
+    
+    
+    
+    \begin{frame}[fragile]{Addressing the linearity issue}
+      %\fontsize{9}{9}\selectfont
+      \begin{center}
+        If we could horizontally shift the data on the far right towards the left, the plot would look more linear.
+        \bigskip \pause
+        
+        So let's predict the MPG of a car not from the horsepower, but from a ``transformation'' of the horsepower. \pause
+        \bigskip
+        
+        For example, the relation between MPG and HP is not linear, but the one between MPG and $\sqrt{\text{HP}}$ could be!
+      \end{center}
+    
+    \end{frame}
+    
+    
+    
+    
+    \begin{frame}[fragile]{Addressing the linearity issue}
+      \fontsize{9}{9}\selectfont
+      <<fig.height=2.5>>=
+        auto_mpg$HP_sqrt <- sqrt(auto_mpg$HP)
+        plot(auto_mpg$HP_sqrt, auto_mpg$MPG, col='green', 
+             xlab='Squareroot of Horsepower', ylab='MPG')
+      @
+     \end{frame}  
+    
+    
+      
+    
+    
+    
+    \begin{frame}[fragile]{Addressing the linearity issue}
+      \fontsize{9}{9}\selectfont
+      
+        It indeed seems a bit better. Notice the change in the range of the horizontal axis. \pause
+      
+        It has changed from [49,225] to [7,15]. The shift is larger for the data on the far right. 
+      
+       <<fig.height=2.5>>=
+        plot(auto_mpg$HP, auto_mpg$HP_sqrt, col='green', 
+            xlab='Horsepower', ylab='Squareroot of Horsepower')
+        @ 
+    \end{frame}
+  
+  
+  
+    \begin{frame}[fragile]{Addressing the linearity issue}
+      \fontsize{9}{9}\selectfont
+      <<>>=
+        model2 <- lm(MPG ~ HP_sqrt, data=auto_mpg)
+        summary(model2)
+      @
+    \end{frame}
+    
+    
+    \begin{frame}[fragile]
+    \fontsize{9}{9}\selectfont
+      <<fig.height=2.5>>=
+        plot(model2$fitted.values, resid(model2), col='green')
+      @
+      The trend flattened a bit. \pause
+      
+      Can we do better? Let's try some other transformation.
+    \end{frame}
+    
+    
+    
+    \begin{frame}[fragile]{Logarithmic transformation}
+    %\fontsize{9}{9}\selectfont
+      \begin{center}
+        One of the most common transformations is the logarithmic transformation with base $e$ (natural logarithm). \bigskip \pause
+        
+        $e=2.7182818284\ldots$ \bigskip \pause
+        
+        $e^2 = 7.389$ \bigskip \pause
+        
+        $\log(e^2) = 2$ \bigskip \pause
+        
+        In general:
+        
+        $y=e^x \qquad\longleftrightarrow\qquad \log y = x$.
+      
+      \end{center}
+        
+    \end{frame}
+    
+    
+    \begin{frame}[fragile]{Logarithmic transformation}
+      \fontsize{9}{9}\selectfont
+      <<fig.height=2.5>>=
+        auto_mpg$HP_ln <- log(auto_mpg$HP)
+        plot(auto_mpg$HP, auto_mpg$HP_ln, col='green', 
+            xlab='Horsepower', ylab='Log of Horsepower')
+      @
+     \end{frame}  
+    
+    
+    
+    
+    \begin{frame}[fragile]{Logarithmic transformation}
+      \fontsize{9}{9}\selectfont
+      <<fig.height=2.5>>=
+        plot(auto_mpg$HP_ln, auto_mpg$MPG, col='green', 
+             xlab='Log of Horsepower', ylab='MPG')
+      @
+    \end{frame}
+    
+
+    \begin{frame}[fragile]
+      \fontsize{9}{9}\selectfont
+      <<>>=
+        model3 <- lm(MPG ~ HP_ln, data=auto_mpg)
+        summary(model3)
+      @
+    \end{frame}
+    
+    
+    \begin{frame}[fragile]
+      <<fig.height=2.5>>=
+        plot(model3$fitted.values, resid(model3), col='green')
+      @
+      The trend flattened even more. 
+    \end{frame}
+
+
+    \begin{frame}[fragile]{Transforming a Predictor}
+      \begin{center}
+        It is equivalent to ``cutting the distribution of $X$ into vertical slices and changing the spacing of the slices.'' \bigskip \pause
+        
+        It does not affect the vertical locations of the data (MPG did not change!). \bigskip \pause
+        
+        When the nonlinearity is the biggest issue in the model, transforming the predictor is a good start. \bigskip \pause
+        
+        Finding the right transformation is a bit of art, field knowledge and trial and error.
+        
+      \end{center}
+      
+      \lc
+    
+    \end{frame}
+    
+    \begin{frame}{Transforming a Predictor}
+      <<echo=F>>=
+      options(digits=2)
+      @
+      \begin{center}
+        \begin{tabular}{lll}
+          \hline
+          $X$ & $\sqrt{X}$ & $\log X$ \\
+          \hline
+          1 & $\Sexpr{sqrt(1)}$ & $\Sexpr{log(1)}$ \\
+          10 & $\Sexpr{sqrt(10)}$ & $\Sexpr{log(10)}$ \\
+          100 & $\Sexpr{sqrt(100)}$ & $\Sexpr{log(100)}$ \\
+          1000 & $\Sexpr{sqrt(1000)}$ & $\Sexpr{log(1000)}$ \\
+          10000 & $\Sexpr{sqrt(10000)}$ & $\Sexpr{log(10000)}$ \\
+          100000 & $\Sexpr{sqrt(100000)}$ & $\Sexpr{log(100000)}$ \\
+          \hline
+        \end{tabular}
+      \end{center}
+    \end{frame}
+    
+    
+    \begin{frame}[fragile]{Addressing the equal variance issue}
+      \begin{columns}[onlytextwidth]
+        \column{.5\textwidth}
+          \begin{itemize}[<+->]
+            \item The (unexplained) variance in the response is higher in some regions.
+            \item Remember how log-transformation shrinks larger numbers more than it shrinks smaller numbers.
+            \item Log-transformation of the response often helps with fixing heteroscedasticity (and non-normality)!
+          \end{itemize}
+        \column{.5\textwidth}
+          <<echo=F, fig.width=2.5>>=
+            plot(model3$fitted.values, resid(model3), col='green')
+          @
+      \end{columns}
+    \end{frame}
+  
+  
+  
+    \begin{frame}[fragile]
+      \fontsize{9}{9}\selectfont
+      <<>>=
+        auto_mpg$MPG_ln <- log(auto_mpg$MPG)
+        model4 <- lm(MPG_ln ~ HP_ln, data=auto_mpg)
+        summary(model4)
+      @
+    \end{frame}
+    
+    
+    \begin{frame}[fragile]%{Addressing the equal variance issues}
+      \fontsize{9}{9}\selectfont
+      <<>>=
+        plot(auto_mpg$HP_ln, auto_mpg$MPG_ln, col='green', 
+             xlab='Log of Horsepower', ylab='Log of MPG')
+        abline(model4, col='cyan', lwd=3)
+      @
+    \end{frame}
+    
+    
+    \begin{frame}[fragile]
+      Beautiful!
+      <<fig.height=2.5>>=
+        plot(model4$fitted.values, resid(model4), col='green')
+      @
+    \end{frame}
+  
+    \begin{frame}{Look how awesome our models are getting}
+      <<echo=F>>=
+      options(digits=2)
+      @
+      \begin{center}
+        \begin{tabular}{llll}
+          Predictor ($X$) & Response ($Y$) & $R^2$ & Residual SE \\
+          \hline
+          $\text{HP}$ & $\text{MPG}$ & \Sexpr{summary(model)$r.squared} & \Sexpr{summary(model)$sigma} \\
+          $\sqrt{\text{HP}}$ & $\text{MPG}$ & \Sexpr{summary(model2)$r.squared}  & \Sexpr{summary(model2)$sigma} \\
+          $\log\text{HP}$ & $\text{MPG}$ & \Sexpr{summary(model3)$r.squared} & \Sexpr{summary(model3)$sigma} \\
+          $\log\text{HP}$ & $\log\text{MPG}$ & \Sexpr{summary(model4)$r.squared} & \Sexpr{summary(model4)$sigma} \\
+        \end{tabular}
+      \end{center}
+    \end{frame}
+  
+  
+  
+  
+    \begin{frame}[fragile]{Interpretation of $\beta$ values}
+      <<echo=F>>=
+      options(digits=2)
+      @
+      \begin{center} 
+        The model before the transformations was:
+        
+        \[
+          \widehat{\text{MPG}} = \Sexpr{model$coefficients['(Intercept)']} - \Sexpr{abs(model$coefficients['HP'])} \cdot\text{HP}
+        \] 
+
+        \bigskip \pause
+        
+        The interpretation of $- \Sexpr{abs(model$coefficients['HP'])}$ is ``for each unit of increase in the horsepower, the MPG estimate reduces by $ \Sexpr{abs(model$coefficients['HP'])}$''.
+        \bigskip \pause
+        
+        \alert{After transforming the predictor or the response, this interpretation does not hold!}
+      
+      \end{center}
+    \end{frame}
+  
+  
+  
+  \begin{frame}[fragile]{Interpretation of $\beta$ values}
+      <<echo=F>>=
+      options(digits=2)
+      @
+      \begin{center} 
+        When the square root of HP is used: \bigskip
+        
+        \[
+        \widehat{\text{MPG}} = \Sexpr{model2$coefficients['(Intercept)']} 
+        - \Sexpr{abs(model2$coefficients['HP_sqrt'])} \cdot\sqrt{\text{HP}}        
+        \] \bigskip \pause
+        
+        The interpretation of $- \Sexpr{abs(model2$coefficients['HP_sqrt'])}$ is ``for each unit of increase \alert{in the square root of the horsepower}, the MPG estimate reduces by $ \Sexpr{abs(model2$coefficients['HP_sqrt'])}$''.
+        
+        \lc
+        
+      
+      \end{center}
+    \end{frame}
+  
+  
+  \begin{frame}[fragile]{Interpretation of $\beta$ values}
+      <<echo=F>>=
+      options(digits=2)
+      @
+      \begin{center} 
+        Similarly, in the following model: \bigskip
+        
+        \[
+        \widehat{\text{MPG}} = \Sexpr{model3$coefficients['(Intercept)']} 
+        - \Sexpr{abs(model3$coefficients['HP_ln'])} \cdot\log{\text{HP}}
+        \] \bigskip \pause
+        
+        The interpretation of $- \Sexpr{abs(model3$coefficients['HP_ln'])}$ is ``for each unit of increase \alert{in the natural logarithm of the horsepower}, the MPG estimate reduces by $ \Sexpr{abs(model3$coefficients['HP_ln'])}$''.
+        
+        \lc
+        
+      
+      \end{center}
+    \end{frame}
+
+  
+  
+  
+    \begin{frame}[fragile]{Transformation strategy}
+      \begin{itemize}[<+->]
+        \item If the model has two or three of the equal variance, normality and linearity issues, try transforming $Y$.
+        \item Transforming the response often fixes nonlinearity in addition to fixing normality and equal variance issues.
+        \item After transforming the response, if the nonlinearity is not fixed, try transforming the predictor(s) as well.
+        \item There is no rule for which transformations will work in all cases; trial and error may be required.
+        \item Remember, the interpretations of the coefficients will change after you transform one or more variables!
+      \end{itemize}
+    \end{frame}
+  
+
+  \end{darkframes}
+
+  \end{document}
