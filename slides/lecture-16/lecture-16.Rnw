@@ -20,7 +20,7 @@
   \frame{\maketitle}
 
   % Show outline at beginning of each section
-  \AtBeginSection[]{ 
+  \AtBeginSection[]{
     \begin{frame}<beamer>
       \tableofcontents[currentsection]
     \end{frame}
@@ -30,9 +30,9 @@
 
   \begin{darkframes}
       \begin{frame}{Project}
-      \begin{itemize} 
+      \begin{itemize}
         \item It's time to start thinking about our final project!
-	\item You will work in groups of 4---sign on Canvas by Sunday, March 25. You can create your own group or add to an existing group. Please fill partial groups before starting a new group.
+	\item You will work in groups of 4---sign up on Canvas by Sunday, March 25. You can create your own group or add to an existing group. Please fill partial groups before starting a new group.
 	\item Your task will be to find or gather a regression data set, build an appropriate regression model, and write and present a report containing your findings.
 	\item You must send me a proposal by Sunday, April 1 (details on handout available on Canvas)
       \end{itemize}
@@ -87,7 +87,7 @@
             \item \textbf{1 point} for free throws made after a foul by the other team
             \item \textbf{2 points} for shots made inside the 3-point line
             \item \textbf{3 points} for shots made outside the 3-point line
-          \end{itemize}        
+          \end{itemize}
       \end{columns}
     \end{frame}
 
@@ -124,7 +124,7 @@
       \end{center}
       \lc
     \end{frame}
-    
+
 \begin{frame}[fragile]{Can we do better?}
       \fontsize{8}{8}\selectfont
       <<>>=
@@ -143,7 +143,7 @@
         This sounds like an interaction --- let's make a model with an interaction between the two predictors!
       \end{center}
     \end{frame}
-    
+
 \begin{frame}[fragile]
       \fontsize{8}{8}\selectfont
       <<>>=
@@ -158,7 +158,7 @@
       @
       Model 3 corresponds to the regression equation
       \[
-        \widehat{\text{PTS}} = \Sexpr{model3$coefficients['(Intercept)']} 
+        \widehat{\text{PTS}} = \Sexpr{model3$coefficients['(Intercept)']}
           - \Sexpr{abs(model3$coefficients['N3PA'])} \cdot\text{N3PA}
           - \Sexpr{abs(model3$coefficients['PCT3P'])} \cdot\text{PCT3P}
           + \Sexpr{model3$coefficients['N3PA:PCT3P']} \cdot\text{N3PA}\cdot\text{PCT3P}.
@@ -227,7 +227,7 @@
     \end{frame}
 \begin{frame}
 \[
-        \widehat{\text{PTS}} = \Sexpr{model3$coefficients['(Intercept)']} 
+        \widehat{\text{PTS}} = \Sexpr{model3$coefficients['(Intercept)']}
           - \Sexpr{abs(model3$coefficients['N3PA'])} \cdot\text{N3PA}
           - \Sexpr{abs(model3$coefficients['PCT3P'])} \cdot\text{PCT3P}
           + \Sexpr{model3$coefficients['N3PA:PCT3P']} \cdot\text{N3PA}\cdot\text{PCT3P}.

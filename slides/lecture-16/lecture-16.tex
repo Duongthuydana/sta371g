@@ -62,7 +62,7 @@
   \frame{\maketitle}
 
   % Show outline at beginning of each section
-  \AtBeginSection[]{ 
+  \AtBeginSection[]{
     \begin{frame}<beamer>
       \tableofcontents[currentsection]
     \end{frame}
@@ -71,12 +71,12 @@
   %%%%%%% Slides start here %%%%%%%
 
   \begin{darkframes}
-    \begin{frame}{Project}
+      \begin{frame}{Project}
       \begin{itemize}
         \item It's time to start thinking about our final project!
-	\item You will work in groups of 4---sign on Canvas by Thursday. You can create your own group or add to an existing group. Please fill partial groups before starting a new group.
+	\item You will work in groups of 4---sign up on Canvas by Sunday, March 25. You can create your own group or add to an existing group. Please fill partial groups before starting a new group.
 	\item Your task will be to find or gather a regression data set, build an appropriate regression model, and write and present a report containing your findings.
-	\item You must send me a proposal by Sunday (details on handout available on Canvas)
+	\item You must send me a proposal by Sunday, April 1 (details on handout available on Canvas)
       \end{itemize}
     \end{frame}
     \begin{frame}{Project}
@@ -109,7 +109,6 @@
       \end{itemize}
     \end{frame}
 
-
     \begin{frame}{NBA data}
       Basketball-Reference.com provides detailed data on NBA teams and players. We'll look at team data for 4 seasons ending in 2016; each of these metrics is the average across the season:
       \begin{itemize}
@@ -130,7 +129,7 @@
             \item \textbf{1 point} for free throws made after a foul by the other team
             \item \textbf{2 points} for shots made inside the 3-point line
             \item \textbf{3 points} for shots made outside the 3-point line
-          \end{itemize}        
+          \end{itemize}
       \end{columns}
     \end{frame}
 
@@ -197,7 +196,7 @@ F-statistic: 66.77 on 1 and 118 DF,  p-value: 3.889e-13
       \end{center}
       \lc
     \end{frame}
-    
+
 \begin{frame}[fragile]{Can we do better?}
       \fontsize{8}{8}\selectfont
 \begin{knitrout}
@@ -241,7 +240,7 @@ F-statistic:    49 on 2 and 117 DF,  p-value: 3.478e-16
         This sounds like an interaction --- let's make a model with an interaction between the two predictors!
       \end{center}
     \end{frame}
-    
+
 \begin{frame}[fragile]
       \fontsize{8}{8}\selectfont
 \begin{knitrout}
@@ -280,7 +279,7 @@ F-statistic: 34.89 on 3 and 116 DF,  p-value: 3.798e-16
 
       Model 3 corresponds to the regression equation
       \[
-        \widehat{\text{PTS}} = 122.85 
+        \widehat{\text{PTS}} = 122.85
           - 2.12 \cdot\text{N3PA}
           - 0.98 \cdot\text{PCT3P}
           + 0.08 \cdot\text{N3PA}\cdot\text{PCT3P}.
@@ -328,7 +327,7 @@ F-statistic: 34.89 on 3 and 116 DF,  p-value: 3.798e-16
     \end{frame}
 \begin{frame}
 \[
-        \widehat{\text{PTS}} = 122.85 
+        \widehat{\text{PTS}} = 122.85
           - 2.12 \cdot\text{N3PA}
           - 0.98 \cdot\text{PCT3P}
           + 0.08 \cdot\text{N3PA}\cdot\text{PCT3P}.
