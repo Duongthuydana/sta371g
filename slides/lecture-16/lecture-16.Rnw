@@ -32,9 +32,9 @@
       \begin{frame}{Project}
       \begin{itemize}
         \item It's time to start thinking about our final project!
-	\item You will work in groups of 4---sign on Canvas by Thursday. You can create your own group or add to an existing group. Please fill partial groups before starting a new group.
+	\item You will work in groups of 4---sign on Canvas by Sunday, March 25. You can create your own group or add to an existing group. Please fill partial groups before starting a new group.
 	\item Your task will be to find or gather a regression data set, build an appropriate regression model, and write and present a report containing your findings.
-	\item You must send me a proposal by Sunday (details on handout available on Canvas)
+	\item You must send me a proposal by Sunday, April 1 (details on handout available on Canvas)
       \end{itemize}
     \end{frame}
     \begin{frame}{Project}
