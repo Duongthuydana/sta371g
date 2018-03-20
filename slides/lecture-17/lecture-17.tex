@@ -98,7 +98,7 @@
     
     
     
-\begin{frame}[fragile]{Predicting MPG from Horsepower}
+    \begin{frame}[fragile]{Predicting MPG from Horsepower}
     \fontsize{9}{9}\selectfont
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
@@ -128,11 +128,11 @@ F-statistic: 599.7 on 1 and 390 DF,  p-value: < 2.2e-16
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
-\end{frame}
+    \end{frame}
     
     
     
-\begin{frame}[fragile]
+    \begin{frame}[fragile]
     \fontsize{9}{9}\selectfont
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
@@ -151,11 +151,11 @@ F-statistic: 599.7 on 1 and 390 DF,  p-value: < 2.2e-16
       \item The ``funnel'' implies equal variance issues.
     \end{itemize}	   
       
-\end{frame}
+    \end{frame}
     
     
     
-\begin{frame}[fragile]{Addressing the linearity issue}
+    \begin{frame}[fragile]{Addressing the linearity issue}
       \fontsize{9}{9}\selectfont
         The relation between MPG and horsepower does not seem to be linear.
 \begin{knitrout}
@@ -169,11 +169,11 @@ F-statistic: 599.7 on 1 and 390 DF,  p-value: < 2.2e-16
 \input{/tmp/figures/unnamed-chunk-4-1.tikz}
 
 \end{knitrout}
-\end{frame}
+    \end{frame}
     
     
     
-\begin{frame}[fragile]{Addressing the linearity issue}
+    \begin{frame}[fragile]{Addressing the linearity issue}
       %\fontsize{9}{9}\selectfont
       \begin{center}
         If we could horizontally shift the data on the far right towards the left, the plot would look more linear.
@@ -185,12 +185,12 @@ F-statistic: 599.7 on 1 and 390 DF,  p-value: < 2.2e-16
         For example, the relation between MPG and HP is not linear, but the one between MPG and $\sqrt{\text{HP}}$ could be!
       \end{center}
     
-\end{frame}
+    \end{frame}
     
     
     
     
-\begin{frame}[fragile]{Addressing the linearity issue}
+    \begin{frame}[fragile]{Addressing the linearity issue}
       \fontsize{9}{9}\selectfont
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
@@ -203,14 +203,14 @@ F-statistic: 599.7 on 1 and 390 DF,  p-value: < 2.2e-16
 \input{/tmp/figures/unnamed-chunk-5-1.tikz}
 
 \end{knitrout}
-\end{frame}  
+     \end{frame}  
     
     
       
     
     
     
-\begin{frame}[fragile]{Addressing the linearity issue}
+    \begin{frame}[fragile]{Addressing the linearity issue}
       \fontsize{9}{9}\selectfont
       
         It indeed seems a bit better. Notice the change in the range of the horizontal axis. \pause
@@ -227,11 +227,11 @@ F-statistic: 599.7 on 1 and 390 DF,  p-value: < 2.2e-16
 \input{/tmp/figures/unnamed-chunk-6-1.tikz}
 
 \end{knitrout}
-\end{frame}
+    \end{frame}
   
   
   
-\begin{frame}[fragile]{Addressing the linearity issue}
+    \begin{frame}[fragile]{Addressing the linearity issue}
       \fontsize{9}{9}\selectfont
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
@@ -261,10 +261,10 @@ F-statistic: 704.6 on 1 and 390 DF,  p-value: < 2.2e-16
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
-\end{frame}
+    \end{frame}
     
     
-\begin{frame}[fragile]
+    \begin{frame}[fragile]
     \fontsize{9}{9}\selectfont
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
@@ -278,11 +278,11 @@ F-statistic: 704.6 on 1 and 390 DF,  p-value: < 2.2e-16
       The trend flattened a bit. \pause
       
       Can we do better? Let's try some other transformation.
-\end{frame}
+    \end{frame}
     
     
     
-\begin{frame}[fragile]{Logarithmic transformation}
+    \begin{frame}[fragile]{Logarithmic transformation}
     %\fontsize{9}{9}\selectfont
       \begin{center}
         One of the most common transformations is the logarithmic transformation with base $e$ (natural logarithm). \bigskip \pause
@@ -299,10 +299,10 @@ F-statistic: 704.6 on 1 and 390 DF,  p-value: < 2.2e-16
       
       \end{center}
         
-\end{frame}
+    \end{frame}
     
     
-\begin{frame}[fragile]{Logarithmic transformation}
+    \begin{frame}[fragile]{Logarithmic transformation}
       \fontsize{9}{9}\selectfont
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
@@ -315,12 +315,12 @@ F-statistic: 704.6 on 1 and 390 DF,  p-value: < 2.2e-16
 \input{/tmp/figures/unnamed-chunk-9-1.tikz}
 
 \end{knitrout}
-\end{frame}  
+     \end{frame}  
     
     
     
     
-\begin{frame}[fragile]{Logarithmic transformation}
+    \begin{frame}[fragile]{Logarithmic transformation}
       \fontsize{9}{9}\selectfont
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
@@ -332,10 +332,10 @@ F-statistic: 704.6 on 1 and 390 DF,  p-value: < 2.2e-16
 \input{/tmp/figures/unnamed-chunk-10-1.tikz}
 
 \end{knitrout}
-\end{frame}
+    \end{frame}
     
 
-\begin{frame}[fragile]
+    \begin{frame}[fragile]
       \fontsize{9}{9}\selectfont
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
@@ -365,10 +365,10 @@ F-statistic: 785.9 on 1 and 390 DF,  p-value: < 2.2e-16
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
-\end{frame}
+    \end{frame}
     
     
-\begin{frame}[fragile]
+    \begin{frame}[fragile]
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
 \begin{alltt}
@@ -379,10 +379,10 @@ F-statistic: 785.9 on 1 and 390 DF,  p-value: < 2.2e-16
 
 \end{knitrout}
       The trend flattened even more. 
-\end{frame}
+    \end{frame}
 
 
-\begin{frame}[fragile]{Transforming a Predictor}
+    \begin{frame}[fragile]{Transforming a Predictor}
       \begin{center}
         It is equivalent to ``cutting the distribution of $X$ into vertical slices and changing the spacing of the slices.'' \bigskip \pause
         
@@ -396,7 +396,7 @@ F-statistic: 785.9 on 1 and 390 DF,  p-value: < 2.2e-16
       
       \lc
     
-\end{frame}
+    \end{frame}
     
     \begin{frame}{Transforming a Predictor}
 
@@ -417,7 +417,7 @@ F-statistic: 785.9 on 1 and 390 DF,  p-value: < 2.2e-16
     \end{frame}
     
     
-\begin{frame}[fragile]{Addressing the equal variance issue}
+    \begin{frame}[fragile]{Addressing the equal variance issue}
       \begin{columns}[onlytextwidth]
         \column{.5\textwidth}
           \begin{itemize}[<+->]
@@ -432,11 +432,11 @@ F-statistic: 785.9 on 1 and 390 DF,  p-value: < 2.2e-16
 
 \end{knitrout}
       \end{columns}
-\end{frame}
+    \end{frame}
   
   
   
-\begin{frame}[fragile]
+    \begin{frame}[fragile]
       \fontsize{9}{9}\selectfont
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
@@ -467,10 +467,10 @@ F-statistic: 1.02e+03 on 1 and 390 DF,  p-value: <2e-16
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
-\end{frame}
+    \end{frame}
     
     
-\begin{frame}[fragile]%{Addressing the equal variance issues}
+    \begin{frame}[fragile]%{Addressing the equal variance issues}
       \fontsize{9}{9}\selectfont
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
@@ -483,10 +483,10 @@ F-statistic: 1.02e+03 on 1 and 390 DF,  p-value: <2e-16
 \input{/tmp/figures/unnamed-chunk-16-1.tikz}
 
 \end{knitrout}
-\end{frame}
+    \end{frame}
     
     
-\begin{frame}[fragile]
+    \begin{frame}[fragile]
       Beautiful!
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
@@ -497,9 +497,9 @@ F-statistic: 1.02e+03 on 1 and 390 DF,  p-value: <2e-16
 \input{/tmp/figures/unnamed-chunk-17-1.tikz}
 
 \end{knitrout}
-\end{frame}
+    \end{frame}
   
-\begin{frame}{Look how awesome our models are getting}
+    \begin{frame}{Look how awesome our models are getting}
 
       \begin{center}
         \begin{tabular}{llll}
@@ -511,12 +511,12 @@ F-statistic: 1.02e+03 on 1 and 390 DF,  p-value: <2e-16
           $\log\text{HP}$ & $\log\text{MPG}$ & 0.72 & 0.18 \\
         \end{tabular}
       \end{center}
-\end{frame}
+    \end{frame}
   
   
   
   
-\begin{frame}[fragile]{Interpretation of $\beta$ values}
+    \begin{frame}[fragile]{Interpretation of $\beta$ values}
 
       \begin{center} 
         The model before the transformations was:
@@ -533,11 +533,11 @@ F-statistic: 1.02e+03 on 1 and 390 DF,  p-value: <2e-16
         \alert{After transforming the predictor or the response, this interpretation does not hold!}
       
       \end{center}
-\end{frame}
+    \end{frame}
   
   
   
-\begin{frame}[fragile]{Interpretation of $\beta$ values}
+  \begin{frame}[fragile]{Interpretation of $\beta$ values}
 
       \begin{center} 
         When the square root of HP is used: \bigskip
@@ -553,10 +553,10 @@ F-statistic: 1.02e+03 on 1 and 390 DF,  p-value: <2e-16
         
       
       \end{center}
-\end{frame}
+    \end{frame}
   
   
-\begin{frame}[fragile]{Interpretation of $\beta$ values}
+  \begin{frame}[fragile]{Interpretation of $\beta$ values}
 
       \begin{center} 
         Similarly, in the following model: \bigskip
@@ -572,12 +572,12 @@ F-statistic: 1.02e+03 on 1 and 390 DF,  p-value: <2e-16
         
       
       \end{center}
-\end{frame}
+    \end{frame}
 
   
   
   
-\begin{frame}[fragile]{Transformation strategy}
+    \begin{frame}[fragile]{Transformation strategy}
       \begin{itemize}[<+->]
         \item If the model has two or three of the equal variance, normality and linearity issues, try transforming $Y$.
         \item Transforming the response often fixes nonlinearity in addition to fixing normality and equal variance issues.
@@ -585,7 +585,7 @@ F-statistic: 1.02e+03 on 1 and 390 DF,  p-value: <2e-16
         \item There is no rule for which transformations will work in all cases; trial and error may be required.
         \item Remember, the interpretations of the coefficients will change after you transform one or more variables!
       \end{itemize}
-\end{frame}
+    \end{frame}
   
 
   \end{darkframes}
