@@ -2,8 +2,7 @@
 options(digits = 10) # this command tells R to display 10 digits
 
 # Load dataset
-#cars = read.csv('https://faculty.mccombs.utexas.edu/carlos.carvalho/teaching/Cars.csv')
-cars = read.csv('Downloads/Cars.csv')
+cars = read.csv('https://faculty.mccombs.utexas.edu/carlos.carvalho/teaching/Cars.csv')
 
 ### Multiple Regression: 
 # Use multiple variables by adding them to the right-hand-side
