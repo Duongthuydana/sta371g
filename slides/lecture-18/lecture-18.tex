@@ -1,0 +1,543 @@
+\documentclass{beamer}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{1, 0.894, 0.769}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.824,0.412,0.118}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{1,0.894,0.71}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.824,0.706,0.549}{#1}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{1,0.894,0.769}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{1,0.894,0.769}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.941,0.902,0.549}{#1}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.804,0.776,0.451}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.78,0.941,0.545}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{1,0.78,0.769}{#1}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\usepackage{../371g-slides}
+\title{Diagnostics \& Transformations 2}
+\subtitle{Lecture 18}
+\author{STA 371G}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+  
+  
+
+  \frame{\maketitle}
+
+  % Show outline at beginning of each section
+  \AtBeginSection[]{ 
+    \begin{frame}<beamer>
+      \tableofcontents[currentsection]
+    \end{frame}
+  }
+
+  %%%%%%% Slides start here %%%%%%%
+
+  \begin{darkframes}
+    \begin{frame}{Salaries of newly hired managers}
+      \begin{center}
+        \includegraphics[width=2.8in]{manager} \\
+      \end{center} \pause
+      
+      \begin{columns}[onlytextwidth]
+        \column{.5\textwidth}
+          \begin{itemize}
+            \item Salary (response)
+            \item Manager rating
+            \item Years of experience
+          \end{itemize}
+        \column{.5\textwidth}
+          \begin{itemize}
+            \item Years since graduation
+            \item Origin (internal or external hire)
+          \end{itemize}
+      \end{columns}
+    \end{frame}
+   
+\begin{frame}[fragile]{Data issues}
+      \begin{center}
+        Data scientists report that they spend \alert{70\% of their time on obtaining and cleaning the data}. Only 30\% is for statistical analysis.\bigskip \pause
+        
+        Never run a regression without exploring and cleaning the data first!
+      \end{center}
+\end{frame}
+
+    \begin{frame}
+      The most common issues:
+      \tableofcontents
+    \end{frame}
+    
+    \section{Outliers}
+    
+\begin{frame}[fragile]{Exploring the data: Outliers}
+      Boxplots are commonly used to detect outliers. Let's start by looking at the Salary column. \pause
+      
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+\hlkwd{boxplot}\hlstd{(manager}\hlopt{$}\hlstd{Salary,} \hlkwc{xlab}\hlstd{=}\hlstr{'Salary'}\hlstd{,} \hlkwc{horizontal}\hlstd{=T)}
+\end{alltt}
+\end{kframe}
+\input{/tmp/figures/unnamed-chunk-2-1.tikz}
+
+\end{knitrout}
+\end{frame}
+    
+    
+    
+\begin{frame}[fragile]{Exploring the data: Outliers}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+\hlstd{manager[manager}\hlopt{$}\hlstd{Salary}\hlopt{>}\hlnum{200}\hlstd{,]}
+\end{alltt}
+\begin{verbatim}
+    Salary MngrRating YearsExp YrsSinceGrad   Origin
+146    511        6.1        2            2 Internal
+\end{verbatim}
+\begin{alltt}
+\hlstd{manager[manager}\hlopt{$}\hlstd{Salary}\hlopt{<}\hlnum{0}\hlstd{,]}
+\end{alltt}
+\begin{verbatim}
+    Salary MngrRating YearsExp YrsSinceGrad   Origin
+121    -66        5.7        1            2 Internal
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+      \pause
+
+      We can deal with outliers in two ways.
+      \begin{itemize}[<+->]
+        \item If the result of \textbf{errors in the data}, we can try to correct or omit.
+        \item If not, consider omitting, but report on them separately.
+      \end{itemize}
+      \lc
+\end{frame}
+    
+    
+\begin{frame}[fragile]{Exploring the data: Outliers}
+      Let's omit the outliers by creating a new data set \texttt{mclean} that consists of the subset of the data where the salary is between \$0 and \$200,000. 
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+\hlstd{mclean} \hlkwb{<-} \hlstd{manager[manager}\hlopt{$}\hlstd{Salary}\hlopt{>}\hlnum{0} \hlopt{&}
+                  \hlstd{manager}\hlopt{$}\hlstd{Salary}\hlopt{<}\hlnum{200}\hlstd{,]}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+      \pause
+      
+      \lc
+\end{frame}
+    
+    
+\begin{frame}[fragile]{Exploring the data: Outliers}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+\hlkwd{boxplot}\hlstd{(mclean}\hlopt{$}\hlstd{YearsExp,} \hlkwc{xlab}\hlstd{=}\hlstr{'Years of Experience'}\hlstd{,}
+  \hlkwc{horizontal}\hlstd{=T)}
+\end{alltt}
+\end{kframe}
+\input{/tmp/figures/unnamed-chunk-5-1.tikz}
+
+\end{knitrout}
+\end{frame}
+    
+    
+\begin{frame}[fragile]{Exploring the data: Outliers}
+      99 must be a code for missing entry in the Years of Experience variable!   
+
+      \bigskip\pause 
+      
+      Let's label all 99s as \texttt{NA} (Not Available --- R's code for missing data). \pause
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+\hlstd{mclean}\hlopt{$}\hlstd{YearsExp[mclean}\hlopt{$}\hlstd{YearsExp} \hlopt{==} \hlnum{99}\hlstd{]} \hlkwb{<-} \hlnum{NA}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+\end{frame}
+    
+    \section{Missing data}
+    
+\begin{frame}[fragile]{Exploring the data: Missing entries}
+      Let's see if we have other missing data. \pause
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+  \hlstd{mclean[}\hlopt{!}\hlkwd{complete.cases}\hlstd{(mclean),]}
+\end{alltt}
+\begin{verbatim}
+    Salary MngrRating YearsExp YrsSinceGrad   Origin
+103     75         NA        8            8 Internal
+110     81         NA        9            9 External
+124     73        5.9       NA            7 External
+154     49        8.0        1            1     <NA>
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+      \pause
+      This isn't surprising---it is very common to have missing entries in your data.
+\end{frame}
+    
+  
+  
+  
+\begin{frame}[fragile]{Exploring the data: Missing entries}
+      There are two ways of dealing with missing data:
+      \begin{itemize}[<+->]
+        \item Omit the rows that have missing entries in it.
+        \item Try to predict values to fill the missing entries.      
+      \end{itemize}
+      Omiting data is the easiest, but often \alert{not the best way, because you lose all the other information available in the same row}. \pause \bigskip
+      
+      Let's try to fill in some estimates.  
+\end{frame}
+    
+    
+    
+    
+    
+\begin{frame}[fragile]{Exploring the data: Missing entries}
+      What should we replace the \texttt{NA}s in the Manager Rating and Years of Experience columns with? \pause \bigskip
+    
+      The simplest way would be to use the averages in the respective columns.
+      
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+\hlstd{mclean}\hlopt{$}\hlstd{MngrRating[}\hlkwd{is.na}\hlstd{(mclean}\hlopt{$}\hlstd{MngrRating)]} \hlkwb{<-}
+  \hlkwd{mean}\hlstd{(mclean}\hlopt{$}\hlstd{MngrRating,} \hlkwc{na.rm}\hlstd{=T)}
+
+\hlstd{mclean}\hlopt{$}\hlstd{YearsExp[}\hlkwd{is.na}\hlstd{(mclean}\hlopt{$}\hlstd{YearsExp)]} \hlkwb{<-}
+  \hlkwd{mean}\hlstd{(mclean}\hlopt{$}\hlstd{YearsExp,} \hlkwc{na.rm}\hlstd{=T)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+      \pause \bigskip
+      A smarter and more advanced way is to predict the missing data from the other data (using regression!).      
+\end{frame}
+    
+    
+    
+    
+\begin{frame}[fragile]{Exploring the data: Missing entries}
+      What about the missing data for categorical variables? \pause
+      Let's choose the easy way and omit them.
+      
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+\hlstd{mclean} \hlkwb{<-} \hlkwd{na.omit}\hlstd{(mclean)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+      \pause
+      This removes all the rows that contain missing entries (only the Origin column has missing entries in this case.) \pause \bigskip
+      
+      We could also predict the missing entries, or treat the missing entries as a seperate level (e.g. ``Unknown'').
+\end{frame}
+  
+  
+  
+\begin{frame}[fragile]{Exploring the data: Missing entries}
+      \alert{Important things to consider:}
+      \begin{itemize}[<+->]
+        \item While dealing with the missing data, we assume that the data is ``Missing Completely at Random'' (MCAR).
+        \item If this assumption does not hold (e.g. if the missing data mostly belongs to external hires), the model will  be biased.        
+        \item Making predictions for missing data based on available data reinforces the existing relationships between variables, so impacts the standard error.
+        \item If a lot of data is missing (e.g. more than 5\%) for a particular variable, you may have to discard the whole column. 
+      \end{itemize}
+\end{frame}
+    
+    \section{Multicollinearity}
+    
+    
+\begin{frame}[fragile]{Exploring the data: Multicollinearity}
+      Multicollinearity exists whenever 2+ predictors in a regression model are moderately or highly correlated. \pause
+      \begin{itemize}[<+->]
+        \item If two predictors X1 and X2 are highly correlated, it is hard to estimate the effect of changing X1 while keeping X2 constant.
+        \item This means we will have large standard errors, and small p-values, for X1 and X2.
+        \item This DOES NOT mean there isn't a relationship between X1 and Y, or X2 and Y -- it just means we can't pin down that relationship, because of the correlation!
+      \end{itemize}
+      \pause
+      Correlation between the response and the predictors is good, but correlation between the predictors is not!
+\end{frame}
+    
+    
+\begin{frame}[fragile]{Exploring the data: Multicollinearity}
+      We want to avoid multicollinearity in our models! \pause
+      \begin{itemize}[<+->]
+        \item Any conclusions based on the p-values, coefficients, and confidence intervals of the highly correlated variables will be unreliable.
+        \item These statistics will not be stable: adding new data or predictors to the model could drastically change them.
+      \end{itemize}
+      
+\end{frame}
+    
+\begin{frame}[fragile]%{Exploring the data: Multicollinearity}  
+      \fontsize{9}{9}\selectfont
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+\hlkwd{pairs}\hlstd{(}\hlopt{~} \hlstd{MngrRating} \hlopt{+} \hlstd{YearsExp} \hlopt{+} \hlstd{YrsSinceGrad,} \hlkwc{data}\hlstd{=mclean)}
+\end{alltt}
+\end{kframe}
+\input{/tmp/figures/unnamed-chunk-10-1.tikz}
+
+\end{knitrout}
+\end{frame}
+    
+\begin{frame}[fragile]%{Exploring the data: Multicollinearity}  
+      \fontsize{8}{8}\selectfont
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+\hlstd{model} \hlkwb{<-} \hlkwd{lm}\hlstd{(Salary} \hlopt{~} \hlstd{MngrRating} \hlopt{+} \hlstd{YearsExp} \hlopt{+} \hlstd{YrsSinceGrad} \hlopt{+} \hlstd{Origin,}
+           \hlkwc{data}\hlstd{=mclean)}
+\hlkwd{summary}\hlstd{(model)}
+\end{alltt}
+\begin{verbatim}
+
+Call:
+lm(formula = Salary ~ MngrRating + YearsExp + YrsSinceGrad + 
+    Origin, data = mclean)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-19.7766  -4.2842  -0.2906   3.3266  28.2773 
+
+Coefficients:
+               Estimate Std. Error t value Pr(>|t|)    
+(Intercept)     54.1521     2.6071  20.771  < 2e-16 ***
+MngrRating       4.5147     0.3997  11.296  < 2e-16 ***
+YearsExp        -1.5262     1.3790  -1.107 0.270203    
+YrsSinceGrad     0.7692     1.3833   0.556 0.578976    
+OriginInternal  -4.7314     1.3878  -3.409 0.000838 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 6.838 on 149 degrees of freedom
+Multiple R-squared:  0.6065,	Adjusted R-squared:  0.596 
+F-statistic: 57.42 on 4 and 149 DF,  p-value: < 2.2e-16
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+      \note{Point out the high standard errors}
+\end{frame}
+    
+    
+    
+    
+    
+    
+\begin{frame}[fragile]{Exploring the data: Multicollinearity}  
+      One way to see if two variables are collinear is to check the correlation between the two:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+\hlkwd{cor}\hlstd{(mclean}\hlopt{$}\hlstd{YearsExp, mclean}\hlopt{$}\hlstd{YrsSinceGrad)}
+\end{alltt}
+\begin{verbatim}
+[1] 0.9947616
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+      \pause
+      Any correlation $\geq 0.95$ is definitely a problem, but smaller correlations could be problematic too.
+\end{frame}
+
+\begin{frame}[fragile]{Exploring the data: Multicollinearity}      
+      A better way to check multicollinearity is using Variance Inflation Factors (VIF).
+      
+      \begin{itemize}
+      \item Remember: If we have multicollinearity, we will have large standard errors (i.e.\ high variance) in our estimators.
+      \item The VIF is 
+      $$\mbox{VIF}(\beta_j) = \frac{\mbox{Variance of $\beta_j$ in multiple regression}}{\mbox{Variance of $\beta_j$ if $X_j$ is the only predictor}}$$
+      \item It is a measure of how much more uncertain we are about $\beta_j$, once we've included the other predictors.
+      \end{itemize}
+\end{frame}
+\begin{frame}[fragile]{Exploring the data: Multicollinearity}      
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+\hlkwd{library}\hlstd{(car)}
+\hlkwd{vif}\hlstd{(model)}
+\end{alltt}
+\begin{verbatim}
+  MngrRating     YearsExp YrsSinceGrad       Origin 
+    1.136002    95.954255    97.011260     1.540448 
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+      Predictors with $\text{VIF} > 5$ indicate multicollinearity.
+      \pause  \bigskip
+      
+      \alert{Remember:} Multicollinearity could exist between more than two predictors (this is why there are only $n-1$ dummy variables for a categorical variable with $n$ values).  
+\end{frame}
+    
+\begin{frame}[fragile]{Exploring the data: Multicollinearity}      
+      A better way to check multicollinearity is using Variance Inflation Factors (VIF):
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+\hlkwd{library}\hlstd{(car)}
+\hlkwd{vif}\hlstd{(model)}
+\end{alltt}
+\begin{verbatim}
+  MngrRating     YearsExp YrsSinceGrad       Origin 
+    1.136002    95.954255    97.011260     1.540448 
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+      Drop any predictor that has $\text{VIF} > 5$.
+      \pause  \bigskip
+      
+      \alert{Remember:} Multicollinearity could exist between more than two predictors (this is why there are only $n-1$ dummy variables for a categorical variable with $n$ values).  
+\end{frame}
+    
+\begin{frame}[fragile]%{Exploring the data: Multicollinearity}  
+      \fontsize{9}{9}\selectfont
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+\hlstd{model2} \hlkwb{<-} \hlkwd{lm}\hlstd{(Salary} \hlopt{~} \hlstd{MngrRating} \hlopt{+} \hlstd{YearsExp} \hlopt{+} \hlstd{Origin,} \hlkwc{data}\hlstd{=mclean)}
+\hlkwd{summary}\hlstd{(model2)}
+\end{alltt}
+\begin{verbatim}
+
+Call:
+lm(formula = Salary ~ MngrRating + YearsExp + Origin, data = mclean)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-19.8115  -4.3474  -0.3964   3.3358  28.1801 
+
+Coefficients:
+               Estimate Std. Error t value Pr(>|t|)    
+(Intercept)     54.1080     2.5999  20.812  < 2e-16 ***
+MngrRating       4.5309     0.3977  11.394  < 2e-16 ***
+YearsExp        -0.7651     0.1687  -4.534 1.18e-05 ***
+OriginInternal  -4.6467     1.3762  -3.376 0.000935 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 6.823 on 150 degrees of freedom
+Multiple R-squared:  0.6057,	Adjusted R-squared:  0.5978 
+F-statistic: 76.82 on 3 and 150 DF,  p-value: < 2.2e-16
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+      \lc
+\end{frame}
+    
+    \section{Assumption violations}
+    
+\begin{frame}[fragile]
+      \fontsize{9}{9}\selectfont
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+\hlkwd{plot}\hlstd{(model2)}
+\end{alltt}
+\end{kframe}
+\input{/tmp/figures/unnamed-chunk-17-1.tikz}
+
+\end{knitrout}
+
+\end{frame}
+    
+    \section{High-leverage points}
+    
+\begin{frame}[fragile]{Outliers among the residuals}  
+      The data with index 157 seems to be hanging out by itself. \pause \bigskip
+      
+      We can display the indices of all of the outliers among the residuals.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+\hlkwd{boxplot}\hlstd{(}\hlkwd{resid}\hlstd{(model2))}\hlopt{$}\hlstd{out}
+\end{alltt}
+\begin{verbatim}
+       14        27        52        85       157 
+ 18.76901 -19.81152  17.14133  15.66079  28.18007 
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+      \pause
+      These cases are not predicted well by the model.
+\end{frame}
+    
+    
+\begin{frame}[fragile]{Outliers among the residuals}  
+      Let's look at row 157:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+\hlstd{manager[}\hlnum{157}\hlstd{,]}
+\end{alltt}
+\begin{verbatim}
+    Salary MngrRating YearsExp YrsSinceGrad   Origin
+157     95          4        1            1 Internal
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+      Someone with only 1 year of experience and a poor rating is hired as manager at \$95K! \pause \bigskip
+      
+      If you decide that this is an anomaly (e.g. the CEO's son was promoted!) that you don't want to include in your analysis, omit that row and report on it separately in your conclusions.
+\end{frame}
+    
+    
+\begin{frame}[fragile]{Influential cases}  
+      \begin{itemize}[<+->]
+        \item The Residuals vs Leverage plot tells about \alert{influential cases}.
+        \item A \textbf{high-leverage case} is one that has an unusual combination of predictor values. 
+        \item An \textbf{influential case} is a high-leverage case that also has a high residual: it could change your $\beta$ values significantly when excluded from your analysis, i.e., it does not follow the overall trend. 
+        \item Look for the cases on the upper/lower right corners (beyond the dashed curves).
+      \end{itemize}
+\end{frame}
+    
+
+  \end{darkframes}
+
+  \end{document}
