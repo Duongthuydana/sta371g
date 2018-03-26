@@ -16,7 +16,7 @@ As with simple regression, we can make a prediction of median home price by ente
 
 	predict.lm(model, list(LSTAT=0.5, ROOM=5))
 
-Adding **interval="confidence" **or **interval="prediction" **before the final parenthesis above will generate 95% confidence intervals for the mean Y or for a single new prediction, respectively. To get confidence intervals for the coefficients themselves, we use the same command as with simple regression:
+Adding `interval="confidence` or `interval="prediction"` before the final parenthesis above will generate 95% confidence intervals for the mean Y or for a single new prediction, respectively. To get confidence intervals for the coefficients themselves, we use the same command as with simple regression:
 
 	confint(model)
 
