@@ -30,4 +30,4 @@ The scripts from the help sessions are available here:
 * February 16: [R script](help-sessions/help-session-02-16.R)
 * March 2: [R script](help-sessions/help-session-03-02.R)
 * March 23: [R script](help-sessions/help-session-03-23.R)
-* March 30: [R script](help-sessions/R session 03-30-2018.R)
+* March 30: (help-sessions/R session 03-30-2018.R)
