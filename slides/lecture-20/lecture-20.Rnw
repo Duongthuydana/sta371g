@@ -1,0 +1,91 @@
+\documentclass{beamer}
+\usepackage{../371g-slides}
+\title{Regression Lab}
+\subtitle{Lecture 20}
+\author{STA 371G}
+
+\begin{document}
+  <<setup, include=F, cache=F>>=
+  opts_knit$set(global.par=T)
+  knit_hooks$set(crop=hook_pdfcrop)
+  opts_chunk$set(dev='tikz', external=F, fig.path='/tmp/figures/', comment=NA, fig.width=4, fig.height=3, crop=T, sanitize=T, tidy=F)
+  knit_theme$set('camo')
+  @
+  <<include=F, cache=F>>=
+  par(fg='#fefefe', col.axis='#fefefe', col.lab='#fefefe', col.main="#fefefe", mar=c(5.1, 4.1, 1.1, 2.1))
+  @
+
+  \frame{\maketitle}
+
+  % Show outline at beginning of each section
+  \AtBeginSection[]{
+    \begin{frame}<beamer>
+      \tableofcontents[currentsection]
+    \end{frame}
+  }
+
+  %%%%%%% Slides start here %%%%%%%
+
+  \begin{darkframes}
+    \begin{frame}{Reminders}
+      \begin{itemize}
+        \item Midterm 2 is this Thursday/Friday
+        \item Make sure to sign up for a time slot if you haven't already
+        \item You can bring 2 pages of notes to the test
+      \end{itemize}
+    \end{frame}
+
+    \begin{frame}{Model building workshop}
+      \begin{itemize}
+        \item Today you'll work through a set of interesting questions about predicting income using data from the General Social Survey (GSS)
+        \item The GSS is an annual survey of attitudes and behaviors that has been conducted since the 1970s
+        \item Much of the work is in getting the data into a form that you can work with and dealing with data issues---this will be good practice for your project!
+      \end{itemize}
+    \end{frame}
+
+    \begin{frame}{Loading the data}
+      \begin{itemize}
+        \item Load the GSS data into a variable
+        \item Rename the column to simpler names that are easy to remember and type
+        \item \alert{Very important:} save all of your cleaning steps into a script so you can easily reproduce them later!
+      \end{itemize}
+    \end{frame}
+
+    \begin{frame}{Cleaning data pass 1}
+      \begin{itemize}
+        \item Replace missing data codes with \verb|NA|
+        \item Convert numbers that were read in as character fields (strings) back to numbers
+        \item Transform values to something more meaningful where appropriate
+      \end{itemize}
+    \end{frame}
+
+    \begin{frame}{Model building pass 1}
+      \begin{itemize}
+        \item Select a meaningful subset of the data
+        \item Conduct initial model building
+      \end{itemize}
+    \end{frame}
+
+    \begin{frame}{Cleaning data pass 2}
+      \begin{itemize}
+        \item Use boxplots to think about which levels are meaningful
+        \item Transform character fields (strings) to levels
+      \end{itemize}
+    \end{frame}
+
+    \begin{frame}{Model building pass 2}
+      \begin{itemize}
+        \item Collapse levels where appropriate
+        \item Build another interesting model
+      \end{itemize}
+    \end{frame}
+
+    \begin{frame}{Model selection}
+      \begin{itemize}
+        \item Use automated tools (stepwise and best-subsets regression) to help narrow down the possible models
+        \item Examine and remove incomplete rows
+        \item Use the output of automated tools to decide what to explore further
+      \end{itemize}
+    \end{frame}
+  \end{darkframes}
+\end{document}
