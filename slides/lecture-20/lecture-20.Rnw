@@ -28,11 +28,9 @@
 
   \begin{darkframes}
     \begin{frame}
-      \begin{enumerate}
-        \item Sit with the other members of your project group---today you'll work with them on a model-building workshop.
-        \item Log in to Learning Catalytics and click on the Model Building Workshop module.
-        \item Everyone in your group should enter your group name and number as the team name, e.g., ``Group 15''.
-      \end{enumerate}
+      \begin{center}
+        Sit with the other members of your project group---today you'll work with them on a model-building workshop.
+      \end{center}
     \end{frame}
 
     \begin{frame}{Reminders}
