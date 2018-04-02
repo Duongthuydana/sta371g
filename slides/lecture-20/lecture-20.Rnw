@@ -27,6 +27,14 @@
   %%%%%%% Slides start here %%%%%%%
 
   \begin{darkframes}
+    \begin{frame}
+      \begin{enumerate}
+        \item Sit with the other members of your project group---today you'll work with them on a model-building workshop.
+        \item Log in to Learning Catalytics and click on the Model Building Workshop module.
+        \item Everyone in your group should enter your group name and number as the team name, e.g., ``Group 15''.
+      \end{enumerate}
+    \end{frame}
+
     \begin{frame}{Reminders}
       \begin{itemize}
         \item Midterm 2 is this Thursday/Friday
@@ -53,7 +61,7 @@
 
     \begin{frame}{Cleaning data pass 1}
       \begin{itemize}
-        \item Replace missing data codes with \verb|NA|
+        \item Replace missing data codes with \texttt{NA}
         \item Convert numbers that were read in as character fields (strings) back to numbers
         \item Transform values to something more meaningful where appropriate
       \end{itemize}
