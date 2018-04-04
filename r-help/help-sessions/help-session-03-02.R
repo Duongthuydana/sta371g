@@ -77,6 +77,14 @@ newdata = data.frame(Appraised_Value = 150, Square_Footage = 25)
 
 predict.lm(reduced_multiple_model, newdata = list(Appraised_Value = 150, Square_Footage = 25), interval = 'confidence', level = 0.90)
 
+## Consider that the house at 123 Lotus Avenue undergoes expansion, and 
+## 500 sq.ft. are being added to the house. 
+## Predict the change in Sales Price due to this expansion.
+
+
+newdata2 = data.frame(Appraised_Value = 150, Square_Footage = 30)
+predict.lm(reduced_multiple_model, newdata2)- predict.lm(reduced_multiple_model, newdata)
+
 ## What is the difference between prediction and confidence intervals?
 
 ## A prediction interval tells you about the distribution of values of the 
