@@ -70,6 +70,14 @@
   %%%%%%% Slides start here %%%%%%%
 
   \begin{darkframes}
+    \begin{frame}{Announcements}
+      \begin{itemize}[<+->]
+        \item You'll get Midterm 2 back later this week (a few students still have to take the test).
+        \item Reminder: there are a few more readings in Perusall (including one on logistic regression due tonight!)
+        \item Get started on your project with your group as soon as you can, so you have plenty of time to iron out any issues.
+      \end{itemize}
+    \end{frame}
+
     \begin{frame}{Near, far, wherever you are....}
       \begin{itemize}
         \item How much did the ticket price affect whether someone survived the Titanic?
@@ -153,7 +161,7 @@
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
 \begin{alltt}
-\hlkwd{predict}\hlstd{(model,} \hlkwd{data.frame}\hlstd{(}\hlkwc{fare}\hlstd{=}\hlnum{50}\hlstd{),} \hlkwc{type}\hlstd{=}\hlstr{"response"}\hlstd{)}
+\hlkwd{predict}\hlstd{(model,} \hlkwd{list}\hlstd{(}\hlkwc{fare}\hlstd{=}\hlnum{50}\hlstd{),} \hlkwc{type}\hlstd{=}\hlstr{"response"}\hlstd{)}
 \end{alltt}
 \begin{verbatim}
     1 

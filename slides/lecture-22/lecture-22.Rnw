@@ -28,6 +28,14 @@
   %%%%%%% Slides start here %%%%%%%
 
   \begin{darkframes}
+    \begin{frame}{Announcements}
+      \begin{itemize}[<+->]
+        \item You'll get Midterm 2 back later this week (a few students still have to take the test).
+        \item Reminder: there are a few more readings in Perusall (including one on logistic regression due tonight!)
+        \item Get started on your project with your group as soon as you can, so you have plenty of time to iron out any issues.
+      \end{itemize}
+    \end{frame}
+
     \begin{frame}{Near, far, wherever you are....}
       \begin{itemize}
         \item How much did the ticket price affect whether someone survived the Titanic?
@@ -103,10 +111,10 @@
     \begin{frame}[fragile]{Making predictions}
       We can use \texttt{predict} to automate the process of plugging into the equation:
       <<>>=
-      predict(model, data.frame(fare=50), type="response")
+      predict(model, list(fare=50), type="response")
       @
       <<include=F>>=
-      prediction <- predict(model, data.frame(fare=50), type="response")
+      prediction <- predict(model, list(fare=50), type="response")
       @
       \[
         \frac{e^{\Sexpr{b0} + \Sexpr{b1}\cdot 50}}{1 + e^{\Sexpr{b0} + \Sexpr{b1}\cdot 50}} = \Sexpr{prediction}
