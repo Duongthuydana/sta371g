@@ -1,0 +1,225 @@
+\documentclass{beamer}
+\usepackage{../371g-slides}
+\title{Logistic Regression 1}
+\subtitle{Lecture 21}
+\author{STA 371G}
+
+\begin{document}
+  <<setup, include=F, cache=F>>=
+  opts_knit$set(global.par=T)
+  knit_hooks$set(crop=hook_pdfcrop)
+  opts_chunk$set(dev='tikz', external=F, fig.path='/tmp/figures/', comment=NA, fig.width=4, fig.height=3, crop=T, sanitize=T, tidy=F)
+  knit_theme$set('camo')
+  titanic <- read.csv('../../data/titanic.csv')
+  @
+  <<include=F, cache=F>>=
+  par(fg='#fefefe', col.axis='#fefefe', col.lab='#fefefe', col.main="#fefefe", mar=c(5.1, 4.1, 1.1, 2.1))
+  @
+
+  \frame{\maketitle}
+
+  % Show outline at beginning of each section
+  \AtBeginSection[]{ 
+    \begin{frame}<beamer>
+      \tableofcontents[currentsection]
+    \end{frame}
+  }
+
+  %%%%%%% Slides start here %%%%%%%
+
+  \begin{darkframes}
+    \begin{frame}{Near, far, wherever you are....}
+      \begin{itemize}
+        \item How much did the ticket price affect whether someone survived the Titanic?
+        \item We have a data set of \Sexpr{nrow(titanic)} passengers on the Titanic; \Sexpr{nrow(subset(titanic, survived == 1))} survived
+          \begin{itemize}
+            \item \textbf{fare}: the amount of money paid for the ticket
+            \item \textbf{survived}: a dummy variable indicating whether the passenger surived (1) or not (0)
+          \end{itemize}
+        \pause
+        \item What is unusual about this data set?
+      \end{itemize}
+    \end{frame}
+
+    \begin{frame}[fragile]{What goes wrong with linear regression?}
+      <<fig.height=2>>=
+      plot(titanic$fare, titanic$survived)
+      model <- lm(survived ~ fare, data=titanic)
+      abline(model)
+      @
+    \end{frame}
+
+    \begin{frame}{The idea behind logistic regression}
+      \begin{itemize}
+        \item Instead of predicting whether someone survives, let's predict the \emph{probability} that they survive
+        \item Let's fit a curve that is always between 0 and 1
+      \end{itemize}
+    \end{frame}
+
+    \begin{frame}{Odds}
+      \begin{itemize}
+        \item When something has ``even (1/1) odds,'' the probability of success is $1/2$
+        \item When something has ``2/1 odds,'' the probability of success is $2/3$
+        \item When something has ``3/2 odds,'' the probability of success is $3/5$
+        \item In general, the odds of something happening are $p/(1-p)$
+      \end{itemize}
+      \lc
+    \end{frame}
+
+    \begin{frame}{The logistic regression model}
+      Logistic regression models the \alert{log odds} of success $p$ as a linear function of $X$:
+      \[
+        \log\left(\frac{p}{1-p}\right) = \beta_0 + \beta_1 X + \epsilon
+      \]
+      This fits an S-shaped curve to the data (we'll see what it looks like later).
+    \end{frame}
+
+    \begin{frame}[fragile]{Let's try it}
+      <<results='hide'>>=
+      model <- glm(survived ~ fare, data=titanic, 
+                   family=binomial)
+      summary(model)
+      @
+    \end{frame}
+
+    \begin{frame}{How to interpret the curve?}
+      <<include=F>>=
+      b0 <- coef(model)['(Intercept)']
+      b1 <- coef(model)['fare']
+      options(digits=3)
+      @
+      The regression output tells us that our prediction is
+      \[
+        \log\left(\frac{P(\text{survival})}{1-P(\text{survival})}\right) = \Sexpr{b0} + \Sexpr{b1}\cdot\text{fare}.
+      \]
+      \pause
+      Let's solve for $P(\text{survival})$:
+      \[
+        \widehat{P(\text{survival})} = \frac{e^{\Sexpr{b0} + \Sexpr{b1}\cdot\text{fare}}}{1 + e^{\Sexpr{b0} + \Sexpr{b1}\cdot\text{fare}}}
+      \]
+      \lc
+    \end{frame}
+
+    \begin{frame}[fragile]{Making predictions}
+      We can use \texttt{predict} to automate the process of plugging into the equation:
+      <<>>=
+      predict(model, data.frame(fare=50), type="response")
+      @
+      <<include=F>>=
+      prediction <- predict(model, data.frame(fare=50), type="response")
+      @
+      \[
+        \frac{e^{\Sexpr{b0} + \Sexpr{b1}\cdot 50}}{1 + e^{\Sexpr{b0} + \Sexpr{b1}\cdot 50}} = \Sexpr{prediction}
+      \]
+    \end{frame}
+
+    \begin{frame}[fragile]{How to interpret the curve?}
+      \[
+        \widehat{P(\text{survival})} = \frac{e^{\Sexpr{b0} + \Sexpr{b1}\cdot\text{fare}}}{1 + e^{\Sexpr{b0} + \Sexpr{b1}\cdot\text{fare}}}
+      \]
+      <<fig.height=2.5, echo=F>>=
+      curve(exp(b0+b1*x)/(1+exp(b0+b1*x)), from=-300, to=512, 
+          xlab='Fare', ylab='Predicted P(survival)')
+      @
+    \end{frame}
+
+    \begin{frame}{Interpreting the coefficients}
+      Our prediction equation is:
+      \[
+        \log\left(\frac{P(\text{survival})}{1-P(\text{survival})}\right) = \Sexpr{b0} + \Sexpr{b1}\cdot\text{fare}.
+      \]
+      Let's start with some basic, but not particularly useful, interpretations:
+      \begin{itemize}[<+->]
+        \item When $\text{fare}=0$, we predict that the log odds will be $\Sexpr{b0}$ \pause, so the probability of survival is predicted to be \Sexpr{round(100*predict(model, list(fare=0), type='response'))}\%.
+        \item When fare increases by \pounds 1, we predict that the log odds will increase by $\Sexpr{b1}$.
+      \end{itemize}
+      \note{LC question in the middle}
+    \end{frame}
+
+    \begin{frame}{Interpreting the coefficients}
+      Let's rewrite the prediction equation as:
+      \[
+        \text{Predicted odds of survival} = e^{\Sexpr{b0} + \Sexpr{b1}\cdot\text{fare}}
+      \]
+      Increasing the fare by \pounds 1 will \emph{multiply} the odds by $e^{\Sexpr{b1}}=\Sexpr{exp(b1)}$; i.e., increase the odds by $\Sexpr{round(100*(exp(b1)-1), 1)}$\%.
+
+      \bigskip\pause
+      Increasing the fare by \pounds 10 will \emph{multiply} the odds by $e^{10 \cdot \Sexpr{b1}}=\Sexpr{exp(10*b1)}$; i.e., increase the odds by $\Sexpr{round(100*(exp(10*b1)-1), 1)}$\%.
+    \end{frame}
+
+    \begin{frame}{Testing the null hypothesis}
+      \begin{center}
+        As in regular linear regression, the overall null hypothesis is that $\beta_1=0$; we can test this by using the $p$-value for that variable on the output.
+
+        \bigskip\pause
+        Since $p$ is very small, we can reject the null hypothesis that $\beta_1=0$; i.e., there is a statistically significant relationship between fare and survival.
+      \end{center}
+    \end{frame}
+
+    \begin{frame}{How good is our model?}
+      \begin{itemize}[<+->]
+        \item Unfortunately, the typical $R^2$ metric isn't available for logistic regression.
+        \item However, there are many ``pseudo-$R^2$'' metrics that indicate model fit.
+      \end{itemize}
+    \end{frame}
+
+    \begin{frame}[fragile]{Take 1: How many cases did we accurately predict?}
+      We could use our model to make a prediction of survival (or not), based on the probability. Suppose we say that our prediction is:
+      \[
+        \text{Prediction} = \begin{cases}
+          \text{survival}, & \text{if $\widehat{P(\text{survival})} \geq 0.5$}, \\
+          \text{tragedy}, & \text{if $\widehat{P(\text{survival})} < 0.5$}. \\
+        \end{cases}
+      \]
+      
+      \pause
+      Now we can compute the fraction of people whose survival we correctly predicted:
+
+      \fontsize{9}{9}\selectfont
+      <<>>=
+      predicted.survival <- (predict(model, type='response') >= 0.5)
+      actual.survival <- (titanic$survived == 1)
+      sum(predicted.survival == actual.survival) / nrow(titanic)
+      @
+      \note{LC question in middle}
+    \end{frame}
+
+    \begin{frame}[fragile]{Take 1: How many cases did we accurately predict?}
+      \Sexpr{round(100*(sum(predicted.survival == actual.survival) / nrow(titanic)), 1)}\% sounds pretty good---what should we compare it against?
+
+      \bigskip
+      \pause
+
+      We should compare \Sexpr{round(100*(sum(predicted.survival == actual.survival) / nrow(titanic)), 1)}\% against what we would have gotten if we just predicted the most common outcome (not surviving) for everyone, without using any other information:
+      \pause
+      
+      <<>>=
+      1 - sum(actual.survival) / nrow(titanic)
+      @
+    \end{frame}
+
+    \begin{frame}{Take 2: McFadden's pseudo-$R^2$}
+      To get a metric on the usual 0-1 scale (like regular $R^2$), McFadden's pseudo-$R^2$ can be used (this is what is described in the reading):
+      \[
+        \text{pseudo-}R^2 = 1 - \frac{\text{residual deviance}}{\text{null deviance}} = 1 - \frac{\Sexpr{model$deviance}}{\Sexpr{model$null.deviance}} = \Sexpr{1 - model$deviance/model$null.deviance}
+      \]
+    \end{frame}
+
+    \begin{frame}[fragile]
+      \fontsize{9}{9}\selectfont
+      <<echo=F>>=
+      summary(model)
+      @
+      \note{Do extra LC practice questions if time.}
+    \end{frame}
+
+    \begin{frame}{What else can we use logistic regression for?}
+      \begin{itemize}
+        \item \textbf{Finance:} Predicting which customers are most likely to default on a loan
+        \item \textbf{Advertising:} Predicting when a customer will respond positively to an advertising campaign
+        \item \textbf{Marketing:} Predicting when a customer will purchase a product or sign up for a service
+      \end{itemize}
+    \end{frame}
+  \end{darkframes}
+
+\end{document}
