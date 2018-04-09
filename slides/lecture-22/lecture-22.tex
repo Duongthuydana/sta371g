@@ -51,7 +51,7 @@
 \usepackage{alltt}
 \usepackage{../371g-slides}
 \title{Logistic Regression 1}
-\subtitle{Lecture 21}
+\subtitle{Lecture 22}
 \author{STA 371G}
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \begin{document}
@@ -61,7 +61,7 @@
   \frame{\maketitle}
 
   % Show outline at beginning of each section
-  \AtBeginSection[]{ 
+  \AtBeginSection[]{
     \begin{frame}<beamer>
       \tableofcontents[currentsection]
     \end{frame}
@@ -226,7 +226,7 @@
           \text{tragedy}, & \text{if $\widehat{P(\text{survival})} < 0.5$}. \\
         \end{cases}
       \]
-      
+
       \pause
       Now we can compute the fraction of people whose survival we correctly predicted:
 
@@ -254,7 +254,7 @@
 
       We should compare 64.4\% against what we would have gotten if we just predicted the most common outcome (not surviving) for everyone, without using any other information:
       \pause
-      
+
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
 \begin{alltt}

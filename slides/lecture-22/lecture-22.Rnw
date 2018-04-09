@@ -1,7 +1,7 @@
 \documentclass{beamer}
 \usepackage{../371g-slides}
 \title{Logistic Regression 1}
-\subtitle{Lecture 21}
+\subtitle{Lecture 22}
 \author{STA 371G}
 
 \begin{document}
@@ -19,7 +19,7 @@
   \frame{\maketitle}
 
   % Show outline at beginning of each section
-  \AtBeginSection[]{ 
+  \AtBeginSection[]{
     \begin{frame}<beamer>
       \tableofcontents[currentsection]
     \end{frame}
@@ -76,7 +76,7 @@
 
     \begin{frame}[fragile]{Let's try it}
       <<results='hide'>>=
-      model <- glm(survived ~ fare, data=titanic, 
+      model <- glm(survived ~ fare, data=titanic,
                    family=binomial)
       summary(model)
       @
@@ -118,7 +118,7 @@
         \widehat{P(\text{survival})} = \frac{e^{\Sexpr{b0} + \Sexpr{b1}\cdot\text{fare}}}{1 + e^{\Sexpr{b0} + \Sexpr{b1}\cdot\text{fare}}}
       \]
       <<fig.height=2.5, echo=F>>=
-      curve(exp(b0+b1*x)/(1+exp(b0+b1*x)), from=-300, to=512, 
+      curve(exp(b0+b1*x)/(1+exp(b0+b1*x)), from=-300, to=512,
           xlab='Fare', ylab='Predicted P(survival)')
       @
     \end{frame}
@@ -171,7 +171,7 @@
           \text{tragedy}, & \text{if $\widehat{P(\text{survival})} < 0.5$}. \\
         \end{cases}
       \]
-      
+
       \pause
       Now we can compute the fraction of people whose survival we correctly predicted:
 
@@ -192,7 +192,7 @@
 
       We should compare \Sexpr{round(100*(sum(predicted.survival == actual.survival) / nrow(titanic)), 1)}\% against what we would have gotten if we just predicted the most common outcome (not surviving) for everyone, without using any other information:
       \pause
-      
+
       <<>>=
       1 - sum(actual.survival) / nrow(titanic)
       @
