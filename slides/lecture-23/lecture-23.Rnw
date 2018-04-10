@@ -1,0 +1,200 @@
+\documentclass{beamer}
+\usepackage{../371g-slides}
+\title{Logistic Regression 2}
+\subtitle{Lecture 23}
+\author{STA 371G}
+
+\begin{document}
+  <<setup, include=F, cache=F>>=
+  opts_knit$set(global.par=T)
+  knit_hooks$set(crop=hook_pdfcrop)
+  opts_chunk$set(dev='tikz', external=F, fig.path='/tmp/figures/', comment=NA, fig.width=4, fig.height=3, crop=T, sanitize=T, tidy=F)
+  knit_theme$set('camo')
+  pot <- read.csv('../../data/pot.csv')
+  @
+  <<include=F, cache=F>>=
+  par(fg='#fefefe', col.axis='#fefefe', col.lab='#fefefe', col.main="#fefefe", mar=c(5.1, 4.1, 1.1, 2.1))
+  @
+
+  \frame{\maketitle}
+
+  % Show outline at beginning of each section
+  \AtBeginSection[]{ 
+    \begin{frame}<beamer>
+      \tableofcontents[currentsection]
+    \end{frame}
+  }
+
+  %%%%%%% Slides start here %%%%%%%
+
+  \begin{darkframes}
+    \begin{frame}{Should pot be legal?}
+      \begin{columns}[onlytextwidth]
+        \column{.5\textwidth}
+          \includegraphics[width=2in]{map}
+
+          \begin{center}
+            \fontsize{8}{8} 
+            \href{http://www.governing.com/gov-data/state-marijuana-laws-map-medical-recreational.html}{(Map source)}
+          \end{center}
+        
+        \column{.5\textwidth}
+          \begin{itemize}
+            \item The General Social Survey is an annual survey of attitudes and behaviors that has been conducted since the 1970s
+            \item Let's use the GSS to examine the question of whether Americans think pot should be legalized
+            \item An increasing number of states have done so already!
+          \end{itemize}
+      \end{columns}
+    \end{frame}
+
+    \begin{frame}
+      Response variable:
+      \begin{itemize}
+        \item \textbf{legal}: Answer to ``Do you think the use of marijuana should be made legal or not?'' \pause\alert{This is binary (yes/no), so we'll need to use logistic regression.}
+      \end{itemize}
+
+      \pause
+      Predictor variables:
+      \begin{itemize}
+        \item \textbf{year}: The year of the survey (1975-2014)
+        \item \textbf{age}: The age of the respondent
+        \item \textbf{schooling}: Number of years of schooling (e.g., 12 = HS degree, 16 = bachelor's)
+        \item \textbf{philosophy}: Political philosophy (on the spectrum of liberal to conservative)
+      \end{itemize}
+      \note{LC questions 2-4}
+    \end{frame}
+
+    \begin{frame}[fragile]
+      Let's start by building a model using only the \texttt{year} variable:
+      \fontsize{8}{8}\selectfont
+      <<>>=
+      model1 <- glm(legal ~ year, data=pot, family=binomial)
+      summary(model1)
+      @
+      \note{LC questions 5 and 6}
+    \end{frame}
+
+    \begin{frame}[fragile]{Evaluating model fit: Take 1}
+      Our baseline prediction percentage is \Sexpr{round(100*prop.table(table(pot$legal))[1], 1)}\% (this is how many cases we'd predict correctly if we just predicted $\text{legal} = 0$ for everyone).
+
+      \bigskip\pause
+
+      How well do we do by using the model?
+
+      \fontsize{9}{9}\selectfont
+      <<>>=
+      predicted.legal <- (predict(model1, type='response') >= 0.5)
+      actual.legal <- (pot$legal == 1)
+      sum(predicted.legal == actual.legal) / nrow(pot)
+      @
+
+      \pause\fontsize{11}{11}\selectfont
+      No better than a naive model that just predicts the same for everyone!
+    \end{frame}
+
+    \begin{frame}{Evaluating model fit: Take 2}
+      Let's also try computing McFadden's pseudo-$R^2$:
+      <<include=F>>=
+      options(digits=2, scipen=5)
+      @
+      \[
+        \text{Pseudo-}R^2 = 1 - \frac{\text{residual deviance}}{\text{null deviance}} = 
+        1 - \frac{\Sexpr{model1$deviance}}{\Sexpr{model1$null.deviance}} = \Sexpr{1 - model1$deviance/model1$null.deviance}
+      \]
+
+      \bigskip\pause
+      Both metrics show us that year does not help us predict attitude towards legalization very well (but we wouldn't expect it to --- why not?)
+    \end{frame}
+
+    \begin{frame}{Improving the model}
+      Let's add more predictors to the model:
+      \begin{itemize}
+        \item Years of schooling
+        \item Age of respondent
+        \item Political philosophy
+        \item Gender
+      \end{itemize}
+      \lc
+    \end{frame}
+
+    \begin{frame}[fragile]{Interpreting the coefficients}
+      Let's interpret the coefficients:
+      \fontsize{9}{9}\selectfont
+      <<results='hide'>>=
+      model2 <- glm(legal ~ year + age + schooling + philosophy 
+                            + gender, data=pot, family=binomial)
+      @
+      <<echo=F>>=
+      round(summary(model2)$coefficients, 3)
+      @
+    \end{frame}
+
+    \begin{frame}[fragile]{Interpreting the coefficients}
+      \fontsize{9}{9}\selectfont
+      <<echo=F>>=
+      round(summary(model2)$coefficients, 3)
+      options(digits=3)
+      @   
+      \fontsize{11}{11}\selectfont
+      All else being equal, being a year older decreases the predicted \emph{odds} that you will support marijuana legalization by \Sexpr{round(100*(1-exp(coef(model2)['age'])),1)}\% (since $e^{\Sexpr{coef(model2)['age']}} = \Sexpr{exp(coef(model2)['age'])}$ and $1-\Sexpr{exp(coef(model2)['age'])} = \Sexpr{1-exp(coef(model2)['age'])}$).
+    \end{frame}
+    \note{LC questions 8-10}
+
+    \begin{frame}[fragile]{Evaluating model fit: Take 1}
+      Recall that our baseline prediction percentage is \Sexpr{round(100*prop.table(table(pot$legal))[1], 1)}\% (this is how many cases we'd predict correctly if we just predicted $\text{legal} = 0$ for everyone).
+
+      \bigskip\pause
+
+      How well do we do by using the model?
+
+      \fontsize{9}{9}\selectfont
+      <<>>=
+      predicted.legal <- (predict(model2, type='response') >= 0.5)
+      actual.legal <- (pot$legal == 1)
+      sum(predicted.legal == actual.legal) / nrow(pot)
+      @
+    \end{frame}
+
+    \begin{frame}{Evaluating model fit: Take 2}
+      <<include=F>>=
+      options(digits=2, scipen=5)
+      @
+      \[
+        \text{Pseudo-}R^2 = 1 - \frac{\text{residual deviance}}{\text{null deviance}} = 
+        1 - \frac{\Sexpr{model2$deviance}}{\Sexpr{model2$null.deviance}} = \Sexpr{1 - model2$deviance/model2$null.deviance}
+      \]
+
+      \pause\bigskip
+
+      \fontsize{11}{11}\selectfont
+      Is it surprising that our measures of model fit are fairly low?
+    \end{frame}
+
+    \begin{frame}[fragile]{Testing the overall null hypothesis}
+      Like with linear regression, there is an overall null hypothesis for the model that all coefficients (except the intercept) are 0 in the population.
+
+      \bigskip\pause
+
+      To test this, we can use a \emph{likelihood-ratio test} (the likelihood measures how likely we are to see a particular set of data if a particular model is correct).
+
+      \bigskip\pause
+
+      We first have to define a null model (with no predictors), just like we did for stepwise regression:
+      <<>>=
+      null <- glm(legal ~ 1, data=pot, family=binomial)
+      @
+    \end{frame}
+
+    \begin{frame}[fragile]{Testing the overall null hypothesis}
+      Now we can test our current model against the null model: 
+      \fontsize{9}{9}\selectfont
+      <<message=F>>=
+      library(lmtest)
+      lrtest(null, model2)
+      @
+      \fontsize{11}{11}\selectfont
+      \pause
+      Since $p< 2\times 10^{-16}$, we can reject the overall model null hypothesis (not surprising since we had many significant coefficients).
+    \end{frame}
+  \end{darkframes}
+\end{document}
