@@ -49,6 +49,7 @@
 \newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
 
 \usepackage{alltt}
+\usepackage{preview}
 \usepackage{../371g-slides}
 \title{Logistic Regression 1}
 \subtitle{Lecture 22}
@@ -73,7 +74,6 @@
     \begin{frame}{Announcements}
       \begin{itemize}[<+->]
         \item You'll get Midterm 2 back later this week (a few students still have to take the test).
-        \item Reminder: there are a few more readings in Perusall (including one on logistic regression due tonight!)
         \item Get started on your project with your group as soon as you can, so you have plenty of time to iron out any issues.
       \end{itemize}
     \end{frame}
@@ -91,7 +91,7 @@
       \end{itemize}
     \end{frame}
 
-    \begin{frame}[fragile]{What goes wrong with linear regression?}
+\begin{frame}[fragile]{What goes wrong with linear regression?}
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
 \begin{alltt}
@@ -100,10 +100,10 @@
 \hlkwd{abline}\hlstd{(model)}
 \end{alltt}
 \end{kframe}
-\input{/tmp/figures/unnamed-chunk-2-1.tikz}
+\input{/tmp/figures/unnamed-chunk-2-1.tex}
 
 \end{knitrout}
-    \end{frame}
+\end{frame}
 
     \begin{frame}{The idea behind logistic regression}
       \begin{itemize}
@@ -130,7 +130,7 @@
       This fits an S-shaped curve to the data (we'll see what it looks like later).
     \end{frame}
 
-    \begin{frame}[fragile]{Let's try it}
+\begin{frame}[fragile]{Let's try it}
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
 \begin{alltt}
@@ -140,7 +140,7 @@
 \end{alltt}
 \end{kframe}
 \end{knitrout}
-    \end{frame}
+\end{frame}
 
     \begin{frame}{How to interpret the curve?}
       
@@ -156,7 +156,7 @@
       \lc
     \end{frame}
 
-    \begin{frame}[fragile]{Making predictions}
+\begin{frame}[fragile]{Making predictions}
       We can use \texttt{predict} to automate the process of plugging into the equation:
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
@@ -173,18 +173,18 @@
       \[
         \frac{e^{-0.794 + 0.012\cdot 50}}{1 + e^{-0.794 + 0.012\cdot 50}} = 0.453
       \]
-    \end{frame}
+\end{frame}
 
-    \begin{frame}[fragile]{How to interpret the curve?}
+\begin{frame}[fragile]{How to interpret the curve?}
       \[
         \widehat{P(\text{survival})} = \frac{e^{-0.794 + 0.012\cdot\text{fare}}}{1 + e^{-0.794 + 0.012\cdot\text{fare}}}
       \]
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}
-\input{/tmp/figures/unnamed-chunk-7-1.tikz}
+\input{/tmp/figures/unnamed-chunk-7-1.tex}
 
 \end{knitrout}
-    \end{frame}
+\end{frame}
 
     \begin{frame}{Interpreting the coefficients}
       Our prediction equation is:
@@ -226,7 +226,7 @@
       \end{itemize}
     \end{frame}
 
-    \begin{frame}[fragile]{Take 1: How many cases did we accurately predict?}
+\begin{frame}[fragile]{Take 1: How many cases did we accurately predict?}
       We could use our model to make a prediction of survival (or not), based on the probability. Suppose we say that our prediction is:
       \[
         \text{Prediction} = \begin{cases}
@@ -252,9 +252,9 @@
 \end{kframe}
 \end{knitrout}
       \note{LC question in middle}
-    \end{frame}
+\end{frame}
 
-    \begin{frame}[fragile]{Take 1: How many cases did we accurately predict?}
+\begin{frame}[fragile]{Take 1: How many cases did we accurately predict?}
       64.4\% sounds pretty good---what should we compare it against?
 
       \bigskip
@@ -273,7 +273,7 @@
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
-    \end{frame}
+\end{frame}
 
     \begin{frame}{Take 2: McFadden's pseudo-$R^2$}
       To get a metric on the usual 0-1 scale (like regular $R^2$), McFadden's pseudo-$R^2$ can be used (this is what is described in the reading):
@@ -282,7 +282,7 @@
       \]
     \end{frame}
 
-    \begin{frame}[fragile]
+\begin{frame}[fragile]
       \fontsize{9}{9}\selectfont
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
@@ -313,7 +313,7 @@ Number of Fisher Scoring iterations: 4
 \end{kframe}
 \end{knitrout}
       \note{Do extra LC practice questions if time.}
-    \end{frame}
+\end{frame}
 
     \begin{frame}{What else can we use logistic regression for?}
       \begin{itemize}

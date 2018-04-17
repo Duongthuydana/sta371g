@@ -50,8 +50,8 @@
 
 \usepackage{alltt}
 \usepackage{../371g-slides}
-\title{Regression Lab}
-\subtitle{Lecture 20}
+\title{Midterm 2 review}
+\subtitle{Lecture 21}
 \author{STA 371G}
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \begin{document}
@@ -71,69 +71,46 @@
 
   \begin{darkframes}
     \begin{frame}
-      \begin{center}
-        Sit with the other members of your project group---today you'll work with them on a model-building workshop.
-      \end{center}
-    \end{frame}
-
-    \begin{frame}{Reminders}
+      \frametitle{Confidence vs Prediction}
       \begin{itemize}
-        \item Midterm 2 is this Thursday/Friday
-        \item Make sure to sign up for a time slot if you haven't already
-        \item You can bring 2 pages of notes to the test
+      \item \textbf{Confidence} interval is a range where you are confident the true parameter value is...
+        \begin{itemize}
+        \item 95\% confidence interval for a slope is a range where you're 95\% sure the slope would be if you saw all possible data points.
+        \item 95\% confidence interval for $\hat{Y}_i$ is a range where you're 95\% sure the regression line would be.
+        \item Remember, the regression line gives the expected value, so if you want a range where you are 95\% sure the average for a given $X$ is... that's the confidence interval.
+        \end{itemize}
+      \item \textbf{Prediction} interval is a range where you predict an indivicual data point would lie.
+        \begin{itemize}
+        \item If we're predicting salary vs age, the salary of an individual 21 year old is not going to lie exactly on the line.
+        \item Prediction intervals also take into account the residual variance.
+        \end{itemize}
       \end{itemize}
     \end{frame}
 
-    \begin{frame}{Model building workshop}
+
+    \begin{frame}
+      \frametitle{AIC, BIC and adjusted $R^2$}
       \begin{itemize}
-        \item Today you'll work through a set of interesting questions about predicting income using data from the General Social Survey (GSS)
-        \item The GSS is an annual survey of attitudes and behaviors that has been conducted since the 1970s
-        \item Much of the work is in getting the data into a form that you can work with and dealing with data issues---this will be good practice for your project!
+      \item We know $R^2$ will always go up as we add more predictors...
+        \item But, our regression might not actually be better... we are likely overfitting.
+        \item AIC, BIC and adjusted $R^2$ are all alternative measures that we can use to tell ``how good'' our regression is.
+        \item They take into account both how well the model predicts, and how complicated they are (how many predictors)... if two models predict equally well, they will pick the simpler model.
+        \item They all weight prediction and parsimony differently... for this course we're not going to look at the details.
+        \item Checking several can give you a small set of candidate models to choose between.
       \end{itemize}
     \end{frame}
 
-    \begin{frame}{Loading the data}
+    \begin{frame}
+      \frametitle{Multicollinearity, correlation and VIF}
       \begin{itemize}
-        \item Load the GSS data into a variable
-        \item Rename the column to simpler names that are easy to remember and type
-        \item \alert{Very important:} save all of your cleaning steps into a script so you can easily reproduce them later!
-      \end{itemize}
-    \end{frame}
-
-    \begin{frame}{Cleaning data pass 1}
-      \begin{itemize}
-        \item Replace missing data codes with \texttt{NA}
-        \item Convert numbers that were read in as character fields (strings) back to numbers
-        \item Transform values to something more meaningful where appropriate
-      \end{itemize}
-    \end{frame}
-
-    \begin{frame}{Model building pass 1}
-      \begin{itemize}
-        \item Select a meaningful subset of the data
-        \item Conduct initial model building
-      \end{itemize}
-    \end{frame}
-
-    \begin{frame}{Cleaning data pass 2}
-      \begin{itemize}
-        \item Use boxplots to think about which levels are meaningful
-        \item Transform character fields (strings) to levels
-      \end{itemize}
-    \end{frame}
-
-    \begin{frame}{Model building pass 2}
-      \begin{itemize}
-        \item Collapse levels where appropriate
-        \item Build another interesting model
-      \end{itemize}
-    \end{frame}
-
-    \begin{frame}{Model selection}
-      \begin{itemize}
-        \item Use automated tools (stepwise and best-subsets regression) to help narrow down the possible models
-        \item Examine and remove incomplete rows
-        \item Use the output of automated tools to decide what to explore further
+      \item Multicollinearity occurs when two variables are correlated, and the part that isn't correlated doesn't tell us much.
+      \item It doesn't mean that the two variables are bad... just that the correlation is making it hard to identify their individual effects.
+      \item We can usually improve our model by removing one of the offending variables.
+        \pause
+      \item Looking at the pairwise correlations can help us spot multicollinearity -- but we can have multicollinearity at middling correlation levels.
+      \item VIF is a way of looking at how uncertain we are about the effect of a variable in our full model, vs in a model with that variable alone.
+      \item VIF $>$ 5 indicates multicollinearity.
+      \item We don't necessarily remove \textit{all} variables with VIF $>$ 5... try removing each one individually to see if it clears up the multicollinearity.
       \end{itemize}
     \end{frame}
   \end{darkframes}

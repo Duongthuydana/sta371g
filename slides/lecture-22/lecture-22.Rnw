@@ -1,4 +1,5 @@
 \documentclass{beamer}
+\usepackage{preview}
 \usepackage{../371g-slides}
 \title{Logistic Regression 1}
 \subtitle{Lecture 22}
