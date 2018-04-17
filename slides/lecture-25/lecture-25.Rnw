@@ -1,0 +1,240 @@
+\documentclass{beamer}
+\usepackage{../371g-slides}
+\usepackage{}
+\title{Time Series: Autocorrelation}
+\subtitle{Lecture 18}
+\author{STA 371G}
+
+\begin{document}
+  <<setup, include=F, cache=F>>=
+  opts_knit$set(global.par=T)
+  knit_hooks$set(crop=hook_pdfcrop)
+  opts_chunk$set(dev='tikz', external=F, fig.path='/tmp/figures/', comment=NA, fig.width=4, fig.height=3, crop=T, sanitize=T, tidy=F)
+  knit_theme$set('camo')
+  oil <- read.csv('../../data/oil.csv')
+  @
+  <<include=F, cache=F>>=
+  par(fg='#fefefe', col.axis='#fefefe', col.lab='#fefefe', col.main="#fefefe", mar=c(5.1, 4.1, 1.1, 2.1))
+  @
+
+  \frame{\maketitle}
+
+  % Show outline at beginning of each section
+  \AtBeginSection[]{ 
+    \begin{frame}<beamer>
+      \tableofcontents[currentsection]
+    \end{frame}
+  }
+
+  %%%%%%% Slides start here %%%%%%%
+
+  \begin{darkframes}
+    
+    \begin{frame}{Predicting oil prices}
+      \fontsize{10}{10}\selectfont
+      \begin{center}
+        \includegraphics[width=2.8in]{pumpjack} \\
+      \end{center} 
+      
+      \vspace{-0.1in}
+      \begin{columns}[onlytextwidth]
+        \column{.4\textwidth}
+            \begin{center}
+              \begin{tabular}{ll}
+              \hline
+              Date & Oil price (\$) \\
+              \hline
+              1/1/2013 & 112.98  \\
+              1/1/2014 & 107.94 \\
+              1/1/2015 & 55.38 \\
+              1/1/2016 & 36.85 \\
+              1/1/2017 & 55.05 \\
+              1/1/2018 & ? \\
+              \hline 
+            \end{tabular}
+          \end{center} \pause
+              
+        \column{.6\textwidth}
+          \begin{itemize}[<+->]
+            \item What's the best prediction of the price of oil on January 1?
+            \item Does next year's price depend on this year's?
+          \end{itemize}
+      \end{columns}
+      \lc
+    \end{frame}
+    
+    
+    
+    
+    \begin{frame}{Time series}
+      In a \alert{time series,} data are not necessarily independent. (Often it is not!) \pause
+      \bigskip
+      
+      Time series:
+      \begin{itemize}
+        \item A sequence of measurements of the same variable collected over time.
+        \item The measurements are made at regular time intervals (most commonly daily, weekly, monthly, quarterly, or yearly).
+        \item The variances are not necessarily constant over time either.
+      \end{itemize}    
+    \end{frame}
+    
+    
+    
+    \begin{frame}{Some examples}
+      \begin{itemize}
+        \item S\&P 500 index (or any stock price)
+        \item iPhone sales worldwide
+        \item U.S. unemployment rate
+        \item U.S. inflation rate
+        \item Crime rate in Austin
+      \end{itemize} \pause
+      \bigskip
+      Any of these could be measured at weekly, monthly, yearly etc. intervals; and each would be a different time series.
+    \end{frame}
+  
+  
+\begin{frame}[fragile]{Oil Prices 1979-2004}
+      \fontsize{8}{8}\selectfont
+      <<fig.height=2.5>>=
+      # Convert the data into a time series object    
+      price <- ts(oil$price, start=1979, frequency=1)
+      # Frequency: # of data points per year
+      plot(price)
+      @  
+\end{frame}
+  
+    
+    
+\begin{frame}[fragile]{Oil Prices 1979-2004}
+      We argued that oil prices are not independent year-over-year. \pause To predict the oil price in a given year, can we use the previous year's price? \pause
+      
+      \begin{center}
+        $y_t$: The oil price at the end of the year $t$ \pause\bigskip
+
+        \begin{tabular}{lll}
+          \hline
+            $t$ & $y_t$ &  $y_{t-1}$\\
+          \hline
+          \ldots & \ldots & \ldots \\
+          1999	& 16.56 & 11.91 \\
+          2000 &	27.39 & 16.56  \\
+          2001	& 23 & 27.39 \\
+          2002	& 22.81 & 23 \\
+          \ldots & \ldots & \ldots \\
+          \hline 
+        \end{tabular}
+      \end{center}
+      \pause
+      
+      $y_{t-1}$ column is obtained by shifting $y_t$ by 1. \pause
+      
+      The \alert{lag} between $y_t$ and $y_{t-1}$ is one time-step.
+    
+\end{frame}
+    
+    
+\begin{frame}[fragile]{Compute one-lag time series}
+      \fontsize{10}{10}\selectfont
+      <<>>=
+      # Create lag 1 time series.
+      priceL1 <- lag(price, k=-1)
+      # Put them together
+      price_all <- cbind(price=price, priceL1=priceL1)
+      price_all[1:5,]
+      @   
+      \pause
+      
+      \texttt{priceL1} in the first row is \texttt{NA} because we did not have data from 1978 to put under $y_{t-1}$ column of 1979.
+\end{frame}
+    
+    
+    
+    
+    \begin{frame}{Linear regression model}
+      The simple linear regression model is:
+        \[
+          y_t = \beta_0 + \beta_1 y_{t-1} + \epsilon_t
+        \] 
+      \pause      
+      Note that we obtained our predictor from the response itself, lagged 1 time step!
+    \end{frame}
+    
+\begin{frame}[fragile]%{Linear regression model}
+      \fontsize{9}{9}\selectfont
+      When we use such a model, we expect to see a linear relation between the predictor and the response. Let's see if there is such a relation! \pause
+      <<fig.height=2.5>>=
+      plot(price ~ priceL1, xy.labels=F, xy.lines=F)
+      @   
+      \pause
+      The oil prices seem to be correlated with its first lag! \pause This is called \alert{autocorrelation.}
+      
+\end{frame}
+    
+    
+\begin{frame}[fragile]%{Linear regression model}
+      \fontsize{9}{9}\selectfont
+      <<>>=
+      model <- lm(price ~ priceL1, data=price_all)
+      summary(model)  
+      @  
+      \pause
+      This is a first-order autoregressive, \alert{AR(1)}, model.
+      \note{LC questions 2 and 3}
+\end{frame}
+      
+      
+\begin{frame}[fragile]{AR(2) model}
+      \fontsize{8}{8}\selectfont
+      Let's try to add one more lag.
+      <<>>=
+      # Create lag 2 time series.
+      priceL2 <- lag(price, k=-2)
+      # Put them together
+      price_all <- cbind(price=price, priceL1=priceL1, priceL2=priceL2)
+      price_all[1:5,]
+      @  
+      \pause
+      The model then becomes:
+      $$
+        y_t = \beta_0 + \beta_1 y_{t-1} + \beta_2 y_{t-2} + \epsilon_t
+      $$
+\end{frame}
+	
+	
+	
+\begin{frame}[fragile]{AR(2) model}
+      \fontsize{8}{8}\selectfont
+      <<>>=
+        model <- lm(price ~ priceL1 + priceL2, data=price_all)
+        summary(model)  
+      @  
+\end{frame}
+    
+    
+    
+\begin{frame}[fragile]{AR(2) model}  
+      \begin{itemize}
+      \item \texttt{priceL2} is not statistically significant, if we include \texttt{priceL1}. 
+      \pause
+      \item This indicates that if we know last year's price, knowing the price from two years ago does not have a significant effect on our predictions!
+      \pause
+      \item On its own, \texttt{priceL2} was significant, and still had a positive correlation with \texttt{price}... but that correlation was smaller than the correlation between \texttt{priceL1} and \texttt{price}.
+      \end{itemize}
+\end{frame}      
+
+\begin{frame}[fragile]{Autocorrelation Function}     
+      The \alert{Autocorrelation Function (ACF)} plots the correlation between the series and each of its lags, to help determine how many lags to include in our model.
+      <<fig.height=2>>=
+      acf(price)
+      @  
+      
+      Note that even if there is a high correlation between the series and the second lag, we might not want to include the second lag. \textit{Why not?}
+    
+ \note{Remaining LC questions if time}      
+\end{frame}
+    
+    
+    
+      
+  \end{darkframes}
+\end{document}
