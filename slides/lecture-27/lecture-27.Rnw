@@ -1,0 +1,228 @@
+\documentclass{beamer}
+\usepackage{../371g-slides}
+\title{Simulation 1}
+\subtitle{Lecture 27}
+\author{STA 371G}
+
+\begin{document}
+  <<setup, include=F, cache=F>>=
+  opts_knit$set(global.par=T)
+  knit_hooks$set(crop=hook_pdfcrop)
+  opts_chunk$set(dev='tikz', external=F, fig.path='/tmp/figures/', comment=NA, fig.width=4, fig.height=3, crop=T, sanitize=T, tidy=F)
+  knit_theme$set('camo')
+  @
+  <<include=F, cache=F>>=
+  par(fg='#fefefe', col.axis='#fefefe', col.lab='#fefefe', col.main="#fefefe", mar=c(5.1, 4.1, 1.1, 2.1))
+  @
+
+  \frame{\maketitle}
+
+  % Show outline at beginning of each section
+  \AtBeginSection[]{
+    \begin{frame}<beamer>
+      \tableofcontents[currentsection]
+    \end{frame}
+  }
+
+  %%%%%%% Slides start here %%%%%%%
+
+  \begin{darkframes}
+    \begin{frame}{What is simulation?}
+      \begin{itemize}[<+->]
+        \item Sometimes (e.g., using decision trees), it's possible for us to work out the expected outcome for a situation analytically.
+        \item But decision trees only tell us about averages (expected value), and given only one ``bite at the apple,'' our actual outcome may not be close to the average.
+        \item And what do we do when faced with a scenario that can't be modeled by decision trees, e.g., predicting the value of a portfolio at retirement age?
+        \item Simulation lets us get a picture of the full distribution of possible outcomes in just about any problem scenario.
+        \item We'll start with some silly examples today and then delve into business applications next time.
+      \end{itemize}
+    \end{frame}
+
+    \begin{frame}{Example 1: Coin flipping}
+      Suppose we flip a coin 10 times. What will the distribution of the number of heads look like?
+      \lc
+    \end{frame}
+
+    \begin{frame}[fragile]
+      \fontsize{10}{10}\selectfont
+      <<fig.height=2.5>>=
+      results <- replicate(100000, {
+        flips <- sample(c(0, 1), 10, replace=T)
+        sum(flips)
+      })
+      hist(results, breaks=10, col='orange')
+      @
+    \end{frame}
+
+    \begin{frame}[fragile]
+      Theory tells us that the outcome of flipping a coin 10 times and counting heads should be a Binomial distribution with expected value $np=10\cdot 0.5=5$ and SD $\sqrt{np(1-p)}=\sqrt{10\cdot 0.5\cdot 0.5} \approx \Sexpr{round(sqrt(10*0.5*0.5), 2)}$.
+
+      We can compare our simulated results against the theoretical results:
+      <<>>=
+      mean(results)
+      sd(results)
+      @
+      \lc
+    \end{frame}
+
+    \begin{frame}
+      \fullpagepicture{monty-hall}
+    \end{frame}
+
+    \begin{frame}
+      \fullpagepicture{gameplay}
+    \end{frame}
+
+    \begin{frame}
+      \fullpagepicture{car}
+    \end{frame}
+
+    \begin{frame}
+      \fullpagepicture{goat}
+    \end{frame}
+
+
+    \begin{frame}{Example 3: Monty Hall and \emph{Let's Make a Deal}}
+      \begin{itemize}[<+->]
+        \item Monty Hall used to host the game show \emph{Let's Make a Deal}.
+        \item There are three doors: two contain a goat, and one contains...\pause \alert{a new car}!
+        \item You (the contestant) select one of three doors.
+        \item Without revealing what is behind the selected door, Monty opens one of the other two doors to reveal a goat.
+        \item Monty then gives you a choice: keep your original door, or switch to the other (unopened) door.
+      \end{itemize}
+    \end{frame}
+
+    \begin{frame}{Example 2: Monty Hall and \emph{Let's Make a Deal}}
+      Do you have a better chance of getting the car by switching, or by keeping your original selection---or does it not matter?
+      \lc
+    \end{frame}
+
+    \begin{frame}[fragile]
+      \fontsize{10}{10}\selectfont
+      <<>>=
+      doors <- c(1, 2, 3)
+      results <- replicate(100000, {
+        # Randomly select my door and the door with the car.
+        car.door <- sample(doors, 1)
+        my.door <- sample(doors, 1)
+        # If I chose the door with the car, he randomly opens one
+        #   of the other two doors.
+        # If I chose another door, he opens the remaining door.
+        if (car.door == my.door) {
+          monty.opens.door <- sample(setdiff(doors, my.door), 1)
+        } else {
+          monty.opens.door <- setdiff(doors, c(my.door, car.door))
+        }
+        # Switch doors: select the door that Monty did not open.
+        my.door <- setdiff(doors, c(monty.opens.door, my.door))
+        my.door == car.door
+      })
+      sum(results) / 100000
+      @
+      \lc
+    \end{frame}
+
+    \begin{frame}[fragile]
+      \fontsize{10}{10}\selectfont
+      <<>>=
+      doors <- c(1, 2, 3)
+      results <- replicate(100000, {
+        # Randomly select my door and the door with the car.
+        car.door <- sample(doors, 1)
+        my.door <- sample(doors, 1)
+        # If I chose the door with the car, he randomly opens one
+        #   of the other two doors.
+        # If I chose another door, he opens the remaining door.
+        if (car.door == my.door) {
+          monty.opens.door <- sample(setdiff(doors, my.door), 1)
+        } else {
+          monty.opens.door <- setdiff(doors, c(my.door, car.door))
+        }
+        # Don't switch; just check to see if I won the car.
+        my.door == car.door
+      })
+      sum(results) / 100000
+      @
+    \end{frame}
+
+    \begin{frame}[fragile]{Simulating random variables}
+      We have seen how the \texttt{sample} command can be used to draw from a set of alternatives with equal probability (e.g., flipping a coin).
+
+      The \texttt{rnorm} command can be used to draw randomly from a normal distribution. Let's create 10 random heights, with mean 68 (inches) and SD 4.
+      <<echo=F>>=
+      options(width=50)
+      @
+      <<>>=
+      rnorm(10, 68, 4)
+      @
+      \lc
+    \end{frame}
+
+    \begin{frame}
+      Let's check that \texttt{rnorm} works as advertised!
+
+      <<>>=
+      hist(rnorm(1000), col='orange')
+      @
+    \end{frame}
+
+    \begin{frame}{Example 3: Will I get an A?}
+      \begin{itemize}[<+->]
+        \item Let's say I'm taking a class with two midterms (each 25\% weight in final grade) and a final exam (50\% weight in final grade).
+        \item I just got my score on the first midterm (75\%).
+        \item I want to know how likely it is that I can get 90\% or above on my final grade.
+        \item This is hard!
+      \end{itemize}
+    \end{frame}
+
+    \begin{frame}{Example 3: Will I get an A?}
+      Let's start by making some assumptions:
+      \begin{itemize}[<+->]
+        \item I think I can improve on the second midterm, and then even more on the final.
+        \item I'll model my Midterm 2 grade as a normal distribution.
+        \item My best guess is that I'll get an 80\% on Midterm 2, and I'm 95\% sure it will be between 70\% and 90\%
+        \item So my Midterm 2 grade should be simulated as a normal distribution with mean 80 and SD 5 (since 95\% of a normal distribution is roughly $\pm 2$ SD from the mean).
+        \item I think I can improve more on the final; my best guess is that I'll get a 90\%, and I'm 95\% sure I'll get between 80\% and 100\%.
+      \end{itemize}
+      \lc
+    \end{frame}
+
+    \begin{frame}{Example 3: Will I get an A?}
+      \begin{itemize}[<+->]
+        \item For each run, we will:
+          \begin{enumerate}[<+->]
+            \item Randomly draw a Midterm 2 score from its normal distribution, and a Final Exam score from its normal distribution.
+            \item Calculate a final score for the course, and see if it's over 90\%.
+          \end{enumerate}
+        \item Then we will count the percentage of runs where we got 90\%+ for the course. That will be our estimate of the probability of getting an A.
+      \end{itemize}
+    \end{frame}
+
+    \begin{frame}[fragile]
+      \fontsize{10}{10}\selectfont
+      <<fig.height=2.5>>=
+      grades <- replicate(10000, {
+        midterm1 <- 75
+        midterm2 <- rnorm(1, mean=80, sd=5)
+        final.exam <- rnorm(1, mean=90, sd=5)
+        0.25*midterm1 + 0.25*midterm2 + 0.5*final.exam
+      })
+      hist(grades, col='orange')
+      @
+    \end{frame}
+
+    \begin{frame}[fragile]
+      <<>>=
+      runs <- replicate(10000, {
+        midterm1 <- 75
+        midterm2 <- rnorm(1, mean=80, sd=5)
+        final.exam <- rnorm(1, mean=90, sd=5)
+        0.25*midterm1 + 0.25*midterm2 + 0.5*final.exam >= 90
+      })
+      sum(runs) / 10000
+      @
+
+      \pause
+      There's only about a \Sexpr{round(sum(runs) / 10000 * 100, 2)}\% chance that I'll get an A.
+    \end{frame}
+  \end{darkframes}
+\end{document}

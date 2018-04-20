@@ -1,0 +1,418 @@
+\documentclass{beamer}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{1, 0.894, 0.769}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.824,0.412,0.118}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{1,0.894,0.71}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.824,0.706,0.549}{#1}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{1,0.894,0.769}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{1,0.894,0.769}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.941,0.902,0.549}{#1}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.804,0.776,0.451}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.78,0.941,0.545}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{1,0.78,0.769}{#1}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\usepackage{../371g-slides}
+\title{Simulation 2}
+\subtitle{Lecture 28}
+\author{STA 371G}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+  
+  
+
+  \frame{\maketitle}
+
+  % Show outline at beginning of each section
+  \AtBeginSection[]{
+    \begin{frame}<beamer>
+      \tableofcontents[currentsection]
+    \end{frame}
+  }
+
+  %%%%%%% Slides start here %%%%%%%
+
+  \begin{darkframes}
+    \begin{frame}{Example 1: Will you have enough money for retirement?}
+      \begin{itemize}[<+->]
+        \item Most people (try to) save for retirement throughout their career.
+        \item But how do you know that the money you have saved will last you from retirement age until death?
+        \item Particularly with expected lifespans growing, how do you know that you won't outlive your money?
+      \end{itemize}
+    \end{frame}
+
+    \begin{frame}{Example 1: Will you have enough money for retirement?}
+      \begin{itemize}[<+->]
+        \item Let's start by building a simple model of a portfolio.
+        \item Each year, at the beginning of the year, I put \$10,000 into a retirement account.
+        \item The entire account will be invested in a single asset that has normally distributed annual returns, with mean 12\% and SD 18\%.
+        \item What will the portfolio look like in 30 years?
+      \end{itemize}
+    \end{frame}
+
+    \begin{frame}[fragile]{\texttt{for} loops}
+      \fontsize{10}{10}\selectfont
+      The \texttt{for} command runs a block of code repeatedly:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+\hlstd{total} \hlkwb{<-} \hlnum{0}
+\hlkwa{for} \hlstd{(j} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{5}\hlstd{) \{}
+  \hlstd{total} \hlkwb{<-} \hlstd{total} \hlopt{+} \hlstd{j}
+\hlstd{\}}
+\hlcom{# The total will be 1 + 2 + 3 + 4 + 5}
+\hlstd{total}
+\end{alltt}
+\begin{verbatim}
+[1] 15
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+      \pause
+      \begin{itemize}[<+->]
+        \item \texttt{for} is similar to \texttt{replicate}, but it should be used when you need to keep a running tally of something across iterations.
+        \item Inside the \texttt{for} loop you get access to a variable that changes with each iteration (e.g., above $j=1$ for the first iteration, $j=2$ for the second iteration, etc).
+      \end{itemize}
+    \end{frame}
+
+    \begin{frame}[fragile]
+      Let's start by writing R code for the first year:
+      \fontsize{10}{10}\selectfont
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+\hlcom{# Start with nothing}
+\hlstd{account.value} \hlkwb{<-} \hlnum{0}
+\hlcom{# Add a $10,000 investment}
+\hlstd{account.value} \hlkwb{<-} \hlstd{account.value} \hlopt{+} \hlnum{10000}
+\hlcom{# Simulate this year's return}
+\hlstd{this.years.return} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(}\hlnum{1}\hlstd{,} \hlkwc{mean}\hlstd{=}\hlnum{.12}\hlstd{,} \hlkwc{sd}\hlstd{=}\hlnum{.18}\hlstd{)}
+\hlcom{# Apply the return}
+\hlstd{account.value} \hlkwb{<-} \hlstd{account.value} \hlopt{*} \hlstd{(}\hlnum{1} \hlopt{+} \hlstd{this.years.return)}
+\hlcom{# Examine the account value}
+\hlstd{account.value}
+\end{alltt}
+\begin{verbatim}
+[1] 10072.38
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+    \end{frame}
+
+    \begin{frame}[fragile]
+      Now let's repeat the process for 30 years:
+      \fontsize{10}{10}\selectfont
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+\hlstd{account.value} \hlkwb{<-} \hlnum{0}
+\hlkwa{for} \hlstd{(year} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{30}\hlstd{) \{}
+  \hlstd{account.value} \hlkwb{<-} \hlstd{account.value} \hlopt{+} \hlnum{10000}
+  \hlstd{this.years.return} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(}\hlnum{1}\hlstd{,} \hlkwc{mean}\hlstd{=}\hlnum{.12}\hlstd{,} \hlkwc{sd}\hlstd{=}\hlnum{.18}\hlstd{)}
+  \hlstd{account.value} \hlkwb{<-} \hlstd{account.value} \hlopt{*} \hlstd{(}\hlnum{1} \hlopt{+} \hlstd{this.years.return)}
+\hlstd{\}}
+\hlstd{account.value}
+\end{alltt}
+\begin{verbatim}
+[1] 3330261
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+    \end{frame}
+
+    \begin{frame}[fragile]
+      \fontsize{9}{9}\selectfont
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+\hlstd{portfolio.values} \hlkwb{<-} \hlkwd{replicate}\hlstd{(}\hlnum{10000}\hlstd{, \{}
+  \hlstd{account.value} \hlkwb{<-} \hlnum{0}
+  \hlkwa{for} \hlstd{(year} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{30}\hlstd{) \{}
+    \hlstd{account.value} \hlkwb{<-} \hlstd{account.value} \hlopt{+} \hlnum{10000}
+    \hlstd{this.years.return} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(}\hlnum{1}\hlstd{,} \hlkwc{mean}\hlstd{=}\hlnum{.12}\hlstd{,} \hlkwc{sd}\hlstd{=}\hlnum{.18}\hlstd{)}
+    \hlstd{account.value} \hlkwb{<-} \hlstd{account.value} \hlopt{*} \hlstd{(}\hlnum{1} \hlopt{+} \hlstd{this.years.return)}
+  \hlstd{\}}
+  \hlstd{account.value}
+\hlstd{\})}
+\hlkwd{hist}\hlstd{(portfolio.values,} \hlkwc{col}\hlstd{=}\hlstr{'cyan'}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\input{/tmp/figures/unnamed-chunk-5-1.tikz}
+
+\end{knitrout}
+      \lc
+    \end{frame}
+
+    \begin{frame}[fragile]
+      This looks pretty good at first, but there is a wide range of outcomes---let's look at the percentiles:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+\hlkwd{quantile}\hlstd{(portfolio.values,}
+  \hlkwc{probs}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{0.05}\hlstd{,} \hlnum{0.25}\hlstd{,} \hlnum{0.5}\hlstd{,} \hlnum{0.75}\hlstd{,} \hlnum{0.95}\hlstd{))}
+\end{alltt}
+\begin{verbatim}
+       5%       25%       50%       75%       95% 
+ 674417.4 1300215.9 2087403.8 3345929.9 6745048.2 
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+      That's a ~10x spread between the 95th percentile outcome and the 5th percentile outcome!
+
+      \pause
+      \bigskip
+      The expected (average) value of my portfolio is:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+\hlkwd{mean}\hlstd{(portfolio.values)}
+\end{alltt}
+\begin{verbatim}
+[1] 2683627
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+    \end{frame}
+
+    \begin{frame}[fragile]{What if I only contribute \$5,000 per year?}
+      \fontsize{9}{9}\selectfont
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+\hlstd{portfolio.values} \hlkwb{<-} \hlkwd{replicate}\hlstd{(}\hlnum{10000}\hlstd{, \{}
+  \hlstd{account.value} \hlkwb{<-} \hlnum{0}
+  \hlkwa{for} \hlstd{(year} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{30}\hlstd{) \{}
+    \hlstd{account.value} \hlkwb{<-} \hlstd{account.value} \hlopt{+} \hlnum{5000}
+    \hlstd{this.years.return} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(}\hlnum{1}\hlstd{,} \hlkwc{mean}\hlstd{=}\hlnum{.12}\hlstd{,} \hlkwc{sd}\hlstd{=}\hlnum{.18}\hlstd{)}
+    \hlstd{account.value} \hlkwb{<-} \hlstd{account.value} \hlopt{*} \hlstd{(}\hlnum{1} \hlopt{+} \hlstd{this.years.return)}
+  \hlstd{\}}
+  \hlstd{account.value}
+\hlstd{\})}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+    \end{frame}
+
+    \begin{frame}[fragile]
+      Let's look at the percentiles, under this new scenario where I only contribute \$5,000 per year:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+\hlkwd{quantile}\hlstd{(portfolio.values,}
+  \hlkwc{probs}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{0.05}\hlstd{,} \hlnum{0.25}\hlstd{,} \hlnum{0.5}\hlstd{,} \hlnum{0.75}\hlstd{,} \hlnum{0.95}\hlstd{))}
+\end{alltt}
+\begin{verbatim}
+       5%       25%       50%       75%       95% 
+ 331238.9  661227.0 1047610.8 1697519.4 3368771.5 
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+      \bigskip
+      The expected (average) value of my portfolio is:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+\hlkwd{mean}\hlstd{(portfolio.values)}
+\end{alltt}
+\begin{verbatim}
+[1] 1344782
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+      \pause\bigskip
+
+      Not contributing that extra \$5,000 per year is expected to cost me ~\$1.3M in the value of my retirement account!
+    \end{frame}
+
+    \begin{frame}[fragile]{How likely is it we'll retire a millionaire?}
+      \fontsize{9}{9}\selectfont
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+\hlstd{results} \hlkwb{<-} \hlkwd{replicate}\hlstd{(}\hlnum{10000}\hlstd{, \{}
+  \hlstd{account.value} \hlkwb{<-} \hlnum{0}
+  \hlkwa{for} \hlstd{(year} \hlkwa{in} \hlnum{1}\hlopt{:}\hlnum{30}\hlstd{) \{}
+    \hlstd{account.value} \hlkwb{<-} \hlstd{account.value} \hlopt{+} \hlnum{10000}
+    \hlstd{this.years.return} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(}\hlnum{1}\hlstd{,} \hlkwc{mean}\hlstd{=}\hlnum{.12}\hlstd{,} \hlkwc{sd}\hlstd{=}\hlnum{.18}\hlstd{)}
+    \hlstd{account.value} \hlkwb{<-} \hlstd{account.value} \hlopt{*} \hlstd{(}\hlnum{1} \hlopt{+} \hlstd{this.years.return)}
+  \hlstd{\}}
+  \hlstd{account.value} \hlopt{>=} \hlnum{1000000}
+\hlstd{\})}
+\hlkwd{sum}\hlstd{(results)} \hlopt{/} \hlnum{10000}
+\end{alltt}
+\begin{verbatim}
+[1] 0.8591
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+    \end{frame}
+
+    \begin{frame}{How likely is it that I'll outlive my money?}
+      \begin{itemize}[<+->]
+        \item Suppose that after I turn 65 (i.e., year 30), I start withdrawing \$100,000 each year to live on, and I stop making annual contributions.
+        \item My life expectancy (35 year old, male, married, nonsmoker, works out 3-4 times per week, etc.) is \pause 95.
+        \item So let's simulate this process, and see how often my money outlives me.
+      \end{itemize}
+    \end{frame}
+
+    \begin{frame}[fragile]
+      \fontsize{9}{9}\selectfont
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+\hlstd{results} \hlkwb{<-} \hlkwd{replicate}\hlstd{(}\hlnum{10000}\hlstd{, \{}
+  \hlstd{account.value} \hlkwb{<-} \hlnum{0}
+  \hlkwa{for} \hlstd{(age} \hlkwa{in} \hlnum{35}\hlopt{:}\hlnum{64}\hlstd{) \{}
+    \hlstd{account.value} \hlkwb{<-} \hlstd{account.value} \hlopt{+} \hlnum{10000}
+    \hlstd{this.years.return} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(}\hlnum{1}\hlstd{,} \hlkwc{mean}\hlstd{=}\hlnum{.12}\hlstd{,} \hlkwc{sd}\hlstd{=}\hlnum{.18}\hlstd{)}
+    \hlstd{account.value} \hlkwb{<-} \hlstd{account.value} \hlopt{*} \hlstd{(}\hlnum{1} \hlopt{+} \hlstd{this.years.return)}
+  \hlstd{\}}
+  \hlkwa{for} \hlstd{(age} \hlkwa{in} \hlnum{65}\hlopt{:}\hlnum{94}\hlstd{) \{}
+    \hlstd{account.value} \hlkwb{<-} \hlstd{account.value} \hlopt{-} \hlnum{100000}
+    \hlkwa{if} \hlstd{(account.value} \hlopt{<} \hlnum{0}\hlstd{) \{}
+      \hlstd{account.value} \hlkwb{<-} \hlnum{0}
+    \hlstd{\}} \hlkwa{else} \hlstd{\{}
+      \hlstd{this.years.return} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(}\hlnum{1}\hlstd{,} \hlkwc{mean}\hlstd{=}\hlnum{.12}\hlstd{,} \hlkwc{sd}\hlstd{=}\hlnum{.18}\hlstd{)}
+      \hlstd{account.value} \hlkwb{<-} \hlstd{account.value} \hlopt{*} \hlstd{(}\hlnum{1} \hlopt{+} \hlstd{this.years.return)}
+    \hlstd{\}}
+  \hlstd{\}}
+  \hlstd{account.value} \hlopt{>} \hlnum{0}
+\hlstd{\})}
+\hlkwd{sum}\hlstd{(results)} \hlopt{/} \hlnum{10000}
+\end{alltt}
+\begin{verbatim}
+[1] 0.8079
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+      \pause
+      There is a 80.79\% chance that I don't run out of money during retirement.
+    \end{frame}
+
+    \begin{frame}{Example 2: Simulating pricing and demand}
+      \begin{itemize}[<+->]
+        \item Let's return to our oil drilling example: you are planning to drill for oil in a newly-discovered field.
+        \item Setting up the drilling equipment costs \$1M.
+        \item There's a 45\% chance that you strike oil.
+        \item If you strike oil, you will generate money---\pause but how much depends on the price of oil and how much demand there is.
+        \item This is not something we can figure out using a decision tree anymore, because the payoff is randomly drawn from a distribution rather than fixed.
+      \end{itemize}
+    \end{frame}
+
+    \begin{frame}[fragile]
+      \fontsize{10}{10}\selectfont
+      \begin{itemize}
+        \item Suppose that the price of oil is normally distributed, with a mean of \$45/barrel and an SD of \$8.
+        \item Suppose that the demand (the number of barrels we can sell) has a \emph{gamma distribution} with shape 3 and rate $1/40000$:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+\hlkwd{hist}\hlstd{(}\hlkwd{rgamma}\hlstd{(}\hlnum{10000}\hlstd{,} \hlkwc{shape}\hlstd{=}\hlnum{3}\hlstd{,} \hlkwc{rate}\hlstd{=}\hlnum{1}\hlopt{/}\hlnum{40000}\hlstd{),}
+  \hlkwc{col}\hlstd{=}\hlstr{'orange'}\hlstd{,} \hlkwc{main}\hlstd{=}\hlstr{''}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\input{/tmp/figures/unnamed-chunk-13-1.tikz}
+
+\end{knitrout}
+      \end{itemize}
+      \lc
+    \end{frame}
+
+    \begin{frame}[fragile]
+      \fontsize{9}{9}\selectfont
+      How much do we make if we decide to drill for oil?
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+\hlstd{results} \hlkwb{<-} \hlkwd{replicate}\hlstd{(}\hlnum{10000}\hlstd{, \{}
+  \hlkwa{if} \hlstd{(}\hlkwd{runif}\hlstd{(}\hlnum{1}\hlstd{)} \hlopt{<} \hlnum{0.45}\hlstd{) \{}
+    \hlstd{price} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(}\hlnum{1}\hlstd{,} \hlkwc{mean}\hlstd{=}\hlnum{45}\hlstd{,} \hlkwc{sd}\hlstd{=}\hlnum{8}\hlstd{)}
+    \hlstd{demand} \hlkwb{<-} \hlkwd{rgamma}\hlstd{(}\hlnum{1}\hlstd{,} \hlkwc{shape}\hlstd{=}\hlnum{3}\hlstd{,} \hlkwc{rate}\hlstd{=}\hlnum{1}\hlopt{/}\hlnum{40000}\hlstd{)}
+    \hlstd{revenue} \hlkwb{<-} \hlstd{price} \hlopt{*} \hlstd{demand} \hlopt{-} \hlnum{1000000}
+  \hlstd{\}} \hlkwa{else} \hlstd{\{}
+    \hlstd{revenue} \hlkwb{<-} \hlopt{-}\hlnum{1000000}
+  \hlstd{\}}
+  \hlstd{revenue}
+\hlstd{\})}
+\hlkwd{hist}\hlstd{(results,} \hlkwc{col}\hlstd{=}\hlstr{'lightblue'}\hlstd{,} \hlkwc{main}\hlstd{=}\hlstr{''}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\input{/tmp/figures/unnamed-chunk-14-1.tikz}
+
+\end{knitrout}
+    \end{frame}
+
+    \begin{frame}
+      \begin{itemize}[<+->]
+        \item We have been assuming that the amount of oil produced by the field is always sufficient to meet the demand.
+        \item It's more realistic to not assume this will necessarily be the case.
+        \item Suppose that production also has a gamma distribution with shape 3 and rate $1/40000$.
+        \item How much do we make if we decide to drill for oil?
+      \end{itemize}
+      \lc
+    \end{frame}
+
+    \begin{frame}[fragile]
+      \fontsize{9}{9}\selectfont
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
+\begin{alltt}
+\hlstd{results} \hlkwb{<-} \hlkwd{replicate}\hlstd{(}\hlnum{10000}\hlstd{, \{}
+  \hlkwa{if} \hlstd{(}\hlkwd{runif}\hlstd{(}\hlnum{1}\hlstd{)} \hlopt{<} \hlnum{0.45}\hlstd{) \{}
+    \hlstd{price} \hlkwb{<-} \hlkwd{rnorm}\hlstd{(}\hlnum{1}\hlstd{,} \hlkwc{mean}\hlstd{=}\hlnum{45}\hlstd{,} \hlkwc{sd}\hlstd{=}\hlnum{8}\hlstd{)}
+    \hlstd{demand} \hlkwb{<-} \hlkwd{rgamma}\hlstd{(}\hlnum{1}\hlstd{,} \hlkwc{shape}\hlstd{=}\hlnum{3}\hlstd{,} \hlkwc{rate}\hlstd{=}\hlnum{1}\hlopt{/}\hlnum{40000}\hlstd{)}
+    \hlstd{production} \hlkwb{<-} \hlkwd{rgamma}\hlstd{(}\hlnum{1}\hlstd{,} \hlkwc{shape}\hlstd{=}\hlnum{3}\hlstd{,} \hlkwc{rate}\hlstd{=}\hlnum{1}\hlopt{/}\hlnum{40000}\hlstd{)}
+    \hlstd{revenue} \hlkwb{<-} \hlstd{price} \hlopt{*} \hlkwd{min}\hlstd{(production, demand)} \hlopt{-} \hlnum{1000000}
+  \hlstd{\}} \hlkwa{else} \hlstd{\{}
+    \hlstd{revenue} \hlkwb{<-} \hlopt{-}\hlnum{1000000}
+  \hlstd{\}}
+  \hlstd{revenue}
+\hlstd{\})}
+\hlkwd{hist}\hlstd{(results,} \hlkwc{col}\hlstd{=}\hlstr{'lightblue'}\hlstd{,} \hlkwc{main}\hlstd{=}\hlstr{''}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\input{/tmp/figures/unnamed-chunk-15-1.tikz}
+
+\end{knitrout}
+    \end{frame}
+  \end{darkframes}
+\end{document}

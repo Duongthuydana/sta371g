@@ -1,0 +1,283 @@
+\documentclass{beamer}
+\usepackage{../371g-slides}
+\title{Simulation 2}
+\subtitle{Lecture 28}
+\author{STA 371G}
+
+\begin{document}
+  <<setup, include=F, cache=F>>=
+  opts_knit$set(global.par=T)
+  knit_hooks$set(crop=hook_pdfcrop)
+  opts_chunk$set(dev='tikz', external=F, fig.path='/tmp/figures/', comment=NA, fig.width=4, fig.height=3, crop=T, sanitize=T, tidy=F)
+  knit_theme$set('camo')
+  set.seed(1)
+  @
+  <<include=F, cache=F>>=
+  par(fg='#fefefe', col.axis='#fefefe', col.lab='#fefefe', col.main="#fefefe", mar=c(5.1, 4.1, 1.1, 2.1))
+  @
+
+  \frame{\maketitle}
+
+  % Show outline at beginning of each section
+  \AtBeginSection[]{
+    \begin{frame}<beamer>
+      \tableofcontents[currentsection]
+    \end{frame}
+  }
+
+  %%%%%%% Slides start here %%%%%%%
+
+  \begin{darkframes}
+    \begin{frame}{Example 1: Will you have enough money for retirement?}
+      \begin{itemize}[<+->]
+        \item Most people (try to) save for retirement throughout their career.
+        \item But how do you know that the money you have saved will last you from retirement age until death?
+        \item Particularly with expected lifespans growing, how do you know that you won't outlive your money?
+      \end{itemize}
+    \end{frame}
+
+    \begin{frame}{Example 1: Will you have enough money for retirement?}
+      \begin{itemize}[<+->]
+        \item Let's start by building a simple model of a portfolio.
+        \item Each year, at the beginning of the year, I put \$10,000 into a retirement account.
+        \item The entire account will be invested in a single asset that has normally distributed annual returns, with mean 12\% and SD 18\%.
+        \item What will the portfolio look like in 30 years?
+      \end{itemize}
+    \end{frame}
+
+    \begin{frame}[fragile]{\texttt{for} loops}
+      \fontsize{10}{10}\selectfont
+      The \texttt{for} command runs a block of code repeatedly:
+      <<>>=
+      total <- 0
+      for (j in 1:5) {
+        total <- total + j
+      }
+      # The total will be 1 + 2 + 3 + 4 + 5
+      total
+      @
+      \pause
+      \begin{itemize}[<+->]
+        \item \texttt{for} is similar to \texttt{replicate}, but it should be used when you need to keep a running tally of something across iterations.
+        \item Inside the \texttt{for} loop you get access to a variable that changes with each iteration (e.g., above $j=1$ for the first iteration, $j=2$ for the second iteration, etc).
+      \end{itemize}
+    \end{frame}
+
+    \begin{frame}[fragile]
+      Let's start by writing R code for the first year:
+      \fontsize{10}{10}\selectfont
+      <<>>=
+      # Start with nothing
+      account.value <- 0
+      # Add a $10,000 investment
+      account.value <- account.value + 10000
+      # Simulate this year's return
+      this.years.return <- rnorm(1, mean=.12, sd=.18)
+      # Apply the return
+      account.value <- account.value * (1 + this.years.return)
+      # Examine the account value
+      account.value
+      @
+    \end{frame}
+
+    \begin{frame}[fragile]
+      Now let's repeat the process for 30 years:
+      \fontsize{10}{10}\selectfont
+      <<>>=
+      account.value <- 0
+      for (year in 1:30) {
+        account.value <- account.value + 10000
+        this.years.return <- rnorm(1, mean=.12, sd=.18)
+        account.value <- account.value * (1 + this.years.return)
+      }
+      account.value
+      @
+    \end{frame}
+
+    \begin{frame}[fragile]
+      \fontsize{9}{9}\selectfont
+      <<fig.height=2.5>>=
+      portfolio.values <- replicate(10000, {
+        account.value <- 0
+        for (year in 1:30) {
+          account.value <- account.value + 10000
+          this.years.return <- rnorm(1, mean=.12, sd=.18)
+          account.value <- account.value * (1 + this.years.return)
+        }
+        account.value
+      })
+      hist(portfolio.values, col='cyan')
+      @
+      \lc
+    \end{frame}
+
+    \begin{frame}[fragile]
+      This looks pretty good at first, but there is a wide range of outcomes---let's look at the percentiles:
+      <<>>=
+      quantile(portfolio.values,
+        probs=c(0.05, 0.25, 0.5, 0.75, 0.95))
+      @
+      That's a ~10x spread between the 95th percentile outcome and the 5th percentile outcome!
+
+      \pause
+      \bigskip
+      The expected (average) value of my portfolio is:
+      <<>>=
+      mean(portfolio.values)
+      @
+    \end{frame}
+
+    \begin{frame}[fragile]{What if I only contribute \$5,000 per year?}
+      \fontsize{9}{9}\selectfont
+      <<>>=
+      portfolio.values <- replicate(10000, {
+        account.value <- 0
+        for (year in 1:30) {
+          account.value <- account.value + 5000
+          this.years.return <- rnorm(1, mean=.12, sd=.18)
+          account.value <- account.value * (1 + this.years.return)
+        }
+        account.value
+      })
+      @
+    \end{frame}
+
+    \begin{frame}[fragile]
+      Let's look at the percentiles, under this new scenario where I only contribute \$5,000 per year:
+      <<>>=
+      quantile(portfolio.values,
+        probs=c(0.05, 0.25, 0.5, 0.75, 0.95))
+      @
+
+      \bigskip
+      The expected (average) value of my portfolio is:
+      <<>>=
+      mean(portfolio.values)
+      @
+
+      \pause\bigskip
+
+      Not contributing that extra \$5,000 per year is expected to cost me ~\$1.3M in the value of my retirement account!
+    \end{frame}
+
+    \begin{frame}[fragile]{How likely is it we'll retire a millionaire?}
+      \fontsize{9}{9}\selectfont
+      <<fig.height=2.5>>=
+      results <- replicate(10000, {
+        account.value <- 0
+        for (year in 1:30) {
+          account.value <- account.value + 10000
+          this.years.return <- rnorm(1, mean=.12, sd=.18)
+          account.value <- account.value * (1 + this.years.return)
+        }
+        account.value >= 1000000
+      })
+      sum(results) / 10000
+      @
+    \end{frame}
+
+    \begin{frame}{How likely is it that I'll outlive my money?}
+      \begin{itemize}[<+->]
+        \item Suppose that after I turn 65 (i.e., year 30), I start withdrawing \$100,000 each year to live on, and I stop making annual contributions.
+        \item My life expectancy (35 year old, male, married, nonsmoker, works out 3-4 times per week, etc.) is \pause 95.
+        \item So let's simulate this process, and see how often my money outlives me.
+      \end{itemize}
+    \end{frame}
+
+    \begin{frame}[fragile]
+      \fontsize{9}{9}\selectfont
+      <<>>=
+      results <- replicate(10000, {
+        account.value <- 0
+        for (age in 35:64) {
+          account.value <- account.value + 10000
+          this.years.return <- rnorm(1, mean=.12, sd=.18)
+          account.value <- account.value * (1 + this.years.return)
+        }
+        for (age in 65:94) {
+          account.value <- account.value - 100000
+          if (account.value < 0) {
+            account.value <- 0
+          } else {
+            this.years.return <- rnorm(1, mean=.12, sd=.18)
+            account.value <- account.value * (1 + this.years.return)
+          }
+        }
+        account.value > 0
+      })
+      sum(results) / 10000
+      @
+      \pause
+      There is a \Sexpr{round(100 * sum(results) / 10000, 2)}\% chance that I don't run out of money during retirement.
+    \end{frame}
+
+    \begin{frame}{Example 2: Simulating pricing and demand}
+      \begin{itemize}[<+->]
+        \item Let's return to our oil drilling example: you are planning to drill for oil in a newly-discovered field.
+        \item Setting up the drilling equipment costs \$1M.
+        \item There's a 45\% chance that you strike oil.
+        \item If you strike oil, you will generate money---\pause but how much depends on the price of oil and how much demand there is.
+        \item This is not something we can figure out using a decision tree anymore, because the payoff is randomly drawn from a distribution rather than fixed.
+      \end{itemize}
+    \end{frame}
+
+    \begin{frame}[fragile]
+      \fontsize{10}{10}\selectfont
+      \begin{itemize}
+        \item Suppose that the price of oil is normally distributed, with a mean of \$45/barrel and an SD of \$8.
+        \item Suppose that the demand (the number of barrels we can sell) has a \emph{gamma distribution} with shape 3 and rate $1/40000$:
+        <<fig.height=2.5>>=
+        hist(rgamma(10000, shape=3, rate=1/40000),
+          col='orange', main='')
+        @
+      \end{itemize}
+      \lc
+    \end{frame}
+
+    \begin{frame}[fragile]
+      \fontsize{9}{9}\selectfont
+      How much do we make if we decide to drill for oil?
+      <<fig.height=2>>=
+      results <- replicate(10000, {
+        if (runif(1) < 0.45) {
+          price <- rnorm(1, mean=45, sd=8)
+          demand <- rgamma(1, shape=3, rate=1/40000)
+          revenue <- price * demand - 1000000
+        } else {
+          revenue <- -1000000
+        }
+        revenue
+      })
+      hist(results, col='lightblue', main='')
+      @
+    \end{frame}
+
+    \begin{frame}
+      \begin{itemize}[<+->]
+        \item We have been assuming that the amount of oil produced by the field is always sufficient to meet the demand.
+        \item It's more realistic to not assume this will necessarily be the case.
+        \item Suppose that production also has a gamma distribution with shape 3 and rate $1/40000$.
+        \item How much do we make if we decide to drill for oil?
+      \end{itemize}
+      \lc
+    \end{frame}
+
+    \begin{frame}[fragile]
+      \fontsize{9}{9}\selectfont
+      <<fig.height=2>>=
+      results <- replicate(10000, {
+        if (runif(1) < 0.45) {
+          price <- rnorm(1, mean=45, sd=8)
+          demand <- rgamma(1, shape=3, rate=1/40000)
+          production <- rgamma(1, shape=3, rate=1/40000)
+          revenue <- price * min(production, demand) - 1000000
+        } else {
+          revenue <- -1000000
+        }
+        revenue
+      })
+      hist(results, col='lightblue', main='')
+      @
+    \end{frame}
+  \end{darkframes}
+\end{document}
