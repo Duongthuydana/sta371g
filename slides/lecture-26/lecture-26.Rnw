@@ -1,8 +1,8 @@
 \documentclass{beamer}
 \usepackage{../371g-slides}
 \usepackage{preview}
-\title{Time Series: Autocorrelation}
-\subtitle{Lecture 18}
+\title{Time Series: Trends and Seasonality}
+\subtitle{Lecture 26}
 \author{STA 371G}
 
 \begin{document}
@@ -20,7 +20,7 @@
   \frame{\maketitle}
 
   % Show outline at beginning of each section
-  \AtBeginSection[]{ 
+  \AtBeginSection[]{
     \begin{frame}<beamer>
       \tableofcontents[currentsection]
     \end{frame}
@@ -29,38 +29,37 @@
   %%%%%%% Slides start here %%%%%%%
 
   \begin{darkframes}
-    
+
 
     \begin{frame}{Predicting beer production over time}
     \begin{center}
         \includegraphics[width=2.8in]{beer} \\
-      \end{center} 
+      \end{center}
       Goal: Predict beer production in the US (in millions of gallons)
       \lc
-      \end{frame} 
+      \end{frame}
 \begin{frame}[fragile]{An autoregressive model for beer production}
     If we believe last month's beer figures are a good prediction for next month's beer figures, we might choose an AR(1) model:
-    
+
     $$y_t = \beta_0 + \beta_1 y_{t-1} + \epsilon_t$$
-    
+
     This means that the next month's beer figures depend only on the current month's beer figures, plus random noise.
-    
+
    \bigskip
-   
-   Let's look at whether this seems a reasonable assumption
+
+   Let's look at whether this is a reasonable assumption.
 \end{frame}
 \begin{frame}[fragile]%{An autoregressive model for beer production}
     \fontsize{8}{8}\selectfont
       <<fig.height=2.5>>=
-      # Convert the data into a time series object    
+      # Convert the data into a time series object (frequency = data pts per year)
       beer <- ts(beer.df$beer, start=c(1970,7), frequency=12)
-      # Create a lag-1 version   
-      beerL1 <- lag(beer, k=-1)
-      #combine them in a data frame
-      beer_all <- cbind(beer=beer,beerL1=beerL1)
-      # Frequency: # of data points per year
-      plot(beer~beerL1,data=beer_all,xlab = "last month\'s beer production",ylab="this month\'s beer production",pch=19)
-      @  
+      beer_all <- cbind(beer=beer, beerL1=lag(beer, k=-1))
+      plot(beer ~ beerL1, data=beer_all,
+           xlab="last month's beer production",
+           ylab="this month's beer production",
+           pch=19)
+      @
       \lc
 \end{frame}
 
@@ -68,19 +67,18 @@
       \fontsize{8}{8}\selectfont
       <<>>=
       model <- lm(beer ~ beerL1, data=beer_all)
-      summary(model)  
-      @  
-      
-      Last month's beer production is statistically significant. The $R^2$ is good, but not amazing... perhaps we can do better!
+      summary(model)
+      @
+      \fontsize{10}{10}\selectfont
+      Last month's beer production is statistically significant. The $R^2$ is good, but not amazing---perhaps we can do better!
 \end{frame}
 
 \begin{frame}[fragile]%{Linear regression model}
 Hmmm... there seems to be more of a pattern here than in the oil price data from last week!
-      \fontsize{9}{9}\selectfont
       <<fig.height=2.5>>=
       plot(beer)
-      @  
-      
+      @
+
 \end{frame}
     \begin{frame}
 \frametitle{Types of temporal variation}
@@ -88,7 +86,7 @@ There are several types of temporal variation we might want to predict!
 
 \bigskip
 
-Cyclic variation is \emph{unpredictable} up and down movement, of the sort we saw last week. 
+\alert{Cyclic variation} is \emph{unpredictable} up and down movement, of the sort we saw last week.
 \begin{itemize}
 \item Length of cycle may vary
 \item Often caused by multiple interacting factors.
@@ -110,7 +108,7 @@ A \alert{trend} is a persistent, overall, upwards or downwards pattern in the da
 \end{itemize}
 We definitely saw a trend in the beer production numbers!
 \end{frame}
-    
+
 \begin{frame}
 \frametitle{Seasonal}
 \begin{itemize}
@@ -126,7 +124,7 @@ There was clear seasonality in the beer production numbers!
 \end{frame}
 
 
-\begin{frame}[fragile]{Modeling a trend}
+\begin{frame}[fragile]
     \fontsize{8}{8}\selectfont
       Let's first deal with the upward trend. We can try predicting production from time using a simple linear regression:
       <<>>=
@@ -134,8 +132,8 @@ There was clear seasonality in the beer production numbers!
       @
       \pause
       Month is a significant predictor! But the $R^2$ is lower than our AR(1) model, so we need to do better.
-\end{frame}   
-    
+\end{frame}
+
 
 \begin{frame}{Seasonal variation}
 How can we deal with the seasonal effect?
@@ -151,7 +149,7 @@ The simplest solution is to treat month as a categorical variable!
 
 \begin{frame}[fragile]%{Adding seasonal dummies}
     \fontsize{7}{7}\selectfont
-      
+
       <<echo=F>>=
       model<-lm(beer ~ month_count + month, data=beer.df)
       summary(model)
@@ -165,35 +163,35 @@ The simplest solution is to treat month as a categorical variable!
 \pause
 \item ... maybe there's also a cyclic effect! Let's take a look at the residuals.
 \end{itemize}
-<<fig.height=2.5>>=
-      # Convert the residuals into a time series object    
-      beer_res <- ts(model$residuals, start=c(1970,7), frequency=12)
-      plot(beer_res)
-      @  
+\fontsize{9}{9}\selectfont
+<<fig.height=2>>=
+# Convert the residuals into a time series object
+beer_res <- ts(model$residuals, start=c(1970,7), frequency=12)
+plot(beer_res)
+@
 \end{frame}
 
 \begin{frame}[fragile]
-Let's try running an autoregressive model on the residuals
+Let's try running an autoregressive model on the residuals:
       <<>>=
-      beer_res_L1 <- lag(beer_res, k=-1)
-      res_all <- cbind(beer_res = beer_res, 
-                       beer_res_L1 = beer_res_L1)
-      model <- lm(beer_res~beer_res_L1,data=res_all)
-      @  
+      res_all <- cbind(beer_res=beer_res,
+                       beer_res_L1=lag(beer_res, k=-1))
+      model <- lm(beer_res ~ beer_res_L1, data=res_all)
+      @
 \end{frame}
 \begin{frame}[fragile]
     \fontsize{9}{9}\selectfont
-      
+
       <<echo=F>>=
       summary(model)
       @
-Statistically significant... but not really practically significant
-\end{frame}  
+Statistically significant... but not really practically significant.
+\end{frame}
 
 \begin{frame}[fragile]
 <<echo=F>>=
       acf(beer_res)
-      @  
+      @
       Autocorrelation function agrees... fairly low autocorrelation at lag one.
       \note{Three bonus LC questions}
 \end{frame}

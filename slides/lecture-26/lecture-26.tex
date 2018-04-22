@@ -51,8 +51,8 @@
 \usepackage{alltt}
 \usepackage{../371g-slides}
 \usepackage{preview}
-\title{Time Series: Autocorrelation}
-\subtitle{Lecture 18}
+\title{Time Series: Trends and Seasonality}
+\subtitle{Lecture 26}
 \author{STA 371G}
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \begin{document}
@@ -62,7 +62,7 @@
   \frame{\maketitle}
 
   % Show outline at beginning of each section
-  \AtBeginSection[]{ 
+  \AtBeginSection[]{
     \begin{frame}<beamer>
       \tableofcontents[currentsection]
     \end{frame}
@@ -71,42 +71,41 @@
   %%%%%%% Slides start here %%%%%%%
 
   \begin{darkframes}
-    
+
 
     \begin{frame}{Predicting beer production over time}
     \begin{center}
         \includegraphics[width=2.8in]{beer} \\
-      \end{center} 
+      \end{center}
       Goal: Predict beer production in the US (in millions of gallons)
       \lc
-      \end{frame} 
+      \end{frame}
 \begin{frame}[fragile]{An autoregressive model for beer production}
     If we believe last month's beer figures are a good prediction for next month's beer figures, we might choose an AR(1) model:
-    
+
     $$y_t = \beta_0 + \beta_1 y_{t-1} + \epsilon_t$$
-    
+
     This means that the next month's beer figures depend only on the current month's beer figures, plus random noise.
-    
+
    \bigskip
-   
-   Let's look at whether this seems a reasonable assumption
+
+   Let's look at whether this is a reasonable assumption.
 \end{frame}
 \begin{frame}[fragile]%{An autoregressive model for beer production}
     \fontsize{8}{8}\selectfont
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
 \begin{alltt}
-\hlcom{# Convert the data into a time series object    }
+\hlcom{# Convert the data into a time series object (frequency = data pts per year)}
 \hlstd{beer} \hlkwb{<-} \hlkwd{ts}\hlstd{(beer.df}\hlopt{$}\hlstd{beer,} \hlkwc{start}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{1970}\hlstd{,}\hlnum{7}\hlstd{),} \hlkwc{frequency}\hlstd{=}\hlnum{12}\hlstd{)}
-\hlcom{# Create a lag-1 version   }
-\hlstd{beerL1} \hlkwb{<-} \hlkwd{lag}\hlstd{(beer,} \hlkwc{k}\hlstd{=}\hlopt{-}\hlnum{1}\hlstd{)}
-\hlcom{#combine them in a data frame}
-\hlstd{beer_all} \hlkwb{<-} \hlkwd{cbind}\hlstd{(}\hlkwc{beer}\hlstd{=beer,}\hlkwc{beerL1}\hlstd{=beerL1)}
-\hlcom{# Frequency: # of data points per year}
-\hlkwd{plot}\hlstd{(beer}\hlopt{~}\hlstd{beerL1,}\hlkwc{data}\hlstd{=beer_all,}\hlkwc{xlab} \hlstd{=} \hlstr{"last month\textbackslash{}'s beer production"}\hlstd{,}\hlkwc{ylab}\hlstd{=}\hlstr{"this month\textbackslash{}'s beer production"}\hlstd{,}\hlkwc{pch}\hlstd{=}\hlnum{19}\hlstd{)}
+\hlstd{beer_all} \hlkwb{<-} \hlkwd{cbind}\hlstd{(}\hlkwc{beer}\hlstd{=beer,} \hlkwc{beerL1}\hlstd{=}\hlkwd{lag}\hlstd{(beer,} \hlkwc{k}\hlstd{=}\hlopt{-}\hlnum{1}\hlstd{))}
+\hlkwd{plot}\hlstd{(beer} \hlopt{~} \hlstd{beerL1,} \hlkwc{data}\hlstd{=beer_all,}
+     \hlkwc{xlab}\hlstd{=}\hlstr{"last month's beer production"}\hlstd{,}
+     \hlkwc{ylab}\hlstd{=}\hlstr{"this month's beer production"}\hlstd{,}
+     \hlkwc{pch}\hlstd{=}\hlnum{19}\hlstd{)}
 \end{alltt}
 \end{kframe}
-\input{/tmp/figures/unnamed-chunk-2-1.tex}
+\input{/tmp/figures/unnamed-chunk-2-1.tikz}
 
 \end{knitrout}
       \lc
@@ -143,23 +142,22 @@ F-statistic: 163.8 on 1 and 93 DF,  p-value: < 2.2e-16
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
-      
-      Last month's beer production is statistically significant. The $R^2$ is good, but not amazing... perhaps we can do better!
+      \fontsize{10}{10}\selectfont
+      Last month's beer production is statistically significant. The $R^2$ is good, but not amazing---perhaps we can do better!
 \end{frame}
 
 \begin{frame}[fragile]%{Linear regression model}
 Hmmm... there seems to be more of a pattern here than in the oil price data from last week!
-      \fontsize{9}{9}\selectfont
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
 \begin{alltt}
 \hlkwd{plot}\hlstd{(beer)}
 \end{alltt}
 \end{kframe}
-\input{/tmp/figures/unnamed-chunk-4-1.tex}
+\input{/tmp/figures/unnamed-chunk-4-1.tikz}
 
 \end{knitrout}
-      
+
 \end{frame}
     \begin{frame}
 \frametitle{Types of temporal variation}
@@ -167,7 +165,7 @@ There are several types of temporal variation we might want to predict!
 
 \bigskip
 
-Cyclic variation is \emph{unpredictable} up and down movement, of the sort we saw last week. 
+\alert{Cyclic variation} is \emph{unpredictable} up and down movement, of the sort we saw last week.
 \begin{itemize}
 \item Length of cycle may vary
 \item Often caused by multiple interacting factors.
@@ -189,7 +187,7 @@ A \alert{trend} is a persistent, overall, upwards or downwards pattern in the da
 \end{itemize}
 We definitely saw a trend in the beer production numbers!
 \end{frame}
-    
+
 \begin{frame}
 \frametitle{Seasonal}
 \begin{itemize}
@@ -205,7 +203,7 @@ There was clear seasonality in the beer production numbers!
 \end{frame}
 
 
-\begin{frame}[fragile]{Modeling a trend}
+\begin{frame}[fragile]
     \fontsize{8}{8}\selectfont
       Let's first deal with the upward trend. We can try predicting production from time using a simple linear regression:
 \begin{knitrout}
@@ -237,8 +235,8 @@ F-statistic: 41.84 on 1 and 94 DF,  p-value: 4.415e-09
 \end{knitrout}
       \pause
       Month is a significant predictor! But the $R^2$ is lower than our AR(1) model, so we need to do better.
-\end{frame}   
-    
+\end{frame}
+
 
 \begin{frame}{Seasonal variation}
 How can we deal with the seasonal effect?
@@ -254,7 +252,7 @@ The simplest solution is to treat month as a categorical variable!
 
 \begin{frame}[fragile]%{Adding seasonal dummies}
     \fontsize{7}{7}\selectfont
-      
+
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
 \begin{verbatim}
@@ -299,35 +297,35 @@ F-statistic: 67.86 on 12 and 83 DF,  p-value: < 2.2e-16
 \pause
 \item ... maybe there's also a cyclic effect! Let's take a look at the residuals.
 \end{itemize}
+\fontsize{9}{9}\selectfont
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
 \begin{alltt}
-      \hlcom{# Convert the residuals into a time series object    }
-      \hlstd{beer_res} \hlkwb{<-} \hlkwd{ts}\hlstd{(model}\hlopt{$}\hlstd{residuals,} \hlkwc{start}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{1970}\hlstd{,}\hlnum{7}\hlstd{),} \hlkwc{frequency}\hlstd{=}\hlnum{12}\hlstd{)}
-      \hlkwd{plot}\hlstd{(beer_res)}
+\hlcom{# Convert the residuals into a time series object}
+\hlstd{beer_res} \hlkwb{<-} \hlkwd{ts}\hlstd{(model}\hlopt{$}\hlstd{residuals,} \hlkwc{start}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{1970}\hlstd{,}\hlnum{7}\hlstd{),} \hlkwc{frequency}\hlstd{=}\hlnum{12}\hlstd{)}
+\hlkwd{plot}\hlstd{(beer_res)}
 \end{alltt}
 \end{kframe}
-\input{/tmp/figures/unnamed-chunk-7-1.tex}
+\input{/tmp/figures/unnamed-chunk-7-1.tikz}
 
 \end{knitrout}
 \end{frame}
 
 \begin{frame}[fragile]
-Let's try running an autoregressive model on the residuals
+Let's try running an autoregressive model on the residuals:
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
 \begin{alltt}
-\hlstd{beer_res_L1} \hlkwb{<-} \hlkwd{lag}\hlstd{(beer_res,} \hlkwc{k}\hlstd{=}\hlopt{-}\hlnum{1}\hlstd{)}
-\hlstd{res_all} \hlkwb{<-} \hlkwd{cbind}\hlstd{(}\hlkwc{beer_res} \hlstd{= beer_res,}
-                 \hlkwc{beer_res_L1} \hlstd{= beer_res_L1)}
-\hlstd{model} \hlkwb{<-} \hlkwd{lm}\hlstd{(beer_res}\hlopt{~}\hlstd{beer_res_L1,}\hlkwc{data}\hlstd{=res_all)}
+\hlstd{res_all} \hlkwb{<-} \hlkwd{cbind}\hlstd{(}\hlkwc{beer_res}\hlstd{=beer_res,}
+                 \hlkwc{beer_res_L1}\hlstd{=}\hlkwd{lag}\hlstd{(beer_res,} \hlkwc{k}\hlstd{=}\hlopt{-}\hlnum{1}\hlstd{))}
+\hlstd{model} \hlkwb{<-} \hlkwd{lm}\hlstd{(beer_res} \hlopt{~} \hlstd{beer_res_L1,} \hlkwc{data}\hlstd{=res_all)}
 \end{alltt}
 \end{kframe}
 \end{knitrout}
 \end{frame}
 \begin{frame}[fragile]
     \fontsize{9}{9}\selectfont
-      
+
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}\begin{kframe}
 \begin{verbatim}
@@ -353,13 +351,13 @@ F-statistic: 7.498 on 1 and 93 DF,  p-value: 0.007404
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
-Statistically significant... but not really practically significant
-\end{frame}  
+Statistically significant... but not really practically significant.
+\end{frame}
 
 \begin{frame}[fragile]
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.137, 0.137, 0.137}
-\input{/tmp/figures/unnamed-chunk-10-1.tex}
+\input{/tmp/figures/unnamed-chunk-10-1.tikz}
 
 \end{knitrout}
       Autocorrelation function agrees... fairly low autocorrelation at lag one.
